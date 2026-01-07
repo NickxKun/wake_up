@@ -1,0 +1,73 @@
+[gd_scene load_steps=9 format=3 uid="uid://c5ruon8wg4f44"]
+
+[ext_resource type="Shader" uid="uid://ds77wg12c4efg" path="res://assets/shaders/edge_detection.gdshader" id="1_o5qli"]
+[ext_resource type="PackedScene" uid="uid://gsfp05m7fkia" path="res://assets/models/player.blend" id="2_0wfyh"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_o5qli"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_0wfyh"]
+sky_material = SubResource("ProceduralSkyMaterial_o5qli")
+
+[sub_resource type="Environment" id="Environment_sugp2"]
+background_mode = 2
+sky = SubResource("Sky_0wfyh")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_0wfyh"]
+flip_faces = true
+size = Vector2(2, 2)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sugp2"]
+render_priority = 0
+shader = ExtResource("1_o5qli")
+shader_parameter/lightIntensity = 1.25
+shader_parameter/lineAlpha = 0.7
+shader_parameter/useLighting = true
+shader_parameter/lineHighlight = 0.2
+shader_parameter/lineShadow = 0.55
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0wfyh"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_sugp2")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-4.371139e-08, -0.86602545, 0.49999997, 0, 0.49999997, 0.86602545, -1, 3.7855173e-08, -2.1855692e-08, 0, 0, 0)
+shadow_enabled = true
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+texture_filter = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+stretch_shrink = 3
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
+size = Vector2i(384, 216)
+
+[node name="Camera3D" type="Camera3D" parent="SubViewportContainer/SubViewport"]
+transform = Transform3D(0.70710677, -0.3535534, 0.6123724, 0, 0.8660254, 0.50000006, -0.70710677, -0.3535534, 0.6123724, 3, 2.7, 3)
+projection = 1
+far = 7.5
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SubViewportContainer/SubViewport/Camera3D"]
+cast_shadow = 0
+extra_cull_margin = 16384.0
+mesh = SubResource("QuadMesh_0wfyh")
+surface_material_override/0 = SubResource("ShaderMaterial_sugp2")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="SubViewportContainer/SubViewport"]
+transform = Transform3D(20, 0, 0, 0, 0.05, 0, 0, 0, 20, 0, -0.02, 0)
+use_collision = true
+material = SubResource("StandardMaterial3D_0wfyh")
+
+[node name="player" parent="SubViewportContainer/SubViewport" instance=ExtResource("2_0wfyh")]
+transform = Transform3D(-0.034202013, 0, -0.09396926, 0, 0.1, 0, 0.09396926, 0, -0.034202013, 0, 0, 0)
