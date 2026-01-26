@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=3 uid="uid://c5ruon8wg4f44"]
 
-[ext_resource type="Shader" uid="uid://ds77wg12c4efg" path="res://assets/shaders/edge_detection.gdshader" id="1_o5qli"]
-[ext_resource type="PackedScene" uid="uid://gsfp05m7fkia" path="res://assets/models/player.blend" id="2_0wfyh"]
+[ext_resource type="Shader" uid="uid://ds77wg12c4efg" path="res://assets/shaders/edge_detection.gdshader" id="1_0wfyh"]
+[ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="1_sugp2"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_o5qli"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -16,20 +16,20 @@ sky = SubResource("Sky_0wfyh")
 tonemap_mode = 2
 glow_enabled = true
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0wfyh"]
+
 [sub_resource type="QuadMesh" id="QuadMesh_0wfyh"]
 flip_faces = true
 size = Vector2(2, 2)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_sugp2"]
 render_priority = 0
-shader = ExtResource("1_o5qli")
+shader = ExtResource("1_0wfyh")
 shader_parameter/lightIntensity = 1.25
 shader_parameter/lineAlpha = 0.7
 shader_parameter/useLighting = true
 shader_parameter/lineHighlight = 0.2
 shader_parameter/lineShadow = 0.55
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0wfyh"]
 
 [node name="Node3D" type="Node3D"]
 
@@ -48,26 +48,102 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 stretch = true
-stretch_shrink = 3
+stretch_shrink = 2
 
 [node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
-size = Vector2i(384, 216)
+handle_input_locally = false
+size = Vector2i(576, 324)
+render_target_update_mode = 4
 
-[node name="Camera3D" type="Camera3D" parent="SubViewportContainer/SubViewport"]
-transform = Transform3D(0.70710677, -0.3535534, 0.6123724, 0, 0.8660254, 0.50000006, -0.70710677, -0.3535534, 0.6123724, 3, 2.7, 3)
+[node name="ProtoController" parent="SubViewportContainer/SubViewport" instance=ExtResource("1_sugp2")]
+can_sprint = true
+input_left = "move_right"
+input_right = "move_left"
+input_forward = "move_up"
+input_back = "move_down"
+input_jump = "jump"
+
+[node name="RemoteTransform3D" type="RemoteTransform3D" parent="SubViewportContainer/SubViewport/ProtoController"]
+remote_path = NodePath("../../CameraRig")
+update_rotation = false
+update_scale = false
+
+[node name="CSGCombiner3D" type="CSGCombiner3D" parent="SubViewportContainer/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 0.5, 0)
+use_collision = true
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="SubViewportContainer/SubViewport/CSGCombiner3D"]
+size = Vector3(0.1, 1, 5)
+
+[node name="CSGBox3D5" type="CSGBox3D" parent="SubViewportContainer/SubViewport/CSGCombiner3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.9, 0, 0)
+size = Vector3(0.1, 1, 5)
+
+[node name="CSGBox3D11" type="CSGBox3D" parent="SubViewportContainer/SubViewport/CSGCombiner3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.9, -0.15, 0.59999996)
+operation = 2
+size = Vector3(0.1, 0.7, 0.6)
+
+[node name="CSGBox3D12" type="CSGBox3D" parent="SubViewportContainer/SubViewport/CSGCombiner3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, 1.0999999)
+operation = 2
+size = Vector3(0.1, 0.7, 1)
+
+[node name="CSGBox3D6" type="CSGBox3D" parent="SubViewportContainer/SubViewport/CSGCombiner3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.7, 0, 1.8499999)
+size = Vector3(0.1, 1, 1.3000001)
+
+[node name="CSGBox3D8" type="CSGBox3D" parent="SubViewportContainer/SubViewport/CSGCombiner3D"]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.9, 0, 1.2)
+size = Vector3(0.1, 1, 2.4)
+
+[node name="CSGBox3D9" type="CSGBox3D" parent="SubViewportContainer/SubViewport/CSGCombiner3D"]
+transform = Transform3D(-0.76604444, 0, -0.6427876, 0, 1, 0, 0.6427876, 0, -0.76604444, 0.5000001, 0, -0.9000001)
+size = Vector3(0.1, 1, 1.6)
+
+[node name="CSGBox3D7" type="CSGBox3D" parent="SubViewportContainer/SubViewport/CSGCombiner3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5000002, 0, -1.1999999)
+size = Vector3(0.1, 1, 2.6000001)
+
+[node name="CSGBox3D10" type="CSGBox3D" parent="SubViewportContainer/SubViewport/CSGCombiner3D"]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.8500001, 0, 0.10000014)
+size = Vector3(0.1, 1, 1.3000001)
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="SubViewportContainer/SubViewport/CSGCombiner3D"]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.4, 0, -2.5)
+size = Vector3(0.1, 1, 5)
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="SubViewportContainer/SubViewport/CSGCombiner3D"]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.4, 0, 2.5)
+size = Vector3(0.1, 1, 5)
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="SubViewportContainer/SubViewport/CSGCombiner3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9, -0.049999982, -1.2)
+radius = 0.1
+height = 0.90000004
+
+[node name="CSGCylinder3D2" type="CSGCylinder3D" parent="SubViewportContainer/SubViewport/CSGCombiner3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9, -0.049999982, 1.9)
+radius = 0.1
+height = 0.90000004
+
+[node name="CSGBox3D" type="CSGBox3D" parent="SubViewportContainer/SubViewport/CSGCombiner3D"]
+transform = Transform3D(20, 0, 0, 0, 0.05, 0, 0, 0, 20, 2.2, -0.52, 0)
+use_collision = true
+material = SubResource("StandardMaterial3D_0wfyh")
+
+[node name="CameraRig" type="Node3D" parent="SubViewportContainer/SubViewport"]
+
+[node name="Camera3D" type="Camera3D" parent="SubViewportContainer/SubViewport/CameraRig"]
+transform = Transform3D(0.7071068, -0.5416752, 0.4545195, 0, 0.64278764, 0.76604444, -0.7071068, -0.5416752, 0.4545195, 0.9000001, 2.5, 0.9)
 projection = 1
-far = 7.5
+size = 4.0
+far = 19.23
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="SubViewportContainer/SubViewport/Camera3D"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SubViewportContainer/SubViewport/CameraRig/Camera3D"]
 cast_shadow = 0
 extra_cull_margin = 16384.0
 mesh = SubResource("QuadMesh_0wfyh")
 surface_material_override/0 = SubResource("ShaderMaterial_sugp2")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="SubViewportContainer/SubViewport"]
-transform = Transform3D(20, 0, 0, 0, 0.05, 0, 0, 0, 20, 0, -0.02, 0)
-use_collision = true
-material = SubResource("StandardMaterial3D_0wfyh")
-
-[node name="player" parent="SubViewportContainer/SubViewport" instance=ExtResource("2_0wfyh")]
-transform = Transform3D(-0.034202013, 0, -0.09396926, 0, 0.1, 0, 0.09396926, 0, -0.034202013, 0, 0, 0)
+[editable path="SubViewportContainer/SubViewport/ProtoController"]
