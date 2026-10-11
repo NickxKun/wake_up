@@ -1,0 +1,59 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/debug/health_debug.gd" id="1_hd"]
+
+[node name="HealthDebug" type="CanvasLayer"]
+script = ExtResource("1_hd")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -60.0
+offset_top = -112.0
+offset_right = 60.0
+offset_bottom = -76.0
+grow_horizontal = 2
+grow_vertical = 0
+alignment = 1
+
+[node name="UpButton" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+focus_mode = 0
+text = "Up"
+
+[node name="DownButton" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+focus_mode = 0
+text = "Down"
+
+; #TEST ONLY
+[node name="ResetButton" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+focus_mode = 0
+text = "Reset"
+
+; #TEST ONLY
+[node name="AmountContainer" type="HBoxContainer" parent="."]
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 176.0
+offset_bottom = 47.0
+
+; #TEST ONLY
+[node name="AmountLabel" type="Label" parent="AmountContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Amount"
+
+; #TEST ONLY
+[node name="AmountBox" type="SpinBox" parent="AmountContainer"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+min_value = 1.0
+max_value = 100.0
+value = 1.0
+rounded = true
+editable = true
