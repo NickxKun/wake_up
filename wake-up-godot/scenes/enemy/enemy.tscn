@@ -1,0 +1,99 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scenes/enemy/enemy.gd" id="1_ene"]
+[ext_resource type="Script" path="res://scenes/components/health_component.gd" id="2_hc"]
+[ext_resource type="Script" path="res://scenes/enemy/enemy_health_bar.gd" id="3_hb"]
+[ext_resource type="PackedScene" uid="uid://gsfp05m7fkia" path="res://assets/models/player.blend" id="4_mdl"]
+[ext_resource type="Script" path="res://scenes/player/player_animation.gd" id="5_anim"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/gun.tscn" id="6_gun"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ene"]
+radius = 0.2
+height = 0.6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.5, 0.5, 0.5, 0.3)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+anti_aliasing = true
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fill"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.6, 0.6, 0.6, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+anti_aliasing = true
+
+[node name="Enemy" type="CharacterBody3D"]
+collision_layer = 2
+collision_mask = 1
+safe_margin = 0.01
+script = ExtResource("1_ene")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("2_hc")
+
+[node name="Model" parent="." instance=ExtResource("4_mdl")]
+transform = Transform3D(-0.1, 0, 8.742278e-09, 0, 0.1, 0, -8.742278e-09, 0, -0.1, 0, 0, 0)
+
+[node name="Collider" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+shape = SubResource("CapsuleShape3D_ene")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+path_desired_distance = 0.15
+target_desired_distance = 0.15
+path_height_offset = 0.0
+radius = 0.2
+height = 0.6
+
+[node name="EnemyAnimation" type="Node" parent="."]
+script = ExtResource("5_anim")
+mesh_path = NodePath("../Model")
+gun_scene = ExtResource("6_gun")
+aim_pitch = 0.6
+
+[node name="HealthBar3D" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+pixel_size = 0.007
+billboard = 1
+shaded = false
+no_depth_test = true
+render_priority = 1
+script = ExtResource("3_hb")
+
+[node name="SubViewport" type="SubViewport" parent="HealthBar3D"]
+transparent_bg = true
+size = Vector2i(80, 14)
+render_target_update_mode = 4
+
+[node name="ProgressBar" type="ProgressBar" parent="HealthBar3D/SubViewport"]
+offset_right = 80.0
+offset_bottom = 14.0
+theme_override_styles/background = SubResource("StyleBoxFlat_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_fill")
+step = 1.0
+value = 100.0
+show_percentage = false
+
+[node name="HealthValue" type="Label" parent="HealthBar3D/SubViewport"]
+offset_right = 80.0
+offset_bottom = 14.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 10
+text = "100/100"
+horizontal_alignment = 1
+vertical_alignment = 1

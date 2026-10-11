@@ -1,0 +1,100 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scenes/weapons/gun.gd" id="1_gun"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_metal"]
+albedo_color = Color(0.2, 0.2, 0.23, 1)
+roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_grip"]
+albedo_color = Color(0.4, 0.25, 0.14, 1)
+roughness = 0.8
+
+[sub_resource type="BoxMesh" id="BoxMesh_body"]
+material = SubResource("StandardMaterial3D_metal")
+size = Vector3(0.03, 0.04, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_grip"]
+material = SubResource("StandardMaterial3D_grip")
+size = Vector3(0.026, 0.05, 0.03)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_barrel"]
+material = SubResource("StandardMaterial3D_metal")
+top_radius = 0.01
+bottom_radius = 0.01
+height = 0.05
+radial_segments = 8
+rings = 1
+
+[sub_resource type="Curve" id="Curve_shrink"]
+_data = [Vector2(0, 1), 0.0, -1.0, 0, 0, Vector2(1, 0), -1.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_flash"]
+albedo_color = Color(1, 0.95, 0.8, 1)
+roughness = 0.0
+emission_enabled = true
+emission = Color(1, 0.8, 0.4, 1)
+emission_energy_multiplier = 8.0
+no_depth_test = true
+render_priority = 1
+
+[sub_resource type="SphereMesh" id="SphereMesh_flash"]
+material = SubResource("StandardMaterial3D_flash")
+radius = 0.035
+height = 0.07
+radial_segments = 8
+rings = 4
+
+[sub_resource type="BoxMesh" id="BoxMesh_spark"]
+material = SubResource("StandardMaterial3D_flash")
+size = Vector3(0.012, 0.05, 0.012)
+
+[node name="Gun" type="Node3D"]
+script = ExtResource("1_gun")
+
+[node name="Pivot" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, -0.03)
+mesh = SubResource("BoxMesh_body")
+
+[node name="Grip" type="MeshInstance3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.005, 0.005)
+mesh = SubResource("BoxMesh_grip")
+
+[node name="Barrel" type="MeshInstance3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0.035, -0.105)
+mesh = SubResource("CylinderMesh_barrel")
+
+[node name="Muzzle" type="Marker3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.035, -0.13)
+
+[node name="Flash" type="CPUParticles3D" parent="Pivot/Muzzle"]
+cast_shadow = 0
+emitting = false
+amount = 1
+lifetime = 0.06
+one_shot = true
+explosiveness = 1.0
+local_coords = true
+mesh = SubResource("SphereMesh_flash")
+gravity = Vector3(0, 0, 0)
+scale_amount_curve = SubResource("Curve_shrink")
+
+[node name="Sparks" type="CPUParticles3D" parent="Pivot/Muzzle"]
+cast_shadow = 0
+emitting = false
+amount = 4
+lifetime = 0.08
+one_shot = true
+explosiveness = 1.0
+local_coords = true
+mesh = SubResource("BoxMesh_spark")
+particle_flag_align_y = true
+direction = Vector3(0, 0, -1)
+spread = 20.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 1.0
+initial_velocity_max = 2.0
+scale_amount_curve = SubResource("Curve_shrink")

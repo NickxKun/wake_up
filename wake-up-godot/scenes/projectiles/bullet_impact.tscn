@@ -1,0 +1,65 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scenes/projectiles/bullet_impact.gd" id="1_imp"]
+
+[sub_resource type="Curve" id="Curve_shrink"]
+_data = [Vector2(0, 1), 0.0, -1.0, 0, 0, Vector2(1, 0), -1.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_spark"]
+albedo_color = Color(1, 0.8, 0.5, 1)
+roughness = 0.0
+emission_enabled = true
+emission = Color(1, 0.6, 0.2, 1)
+emission_energy_multiplier = 6.0
+no_depth_test = true
+render_priority = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_spark"]
+material = SubResource("StandardMaterial3D_spark")
+size = Vector3(0.02, 0.08, 0.02)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_flash"]
+albedo_color = Color(1, 0.95, 0.8, 1)
+roughness = 0.0
+emission_enabled = true
+emission = Color(1, 0.9, 0.6, 1)
+emission_energy_multiplier = 8.0
+no_depth_test = true
+render_priority = 1
+
+[sub_resource type="SphereMesh" id="SphereMesh_flash"]
+material = SubResource("StandardMaterial3D_flash")
+radius = 0.06
+height = 0.12
+radial_segments = 8
+rings = 4
+
+[node name="BulletImpact" type="Node3D"]
+script = ExtResource("1_imp")
+
+[node name="Sparks" type="CPUParticles3D" parent="."]
+cast_shadow = 0
+emitting = false
+amount = 10
+lifetime = 0.3
+one_shot = true
+explosiveness = 1.0
+mesh = SubResource("BoxMesh_spark")
+particle_flag_align_y = true
+direction = Vector3(0, 1, 0)
+spread = 60.0
+initial_velocity_min = 1.5
+initial_velocity_max = 3.0
+scale_amount_curve = SubResource("Curve_shrink")
+
+[node name="Flash" type="CPUParticles3D" parent="."]
+cast_shadow = 0
+emitting = false
+amount = 1
+lifetime = 0.08
+one_shot = true
+explosiveness = 1.0
+mesh = SubResource("SphereMesh_flash")
+gravity = Vector3(0, 0, 0)
+scale_amount_curve = SubResource("Curve_shrink")
