@@ -1,0 +1,2875 @@
+[gd_scene load_steps=45 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/main_menu.gd" id="1_menu"]
+[ext_resource type="Shader" path="res://scenes/ui/vignette.gdshader" id="2_vig"]
+[ext_resource type="Script" path="res://scenes/ui/menu_emblem.gd" id="3_emb"]
+[ext_resource type="Script" path="res://scenes/ui/power_icon.gd" id="4_pow"]
+[ext_resource type="PackedScene" path="res://scenes/ui/settings_menu.tscn" id="5_set"]
+[ext_resource type="Texture2D" path="res://assets/textures/gamemodes/banner_tutorial.png" id="6_tut"]
+[ext_resource type="Texture2D" path="res://assets/textures/gamemodes/banner_survival.png" id="7_surv"]
+[ext_resource type="Texture2D" path="res://assets/textures/gamemodes/banner_sandbox.png" id="8_sand"]
+[ext_resource type="Texture2D" path="res://assets/textures/gamemodes/banner_story.png" id="9_story"]
+[ext_resource type="Texture2D" path="res://assets/textures/gamemodes/banner_coop.png" id="10_coop"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vig"]
+shader = ExtResource("2_vig")
+shader_parameter/inner_radius = 0.38
+shader_parameter/outer_radius = 1.05
+shader_parameter/vignette_opacity = 0.72
+shader_parameter/vignette_color = Color(0, 0, 0, 1)
+
+[sub_resource type="Gradient" id="Gradient_tut_tint"]
+colors = PackedColorArray(0.12, 0.55, 0.92, 0.65, 0.02, 0.06, 0.14, 0.96)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_tut_tint"]
+gradient = SubResource("Gradient_tut_tint")
+fill_from = Vector2(0.5, 0)
+fill_to = Vector2(0.5, 1)
+
+[sub_resource type="Gradient" id="Gradient_surv_tint"]
+colors = PackedColorArray(0.92, 0.18, 0.28, 0.75, 0.14, 0.02, 0.04, 0.96)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_surv_tint"]
+gradient = SubResource("Gradient_surv_tint")
+fill_from = Vector2(0.5, 0)
+fill_to = Vector2(0.5, 1)
+
+[sub_resource type="Gradient" id="Gradient_sand_tint"]
+colors = PackedColorArray(0.96, 0.75, 0.12, 0.75, 0.16, 0.1, 0.02, 0.96)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_sand_tint"]
+gradient = SubResource("Gradient_sand_tint")
+fill_from = Vector2(0.5, 0)
+fill_to = Vector2(0.5, 1)
+
+[sub_resource type="Gradient" id="Gradient_locked_tint"]
+colors = PackedColorArray(0.25, 0.28, 0.34, 0.82, 0.04, 0.05, 0.06, 0.98)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_locked_tint"]
+gradient = SubResource("Gradient_locked_tint")
+fill_from = Vector2(0.5, 0)
+fill_to = Vector2(0.5, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_focus"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_launch_normal"]
+content_margin_left = 24.0
+content_margin_top = 12.0
+content_margin_right = 24.0
+content_margin_bottom = 12.0
+bg_color = Color(1, 1, 1, 0.08)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.7)
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_launch_hover"]
+content_margin_left = 24.0
+content_margin_top = 12.0
+content_margin_right = 24.0
+content_margin_bottom = 12.0
+bg_color = Color(1, 1, 1, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 1)
+shadow_color = Color(1, 1, 1, 0.25)
+shadow_size = 12
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_launch_pressed"]
+content_margin_left = 24.0
+content_margin_top = 12.0
+content_margin_right = 24.0
+content_margin_bottom = 12.0
+bg_color = Color(0.85, 0.85, 0.85, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 1)
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_modal"]
+bg_color = Color(0.04, 0.05, 0.08, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.96, 0.68, 0.18, 0.6)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0, 0, 0, 0.6)
+shadow_size = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_modal_btn_normal"]
+content_margin_left = 20.0
+content_margin_top = 8.0
+content_margin_right = 20.0
+content_margin_bottom = 8.0
+bg_color = Color(0.12, 0.14, 0.2, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.96, 0.68, 0.18, 0.8)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_modal_btn_hover"]
+content_margin_left = 20.0
+content_margin_top = 8.0
+content_margin_right = 20.0
+content_margin_bottom = 8.0
+bg_color = Color(0.96, 0.68, 0.18, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_op_btn_normal"]
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+bg_color = Color(0.06, 0.08, 0.12, 0.75)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.35, 0.45, 0.5)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_op_btn_hover"]
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+bg_color = Color(0.12, 0.16, 0.22, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.8, 0.85, 0.95, 0.8)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_op_detail"]
+content_margin_left = 16.0
+content_margin_top = 6.0
+content_margin_right = 16.0
+content_margin_bottom = 6.0
+bg_color = Color(0.04, 0.05, 0.08, 0.8)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.2, 0.25, 0.35, 0.5)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_char_astro"]
+bg_color = Color(0.04, 0.07, 0.12, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.2, 0.75, 1, 0.4)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_char_engi"]
+bg_color = Color(0.1, 0.06, 0.03, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.55, 0.1, 0.4)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_char_med"]
+bg_color = Color(0.03, 0.09, 0.06, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.1, 0.9, 0.55, 0.4)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_char_exp"]
+bg_color = Color(0.09, 0.08, 0.03, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.95, 0.78, 0.25, 0.4)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_char_badge"]
+content_margin_left = 8.0
+content_margin_top = 3.0
+content_margin_right = 8.0
+content_margin_bottom = 3.0
+bg_color = Color(1, 1, 1, 0.06)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.12)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="Gradient" id="Gradient_banner_fade"]
+colors = PackedColorArray(0, 0, 0, 0, 0.04, 0.05, 0.08, 0.98)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_banner_fade"]
+gradient = SubResource("Gradient_banner_fade")
+fill_from = Vector2(0.5, 0)
+fill_to = Vector2(0.5, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_map_canyon"]
+bg_color = Color(0.08, 0.06, 0.04, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.96, 0.62, 0.22, 0.45)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_map_base"]
+bg_color = Color(0.04, 0.07, 0.12, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.24, 0.72, 0.98, 0.45)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_map_dock"]
+bg_color = Color(0.04, 0.08, 0.07, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.25, 0.85, 0.55, 0.45)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="Gradient" id="Gradient_canyon_tint"]
+colors = PackedColorArray(0.96, 0.62, 0.22, 0.4, 0.08, 0.06, 0.04, 0.98)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_canyon_tint"]
+gradient = SubResource("Gradient_canyon_tint")
+fill_from = Vector2(0.5, 0)
+fill_to = Vector2(0.5, 1)
+
+[sub_resource type="Gradient" id="Gradient_base_tint"]
+colors = PackedColorArray(0.24, 0.72, 0.98, 0.4, 0.04, 0.07, 0.12, 0.98)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_base_tint"]
+gradient = SubResource("Gradient_base_tint")
+fill_from = Vector2(0.5, 0)
+fill_to = Vector2(0.5, 1)
+
+[sub_resource type="Gradient" id="Gradient_dock_tint"]
+colors = PackedColorArray(0.25, 0.85, 0.55, 0.4, 0.04, 0.08, 0.07, 0.98)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_dock_tint"]
+gradient = SubResource("Gradient_dock_tint")
+fill_from = Vector2(0.5, 0)
+fill_to = Vector2(0.5, 1)
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_menu")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.03, 0.03, 0.04, 1)
+
+[node name="Vignette" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_vig")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TitleScreen" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="TitleScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TitleScreen/CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="EmblemBox" type="CenterContainer" parent="TitleScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Emblem" type="Control" parent="TitleScreen/CenterContainer/VBoxContainer/EmblemBox"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+script = ExtResource("3_emb")
+base_radius = 42.0
+spin_speed = 0.25
+
+[node name="TitleBox" type="VBoxContainer" parent="TitleScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="Eyebrow" type="Label" parent="TitleScreen/CenterContainer/VBoxContainer/TitleBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.75, 0.75, 0.8)
+theme_override_font_sizes/font_size = 11
+text = "// VICTOR'S JOURNEY"
+horizontal_alignment = 1
+
+[node name="Title" type="Label" parent="TitleScreen/CenterContainer/VBoxContainer/TitleBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 3
+theme_override_font_sizes/font_size = 48
+text = "WAKE UP"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="TitleScreen/CenterContainer/VBoxContainer/TitleBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.65, 0.65, 1)
+theme_override_font_sizes/font_size = 12
+text = "TACTICAL COMBAT PROTOTYPE"
+horizontal_alignment = 1
+
+[node name="PromptBox" type="MarginContainer" parent="TitleScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 28
+
+[node name="PromptLabel" type="Label" parent="TitleScreen/CenterContainer/VBoxContainer/PromptBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 13
+text = "◈  CLICK TO START  ◈"
+horizontal_alignment = 1
+
+[node name="FullscreenStartButton" type="Button" parent="TitleScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+flat = true
+
+[node name="ModeSelectScreen" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TopBar" type="MarginContainer" parent="ModeSelectScreen"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 68.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 32
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ModeSelectScreen/TopBar"]
+layout_mode = 2
+alignment = 1
+
+[node name="BrandBox" type="HBoxContainer" parent="ModeSelectScreen/TopBar/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="MiniEmblem" type="Control" parent="ModeSelectScreen/TopBar/HBoxContainer/BrandBox"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("3_emb")
+base_radius = 12.0
+spin_speed = 0.35
+
+[node name="BrandLabel" type="Label" parent="ModeSelectScreen/TopBar/HBoxContainer/BrandBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+text = "WAKE UP  //  SELECT PROTOCOL"
+vertical_alignment = 1
+
+[node name="Spacer" type="Control" parent="ModeSelectScreen/TopBar/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="UtilityButtons" type="HBoxContainer" parent="ModeSelectScreen/TopBar/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="SettingsButton" type="Button" parent="ModeSelectScreen/TopBar/HBoxContainer/UtilityButtons"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+tooltip_text = "Settings"
+focus_mode = 0
+flat = true
+theme_override_colors/font_color = Color(1, 1, 1, 0.75)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 20
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+text = "⚙"
+
+[node name="ControlsButton" type="Button" parent="ModeSelectScreen/TopBar/HBoxContainer/UtilityButtons"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+tooltip_text = "How to Play"
+focus_mode = 0
+flat = true
+theme_override_colors/font_color = Color(1, 1, 1, 0.75)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+text = "?"
+
+[node name="QuitButton" type="Button" parent="ModeSelectScreen/TopBar/HBoxContainer/UtilityButtons"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+tooltip_text = "Quit Application"
+focus_mode = 0
+flat = true
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+
+[node name="PowerIcon" type="Control" parent="ModeSelectScreen/TopBar/HBoxContainer/UtilityButtons/QuitButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("4_pow")
+icon_color = Color(1, 1, 1, 0.75)
+
+[node name="CenterCards" type="CenterContainer" parent="ModeSelectScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ModeSelectScreen/CenterCards"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="CardsRow" type="HBoxContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="TutorialCard" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow"]
+custom_minimum_size = Vector2(205, 330)
+layout_mode = 2
+focus_mode = 0
+flat = true
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+
+[node name="CardBackground" type="TextureRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/TutorialCard"]
+self_modulate = Color(0.7, 0.9, 1, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("6_tut")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="VignetteOverlay" type="TextureRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/TutorialCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_tut_tint")
+expand_mode = 1
+
+[node name="SelectionBar" type="ColorRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/TutorialCard"]
+visible = false
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -4.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+color = Color(0.2, 0.75, 1, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/TutorialCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/TutorialCard/CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="ProtocolTag" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/TutorialCard/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.7)
+theme_override_font_sizes/font_size = 10
+text = "PROTOCOL // 00"
+horizontal_alignment = 1
+
+[node name="Title" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/TutorialCard/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 23
+text = "TUTORIAL"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/TutorialCard/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "PROVING GROUNDS"
+horizontal_alignment = 1
+
+[node name="SurvivalCard" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow"]
+custom_minimum_size = Vector2(205, 330)
+layout_mode = 2
+focus_mode = 0
+flat = true
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+
+[node name="CardBackground" type="TextureRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SurvivalCard"]
+self_modulate = Color(1, 0.45, 0.5, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("7_surv")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="VignetteOverlay" type="TextureRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SurvivalCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_surv_tint")
+expand_mode = 1
+
+[node name="SelectionBar" type="ColorRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SurvivalCard"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -4.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+color = Color(0.92, 0.22, 0.32, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SurvivalCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SurvivalCard/CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="ProtocolTag" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SurvivalCard/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.7)
+theme_override_font_sizes/font_size = 10
+text = "PROTOCOL // 01"
+horizontal_alignment = 1
+
+[node name="Title" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SurvivalCard/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 23
+text = "SURVIVAL"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SurvivalCard/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.25, 0.35, 1)
+theme_override_font_sizes/font_size = 10
+text = "◈ SELECTED ◈"
+horizontal_alignment = 1
+
+[node name="SandboxCard" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow"]
+modulate = Color(1, 1, 1, 0.52)
+custom_minimum_size = Vector2(205, 330)
+layout_mode = 2
+focus_mode = 0
+flat = true
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+
+[node name="CardBackground" type="TextureRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SandboxCard"]
+self_modulate = Color(1, 0.88, 0.35, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("8_sand")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="VignetteOverlay" type="TextureRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SandboxCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_sand_tint")
+expand_mode = 1
+
+[node name="SelectionBar" type="ColorRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SandboxCard"]
+visible = false
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -4.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+color = Color(0.96, 0.68, 0.18, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SandboxCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SandboxCard/CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="ProtocolTag" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SandboxCard/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.7)
+theme_override_font_sizes/font_size = 10
+text = "PROTOCOL // 02"
+horizontal_alignment = 1
+
+[node name="Title" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SandboxCard/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 23
+text = "SANDBOX"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SandboxCard/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.68, 0.18, 1)
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+
+[node name="StoryCard" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow"]
+modulate = Color(1, 1, 1, 0.45)
+custom_minimum_size = Vector2(205, 330)
+layout_mode = 2
+focus_mode = 0
+flat = true
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+
+[node name="CardBackground" type="TextureRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard"]
+self_modulate = Color(0.48, 0.5, 0.55, 0.8)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("9_story")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="VignetteOverlay" type="TextureRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_locked_tint")
+expand_mode = 1
+
+[node name="CenterContainer" type="CenterContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard/CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="LockIcon" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.78, 0.85, 0.95)
+theme_override_font_sizes/font_size = 22
+text = "🔒"
+horizontal_alignment = 1
+
+[node name="ProtocolTag" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.55)
+theme_override_font_sizes/font_size = 10
+text = "PROTOCOL // 03"
+horizontal_alignment = 1
+
+[node name="Title" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.9, 0.95, 1)
+theme_override_font_sizes/font_size = 23
+text = "STORY MODE"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.78, 0.85, 0.9)
+theme_override_font_sizes/font_size = 10
+text = "LOCKED // TEASER"
+horizontal_alignment = 1
+
+[node name="CoopCard" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow"]
+modulate = Color(1, 1, 1, 0.45)
+custom_minimum_size = Vector2(205, 330)
+layout_mode = 2
+focus_mode = 0
+flat = true
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+
+[node name="CardBackground" type="TextureRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard"]
+self_modulate = Color(0.48, 0.5, 0.55, 0.8)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("10_coop")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="VignetteOverlay" type="TextureRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_locked_tint")
+expand_mode = 1
+
+[node name="CenterContainer" type="CenterContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard/CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="LockIcon" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.78, 0.85, 0.95)
+theme_override_font_sizes/font_size = 22
+text = "🔒"
+horizontal_alignment = 1
+
+[node name="ProtocolTag" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.55)
+theme_override_font_sizes/font_size = 10
+text = "PROTOCOL // 04"
+horizontal_alignment = 1
+
+[node name="Title" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.9, 0.95, 1)
+theme_override_font_sizes/font_size = 23
+text = "CO-OP SQUAD"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.78, 0.85, 0.9)
+theme_override_font_sizes/font_size = 10
+text = "LOCKED // TEASER"
+horizontal_alignment = 1
+
+[node name="MapSelectSection" type="VBoxContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="MapSelectLabel" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/MapSelectSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.45)
+theme_override_font_sizes/font_size = 10
+text = "CHOOSE SANDBOX TESTBED SECTOR"
+horizontal_alignment = 1
+
+[node name="MapButtonsRow" type="HBoxContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer/MapSelectSection"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="MapButton1" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/MapSelectSection/MapButtonsRow"]
+custom_minimum_size = Vector2(170, 36)
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 11
+text = "01 // CANYON"
+
+[node name="MapButton2" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/MapSelectSection/MapButtonsRow"]
+custom_minimum_size = Vector2(170, 36)
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 11
+text = "02 // SPACE BASE"
+
+[node name="MapButton3" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/MapSelectSection/MapButtonsRow"]
+custom_minimum_size = Vector2(170, 36)
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 11
+text = "03 // DOCK"
+
+[node name="MapDescLabel" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/MapSelectSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.68, 0.18, 0.9)
+theme_override_font_sizes/font_size = 11
+text = "SECTOR 02: SPACE BASE • COLONY HABITATION & SOLAR RIDGE"
+horizontal_alignment = 1
+
+[node name="LaunchSection" type="CenterContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer"]
+layout_mode = 2
+
+[node name="MainLaunchButton" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/LaunchSection"]
+custom_minimum_size = Vector2(280, 48)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(0.06, 0.06, 0.08, 1)
+theme_override_colors/font_pressed_color = Color(0.06, 0.06, 0.08, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_launch_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_launch_pressed")
+theme_override_styles/normal = SubResource("StyleBoxFlat_launch_normal")
+text = "▶  SELECT OPERATIVE  •  SURVIVAL"
+
+[node name="TeaserModal" type="Control" parent="ModeSelectScreen"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Backdrop" type="ColorRect" parent="ModeSelectScreen/TeaserModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.02, 0.03, 0.05, 0.82)
+
+[node name="CenterContainer" type="CenterContainer" parent="ModeSelectScreen/TeaserModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="ModeSelectScreen/TeaserModal/CenterContainer"]
+custom_minimum_size = Vector2(460, 240)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_modal")
+
+[node name="MarginContainer" type="MarginContainer" parent="ModeSelectScreen/TeaserModal/CenterContainer/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 24
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ModeSelectScreen/TeaserModal/CenterContainer/Panel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="HeaderLabel" type="Label" parent="ModeSelectScreen/TeaserModal/CenterContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.68, 0.18, 1)
+theme_override_font_sizes/font_size = 11
+text = "OPERATION AURORA // PROTOCOL 03"
+
+[node name="TitleLabel" type="Label" parent="ModeSelectScreen/TeaserModal/CenterContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "CLASSIFIED BRIEFING"
+
+[node name="DescLabel" type="Label" parent="ModeSelectScreen/TeaserModal/CenterContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.85, 0.9, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "Classified reconnaissance mission..."
+autowrap_mode = 2
+
+[node name="Spacer" type="Control" parent="ModeSelectScreen/TeaserModal/CenterContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CloseButton" type="Button" parent="ModeSelectScreen/TeaserModal/CenterContainer/Panel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(160, 36)
+layout_mode = 2
+size_flags_horizontal = 4
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_colors/font_hover_color = Color(0.04, 0.05, 0.08, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_modal_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_modal_btn_normal")
+theme_override_styles/normal = SubResource("StyleBoxFlat_modal_btn_normal")
+text = "ACKNOWLEDGE"
+
+[node name="BottomBar" type="MarginContainer" parent="ModeSelectScreen"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -46.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 16
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ModeSelectScreen/BottomBar"]
+layout_mode = 2
+
+[node name="VersionLabel" type="Label" parent="ModeSelectScreen/BottomBar/HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.45, 0.45, 1)
+theme_override_font_sizes/font_size = 11
+text = "v0.4.0"
+
+[node name="Spacer" type="Control" parent="ModeSelectScreen/BottomBar/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ReturnTitleButton" type="Button" parent="ModeSelectScreen/BottomBar/HBoxContainer"]
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.55, 0.55, 0.55, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 11
+flat = true
+text = "[ESC] RETURN TO TITLE"
+
+[node name="CharacterSelectScreen" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TopBar" type="MarginContainer" parent="CharacterSelectScreen"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 68.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 32
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CharacterSelectScreen/TopBar"]
+layout_mode = 2
+alignment = 1
+
+[node name="BrandBox" type="HBoxContainer" parent="CharacterSelectScreen/TopBar/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="MiniEmblem" type="Control" parent="CharacterSelectScreen/TopBar/HBoxContainer/BrandBox"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("3_emb")
+base_radius = 12.0
+spin_speed = 0.35
+
+[node name="BrandLabel" type="Label" parent="CharacterSelectScreen/TopBar/HBoxContainer/BrandBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+text = "WAKE UP  //  SELECT OPERATIVE"
+vertical_alignment = 1
+
+[node name="Spacer" type="Control" parent="CharacterSelectScreen/TopBar/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MissionBriefingLabel" type="Label" parent="CharacterSelectScreen/TopBar/HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.68, 0.18, 0.95)
+theme_override_font_sizes/font_size = 12
+text = "DEPLOYMENT: SURVIVAL PROTOCOL // 01"
+vertical_alignment = 1
+
+[node name="Spacer2" type="Control" parent="CharacterSelectScreen/TopBar/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="UtilityButtons" type="HBoxContainer" parent="CharacterSelectScreen/TopBar/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="CharSettingsButton" type="Button" parent="CharacterSelectScreen/TopBar/HBoxContainer/UtilityButtons"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+tooltip_text = "Settings"
+focus_mode = 0
+flat = true
+theme_override_colors/font_color = Color(1, 1, 1, 0.75)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 20
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+text = "⚙"
+
+[node name="CharControlsButton" type="Button" parent="CharacterSelectScreen/TopBar/HBoxContainer/UtilityButtons"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+tooltip_text = "How to Play"
+focus_mode = 0
+flat = true
+theme_override_colors/font_color = Color(1, 1, 1, 0.75)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+text = "?"
+
+[node name="CharQuitButton" type="Button" parent="CharacterSelectScreen/TopBar/HBoxContainer/UtilityButtons"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+tooltip_text = "Quit Application"
+focus_mode = 0
+flat = true
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+
+[node name="PowerIcon" type="Control" parent="CharacterSelectScreen/TopBar/HBoxContainer/UtilityButtons/CharQuitButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("4_pow")
+icon_color = Color(1, 1, 1, 0.75)
+
+[node name="CenterCards" type="CenterContainer" parent="CharacterSelectScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CharacterSelectScreen/CenterCards"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="HeaderBox" type="VBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 3
+alignment = 1
+
+[node name="HeaderTag" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/HeaderBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.45)
+theme_override_font_sizes/font_size = 11
+text = "// FIELD OPERATIVE SELECTION"
+horizontal_alignment = 1
+
+[node name="HeaderTitle" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/HeaderBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 20
+text = "CHOOSE YOUR OPERATIVE SPECIALIZATION"
+horizontal_alignment = 1
+
+[node name="CardsRow" type="HBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="AstronautCard" type="Button" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow"]
+custom_minimum_size = Vector2(245, 430)
+layout_mode = 2
+focus_mode = 0
+flat = true
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+
+[node name="Panel" type="Panel" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_char_astro")
+
+[node name="BannerContainer" type="SubViewportContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 120.0
+grow_horizontal = 2
+mouse_filter = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/BannerContainer"]
+own_world_3d = true
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(245, 120)
+render_target_update_mode = 3
+
+[node name="Camera3D" type="Camera3D" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/BannerContainer/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 0.994522, 0.104528, 0, -0.104528, 0.994522, 0, 0.38, 0.7)
+fov = 40.0
+
+[node name="KeyLight" type="DirectionalLight3D" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/BannerContainer/SubViewport"]
+transform = Transform3D(0.819152, 0.241845, -0.520444, 0, 0.906308, 0.422618, 0.573576, -0.346188, 0.742404, 0, 0, 0)
+light_color = Color(1, 0.96, 0.92, 1)
+light_energy = 1.2
+
+[node name="RimLight" type="DirectionalLight3D" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/BannerContainer/SubViewport"]
+transform = Transform3D(-0.819152, -0.194709, 0.539665, 0, 0.941471, 0.339877, -0.573576, 0.278411, -0.771212, 0, 0, 0)
+light_color = Color(0.2, 0.75, 1, 1)
+light_energy = 1.6
+
+[node name="ModelPivot" type="Node3D" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/BannerContainer/SubViewport"]
+transform = Transform3D(-0.978148, 0, 0.207912, 0, 1, 0, -0.207912, 0, -0.978148, 0, 0, 0)
+
+[node name="BannerGradient" type="TextureRect" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 80.0
+offset_bottom = 120.0
+grow_horizontal = 2
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_banner_fade")
+expand_mode = 1
+
+[node name="SelectionBar" type="ColorRect" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -4.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+color = Color(0.2, 0.75, 1, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 118.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 14
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="TagBox" type="HBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="CallsignTag" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/MarginContainer/VBoxContainer/TagBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.75, 1, 0.8)
+theme_override_font_sizes/font_size = 10
+text = "PROTOCOL // 01"
+
+[node name="Spacer" type="Control" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/MarginContainer/VBoxContainer/TagBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Callsign" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/MarginContainer/VBoxContainer/TagBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.4)
+theme_override_font_sizes/font_size = 10
+text = "VANGUARD-01"
+
+[node name="TitleBox" type="VBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Title" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/MarginContainer/VBoxContainer/TitleBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 22
+text = "ASTRONAUT"
+
+[node name="RoleBadge" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/MarginContainer/VBoxContainer/TitleBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.75, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "BALANCED COMBATANT"
+
+[node name="Divider" type="ColorRect" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+color = Color(0.2, 0.75, 1, 0.25)
+
+[node name="WeaponBox" type="VBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Label" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/MarginContainer/VBoxContainer/WeaponBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.7, 0.75, 0.7)
+theme_override_font_sizes/font_size = 9
+text = "PRIMARY WEAPON"
+
+[node name="Name" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/MarginContainer/VBoxContainer/WeaponBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.95)
+theme_override_font_sizes/font_size = 11
+text = "Energy Pistol"
+
+[node name="Desc" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/MarginContainer/VBoxContainer/WeaponBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.8, 0.65)
+theme_override_font_sizes/font_size = 9
+text = "Reliable sidearm with infinite ammo."
+
+[node name="PerkBox" type="VBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Label" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/MarginContainer/VBoxContainer/PerkBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.7, 0.75, 0.7)
+theme_override_font_sizes/font_size = 9
+text = "PASSIVE PERK"
+
+[node name="Name" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/MarginContainer/VBoxContainer/PerkBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.95)
+theme_override_font_sizes/font_size = 11
+text = "Standard Systems"
+
+[node name="Desc" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/MarginContainer/VBoxContainer/PerkBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.8, 0.65)
+theme_override_font_sizes/font_size = 9
+text = "Balanced kinetic shields & thrusters."
+
+[node name="AbilityBox" type="VBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Label" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/MarginContainer/VBoxContainer/AbilityBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.7, 0.75, 0.7)
+theme_override_font_sizes/font_size = 9
+text = "ACTIVE ABILITY"
+
+[node name="Name" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/MarginContainer/VBoxContainer/AbilityBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.75, 1, 1)
+theme_override_font_sizes/font_size = 11
+text = "[MMB] Frag Grenade"
+
+[node name="Desc" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/MarginContainer/VBoxContainer/AbilityBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.8, 0.65)
+theme_override_font_sizes/font_size = 9
+text = "High-explosive fragmentation ordnance."
+
+[node name="Spacer" type="Control" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StatusLabel" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/AstronautCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.75, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "◈ SELECTED ◈"
+horizontal_alignment = 1
+
+[node name="EngineerCard" type="Button" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow"]
+modulate = Color(1, 1, 1, 0.55)
+custom_minimum_size = Vector2(245, 430)
+layout_mode = 2
+focus_mode = 0
+flat = true
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+
+[node name="Panel" type="Panel" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_char_engi")
+
+[node name="BannerContainer" type="SubViewportContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 120.0
+grow_horizontal = 2
+mouse_filter = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/BannerContainer"]
+own_world_3d = true
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(245, 120)
+render_target_update_mode = 3
+
+[node name="Camera3D" type="Camera3D" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/BannerContainer/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 0.994522, 0.104528, 0, -0.104528, 0.994522, 0, 0.38, 0.7)
+fov = 40.0
+
+[node name="KeyLight" type="DirectionalLight3D" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/BannerContainer/SubViewport"]
+transform = Transform3D(0.819152, 0.241845, -0.520444, 0, 0.906308, 0.422618, 0.573576, -0.346188, 0.742404, 0, 0, 0)
+light_color = Color(1, 0.96, 0.92, 1)
+light_energy = 1.2
+
+[node name="RimLight" type="DirectionalLight3D" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/BannerContainer/SubViewport"]
+transform = Transform3D(-0.819152, -0.194709, 0.539665, 0, 0.941471, 0.339877, -0.573576, 0.278411, -0.771212, 0, 0, 0)
+light_color = Color(1, 0.55, 0.1, 1)
+light_energy = 1.6
+
+[node name="ModelPivot" type="Node3D" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/BannerContainer/SubViewport"]
+transform = Transform3D(-0.978148, 0, 0.207912, 0, 1, 0, -0.207912, 0, -0.978148, 0, 0, 0)
+
+[node name="BannerGradient" type="TextureRect" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 80.0
+offset_bottom = 120.0
+grow_horizontal = 2
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_banner_fade")
+expand_mode = 1
+
+[node name="SelectionBar" type="ColorRect" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard"]
+visible = false
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -4.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+color = Color(1, 0.55, 0.1, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 118.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 14
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="TagBox" type="HBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="CallsignTag" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/MarginContainer/VBoxContainer/TagBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.55, 0.1, 0.8)
+theme_override_font_sizes/font_size = 10
+text = "PROTOCOL // 02"
+
+[node name="Spacer" type="Control" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/MarginContainer/VBoxContainer/TagBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Callsign" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/MarginContainer/VBoxContainer/TagBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.4)
+theme_override_font_sizes/font_size = 10
+text = "FORGE-03"
+
+[node name="TitleBox" type="VBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Title" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/MarginContainer/VBoxContainer/TitleBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 22
+text = "ENGINEER"
+
+[node name="RoleBadge" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/MarginContainer/VBoxContainer/TitleBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.55, 0.1, 1)
+theme_override_font_sizes/font_size = 10
+text = "COMBAT ARCHITECT"
+
+[node name="Divider" type="ColorRect" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+color = Color(1, 0.55, 0.1, 0.25)
+
+[node name="WeaponBox" type="VBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Label" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/MarginContainer/VBoxContainer/WeaponBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.7, 0.75, 0.7)
+theme_override_font_sizes/font_size = 9
+text = "PRIMARY WEAPON"
+
+[node name="Name" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/MarginContainer/VBoxContainer/WeaponBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.95)
+theme_override_font_sizes/font_size = 11
+text = "Titanium Hydro-Wrench"
+
+[node name="Desc" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/MarginContainer/VBoxContainer/WeaponBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.45, 0.4, 0.85)
+theme_override_font_sizes/font_size = 9
+text = "NO SIDEARM • Heavy melee weapon."
+
+[node name="PerkBox" type="VBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Label" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/MarginContainer/VBoxContainer/PerkBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.7, 0.75, 0.7)
+theme_override_font_sizes/font_size = 9
+text = "PASSIVE PERK"
+
+[node name="Name" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/MarginContainer/VBoxContainer/PerkBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.95)
+theme_override_font_sizes/font_size = 11
+text = "Aggro Decoy & Repair"
+
+[node name="Desc" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/MarginContainer/VBoxContainer/PerkBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.8, 0.65)
+theme_override_font_sizes/font_size = 9
+text = "Hostiles target active turrets first."
+
+[node name="AbilityBox" type="VBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Label" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/MarginContainer/VBoxContainer/AbilityBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.7, 0.75, 0.7)
+theme_override_font_sizes/font_size = 9
+text = "ACTIVE ABILITY"
+
+[node name="Name" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/MarginContainer/VBoxContainer/AbilityBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.55, 0.1, 1)
+theme_override_font_sizes/font_size = 11
+text = "[F] Deploy Sentry Turret"
+
+[node name="Desc" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/MarginContainer/VBoxContainer/AbilityBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.8, 0.65)
+theme_override_font_sizes/font_size = 9
+text = "Autonomous sentry (12s cooldown)."
+
+[node name="Spacer" type="Control" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StatusLabel" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/EngineerCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.55, 0.1, 1)
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+
+[node name="MedicCard" type="Button" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow"]
+modulate = Color(1, 1, 1, 0.55)
+custom_minimum_size = Vector2(245, 430)
+layout_mode = 2
+focus_mode = 0
+flat = true
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+
+[node name="Panel" type="Panel" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_char_med")
+
+[node name="BannerContainer" type="SubViewportContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 120.0
+grow_horizontal = 2
+mouse_filter = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/BannerContainer"]
+own_world_3d = true
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(245, 120)
+render_target_update_mode = 3
+
+[node name="Camera3D" type="Camera3D" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/BannerContainer/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 0.994522, 0.104528, 0, -0.104528, 0.994522, 0, 0.38, 0.7)
+fov = 40.0
+
+[node name="KeyLight" type="DirectionalLight3D" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/BannerContainer/SubViewport"]
+transform = Transform3D(0.819152, 0.241845, -0.520444, 0, 0.906308, 0.422618, 0.573576, -0.346188, 0.742404, 0, 0, 0)
+light_color = Color(1, 0.96, 0.92, 1)
+light_energy = 1.2
+
+[node name="RimLight" type="DirectionalLight3D" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/BannerContainer/SubViewport"]
+transform = Transform3D(-0.819152, -0.194709, 0.539665, 0, 0.941471, 0.339877, -0.573576, 0.278411, -0.771212, 0, 0, 0)
+light_color = Color(0.1, 0.9, 0.55, 1)
+light_energy = 1.6
+
+[node name="ModelPivot" type="Node3D" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/BannerContainer/SubViewport"]
+transform = Transform3D(-0.978148, 0, 0.207912, 0, 1, 0, -0.207912, 0, -0.978148, 0, 0, 0)
+
+[node name="BannerGradient" type="TextureRect" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 80.0
+offset_bottom = 120.0
+grow_horizontal = 2
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_banner_fade")
+expand_mode = 1
+
+[node name="SelectionBar" type="ColorRect" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard"]
+visible = false
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -4.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+color = Color(0.1, 0.9, 0.55, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 118.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 14
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="TagBox" type="HBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="CallsignTag" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/MarginContainer/VBoxContainer/TagBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.1, 0.9, 0.55, 0.8)
+theme_override_font_sizes/font_size = 10
+text = "PROTOCOL // 03"
+
+[node name="Spacer" type="Control" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/MarginContainer/VBoxContainer/TagBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Callsign" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/MarginContainer/VBoxContainer/TagBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.4)
+theme_override_font_sizes/font_size = 10
+text = "LIFELINE-02"
+
+[node name="TitleBox" type="VBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Title" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/MarginContainer/VBoxContainer/TitleBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 22
+text = "MEDIC"
+
+[node name="RoleBadge" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/MarginContainer/VBoxContainer/TitleBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.1, 0.9, 0.55, 1)
+theme_override_font_sizes/font_size = 10
+text = "FIELD SURGEON"
+
+[node name="Divider" type="ColorRect" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+color = Color(0.1, 0.9, 0.55, 0.25)
+
+[node name="WeaponBox" type="VBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Label" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/MarginContainer/VBoxContainer/WeaponBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.7, 0.75, 0.7)
+theme_override_font_sizes/font_size = 9
+text = "PRIMARY WEAPON"
+
+[node name="Name" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/MarginContainer/VBoxContainer/WeaponBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.95)
+theme_override_font_sizes/font_size = 11
+text = "Bio-Blaster"
+
+[node name="Desc" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/MarginContainer/VBoxContainer/WeaponBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.8, 0.65)
+theme_override_font_sizes/font_size = 9
+text = "Micro-darts with high rate of fire."
+
+[node name="PerkBox" type="VBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Label" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/MarginContainer/VBoxContainer/PerkBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.7, 0.75, 0.7)
+theme_override_font_sizes/font_size = 9
+text = "PASSIVE PERK"
+
+[node name="Name" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/MarginContainer/VBoxContainer/PerkBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.95)
+theme_override_font_sizes/font_size = 11
+text = "Cellular Regeneration"
+
+[node name="Desc" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/MarginContainer/VBoxContainer/PerkBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.8, 0.65)
+theme_override_font_sizes/font_size = 9
+text = "+3 HP/sec innate healing recovery."
+
+[node name="AbilityBox" type="VBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Label" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/MarginContainer/VBoxContainer/AbilityBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.7, 0.75, 0.7)
+theme_override_font_sizes/font_size = 9
+text = "ACTIVE ABILITY"
+
+[node name="Name" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/MarginContainer/VBoxContainer/AbilityBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.1, 0.9, 0.55, 1)
+theme_override_font_sizes/font_size = 11
+text = "[F] Biotic Healing Surge"
+
+[node name="Desc" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/MarginContainer/VBoxContainer/AbilityBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.8, 0.65)
+theme_override_font_sizes/font_size = 9
+text = "Restores +35 HP area wave (12s CD)."
+
+[node name="Spacer" type="Control" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StatusLabel" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/MedicCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.1, 0.9, 0.55, 1)
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+
+[node name="ExplorerCard" type="Button" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow"]
+modulate = Color(1, 1, 1, 0.55)
+custom_minimum_size = Vector2(245, 430)
+layout_mode = 2
+focus_mode = 0
+flat = true
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+
+[node name="Panel" type="Panel" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_char_exp")
+
+[node name="BannerContainer" type="SubViewportContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 120.0
+grow_horizontal = 2
+mouse_filter = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/BannerContainer"]
+own_world_3d = true
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(245, 120)
+render_target_update_mode = 3
+
+[node name="Camera3D" type="Camera3D" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/BannerContainer/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 0.994522, 0.104528, 0, -0.104528, 0.994522, 0, 0.38, 0.7)
+fov = 40.0
+
+[node name="KeyLight" type="DirectionalLight3D" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/BannerContainer/SubViewport"]
+transform = Transform3D(0.819152, 0.241845, -0.520444, 0, 0.906308, 0.422618, 0.573576, -0.346188, 0.742404, 0, 0, 0)
+light_color = Color(1, 0.96, 0.92, 1)
+light_energy = 1.2
+
+[node name="RimLight" type="DirectionalLight3D" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/BannerContainer/SubViewport"]
+transform = Transform3D(-0.819152, -0.194709, 0.539665, 0, 0.941471, 0.339877, -0.573576, 0.278411, -0.771212, 0, 0, 0)
+light_color = Color(0.95, 0.78, 0.25, 1)
+light_energy = 1.6
+
+[node name="ModelPivot" type="Node3D" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/BannerContainer/SubViewport"]
+transform = Transform3D(-0.978148, 0, 0.207912, 0, 1, 0, -0.207912, 0, -0.978148, 0, 0, 0)
+
+[node name="BannerGradient" type="TextureRect" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 80.0
+offset_bottom = 120.0
+grow_horizontal = 2
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_banner_fade")
+expand_mode = 1
+
+[node name="SelectionBar" type="ColorRect" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard"]
+visible = false
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -4.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+color = Color(0.95, 0.78, 0.25, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 118.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 14
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="TagBox" type="HBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="CallsignTag" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/MarginContainer/VBoxContainer/TagBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.78, 0.25, 0.8)
+theme_override_font_sizes/font_size = 10
+text = "PROTOCOL // 04"
+
+[node name="Spacer" type="Control" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/MarginContainer/VBoxContainer/TagBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Callsign" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/MarginContainer/VBoxContainer/TagBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.4)
+theme_override_font_sizes/font_size = 10
+text = "PATHFINDER-04"
+
+[node name="TitleBox" type="VBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Title" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/MarginContainer/VBoxContainer/TitleBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 22
+text = "EXPLORER"
+
+[node name="RoleBadge" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/MarginContainer/VBoxContainer/TitleBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.78, 0.25, 1)
+theme_override_font_sizes/font_size = 10
+text = "FRONTIER SCOUT"
+
+[node name="Divider" type="ColorRect" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+color = Color(0.95, 0.78, 0.25, 0.25)
+
+[node name="WeaponBox" type="VBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Label" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/MarginContainer/VBoxContainer/WeaponBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.7, 0.75, 0.7)
+theme_override_font_sizes/font_size = 9
+text = "PRIMARY WEAPON"
+
+[node name="Name" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/MarginContainer/VBoxContainer/WeaponBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.95)
+theme_override_font_sizes/font_size = 11
+text = "Recon Pistol"
+
+[node name="Desc" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/MarginContainer/VBoxContainer/WeaponBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.8, 0.65)
+theme_override_font_sizes/font_size = 9
+text = "High-precision scout sidearm."
+
+[node name="PerkBox" type="VBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Label" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/MarginContainer/VBoxContainer/PerkBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.7, 0.75, 0.7)
+theme_override_font_sizes/font_size = 9
+text = "PASSIVE PERK"
+
+[node name="Name" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/MarginContainer/VBoxContainer/PerkBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.95)
+theme_override_font_sizes/font_size = 11
+text = "Extended Recon"
+
+[node name="Desc" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/MarginContainer/VBoxContainer/PerkBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.8, 0.65)
+theme_override_font_sizes/font_size = 9
+text = "+30% zoom, 38m radar, truck driver."
+
+[node name="AbilityBox" type="VBoxContainer" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Label" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/MarginContainer/VBoxContainer/AbilityBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.7, 0.75, 0.7)
+theme_override_font_sizes/font_size = 9
+text = "ACTIVE ABILITY"
+
+[node name="Name" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/MarginContainer/VBoxContainer/AbilityBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.78, 0.25, 1)
+theme_override_font_sizes/font_size = 11
+text = "[L-Click Driving] Cannons"
+
+[node name="Desc" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/MarginContainer/VBoxContainer/AbilityBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.8, 0.65)
+theme_override_font_sizes/font_size = 9
+text = "Twin roof plasma cannons on rover."
+
+[node name="Spacer" type="Control" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StatusLabel" type="Label" parent="CharacterSelectScreen/CenterCards/VBoxContainer/CardsRow/ExplorerCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.78, 0.25, 1)
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+
+[node name="BottomBar" type="MarginContainer" parent="CharacterSelectScreen"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -68.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 18
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CharacterSelectScreen/BottomBar"]
+layout_mode = 2
+
+[node name="ReturnModeButton" type="Button" parent="CharacterSelectScreen/BottomBar/HBoxContainer"]
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.6, 0.65, 0.7, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+flat = true
+text = "[ESC] BACK TO PROTOCOLS"
+
+[node name="Spacer" type="Control" parent="CharacterSelectScreen/BottomBar/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MainDeployButton" type="Button" parent="CharacterSelectScreen/BottomBar/HBoxContainer"]
+custom_minimum_size = Vector2(360, 48)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(0.06, 0.06, 0.08, 1)
+theme_override_colors/font_pressed_color = Color(0.06, 0.06, 0.08, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_launch_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_launch_pressed")
+theme_override_styles/normal = SubResource("StyleBoxFlat_launch_normal")
+text = "▶  DEPLOY AS ASTRONAUT  •  LAUNCH MISSION"
+
+[node name="Spacer2" type="Control" parent="CharacterSelectScreen/BottomBar/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HintLabel" type="Label" parent="CharacterSelectScreen/BottomBar/HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.45, 0.45, 1)
+theme_override_font_sizes/font_size = 11
+text = "[ENTER] DEPLOY  •  [1-4] SELECT CLASS"
+vertical_alignment = 1
+
+[node name="MapSelectScreen" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TopBar" type="MarginContainer" parent="MapSelectScreen"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 68.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 32
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MapSelectScreen/TopBar"]
+layout_mode = 2
+alignment = 1
+
+[node name="BrandBox" type="HBoxContainer" parent="MapSelectScreen/TopBar/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="MiniEmblem" type="Control" parent="MapSelectScreen/TopBar/HBoxContainer/BrandBox"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("3_emb")
+base_radius = 12.0
+spin_speed = 0.35
+
+[node name="BrandLabel" type="Label" parent="MapSelectScreen/TopBar/HBoxContainer/BrandBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+text = "WAKE UP  //  SANDBOX RECONNAISSANCE"
+vertical_alignment = 1
+
+[node name="Spacer" type="Control" parent="MapSelectScreen/TopBar/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MissionBriefingLabel" type="Label" parent="MapSelectScreen/TopBar/HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.68, 0.18, 0.95)
+theme_override_font_sizes/font_size = 12
+text = "PLANETARY SECTOR SELECTION  •  PROTOCOL 02"
+vertical_alignment = 1
+
+[node name="Spacer2" type="Control" parent="MapSelectScreen/TopBar/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="UtilityButtons" type="HBoxContainer" parent="MapSelectScreen/TopBar/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="MapSettingsButton" type="Button" parent="MapSelectScreen/TopBar/HBoxContainer/UtilityButtons"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+tooltip_text = "Settings"
+focus_mode = 0
+flat = true
+theme_override_colors/font_color = Color(1, 1, 1, 0.75)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 20
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+text = "⚙"
+
+[node name="MapControlsButton" type="Button" parent="MapSelectScreen/TopBar/HBoxContainer/UtilityButtons"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+tooltip_text = "How to Play"
+focus_mode = 0
+flat = true
+theme_override_colors/font_color = Color(1, 1, 1, 0.75)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+text = "?"
+
+[node name="MapQuitButton" type="Button" parent="MapSelectScreen/TopBar/HBoxContainer/UtilityButtons"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+tooltip_text = "Quit to Desktop"
+focus_mode = 0
+flat = true
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+
+[node name="PowerIcon" type="Control" parent="MapSelectScreen/TopBar/HBoxContainer/UtilityButtons/MapQuitButton"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -8.0
+offset_top = -8.0
+offset_right = 8.0
+offset_bottom = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("4_pow")
+icon_color = Color(1, 1, 1, 0.75)
+
+[node name="CenterCards" type="CenterContainer" parent="MapSelectScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MapSelectScreen/CenterCards"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="HeaderBox" type="VBoxContainer" parent="MapSelectScreen/CenterCards/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 3
+alignment = 1
+
+[node name="HeaderTag" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/HeaderBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.45)
+theme_override_font_sizes/font_size = 11
+text = "// SANDBOX DEPLOYMENT ZONE"
+horizontal_alignment = 1
+
+[node name="HeaderTitle" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/HeaderBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 20
+text = "CHOOSE TARGET PLANETARY SECTOR"
+horizontal_alignment = 1
+
+[node name="CardsRow" type="HBoxContainer" parent="MapSelectScreen/CenterCards/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="CanyonCard" type="Button" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow"]
+custom_minimum_size = Vector2(285, 410)
+layout_mode = 2
+focus_mode = 0
+flat = true
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+
+[node name="Panel" type="Panel" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_map_canyon")
+
+[node name="Banner" type="TextureRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 120.0
+grow_horizontal = 2
+mouse_filter = 2
+texture = ExtResource("8_sand")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="BannerTint" type="TextureRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 120.0
+grow_horizontal = 2
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_canyon_tint")
+expand_mode = 1
+
+[node name="BannerGradient" type="TextureRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 80.0
+offset_bottom = 120.0
+grow_horizontal = 2
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_banner_fade")
+expand_mode = 1
+
+[node name="SelectionBar" type="ColorRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard"]
+visible = false
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -4.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+color = Color(0.96, 0.62, 0.22, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 122.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="TagBox" type="HBoxContainer" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="CallsignTag" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard/MarginContainer/VBoxContainer/TagBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.62, 0.22, 0.9)
+theme_override_font_sizes/font_size = 10
+text = "SECTOR // 01"
+
+[node name="Spacer" type="Control" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard/MarginContainer/VBoxContainer/TagBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Callsign" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard/MarginContainer/VBoxContainer/TagBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.4)
+theme_override_font_sizes/font_size = 10
+text = "PROVING GROUND"
+
+[node name="TitleBox" type="VBoxContainer" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Title" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard/MarginContainer/VBoxContainer/TitleBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 20
+text = "DESOLATE CANYON"
+
+[node name="Subtitle" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard/MarginContainer/VBoxContainer/TitleBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.62, 0.22, 1)
+theme_override_font_sizes/font_size = 10
+text = "RAW NATURAL TERRAIN & ROCKS"
+
+[node name="Divider" type="ColorRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+color = Color(0.96, 0.62, 0.22, 0.25)
+
+[node name="FeaturesBox" type="VBoxContainer" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Feature1" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard/MarginContainer/VBoxContainer/FeaturesBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 0.8)
+theme_override_font_sizes/font_size = 10
+text = "• Rugged natural terrain & canyon ridges"
+
+[node name="Feature2" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard/MarginContainer/VBoxContainer/FeaturesBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 0.8)
+theme_override_font_sizes/font_size = 10
+text = "• Vehicle testing track & elevation ramps"
+
+[node name="Feature3" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard/MarginContainer/VBoxContainer/FeaturesBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 0.8)
+theme_override_font_sizes/font_size = 10
+text = "• Open firing range & target dummies"
+
+[node name="Spacer" type="Control" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StatusLabel" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.62, 0.22, 1)
+theme_override_font_sizes/font_size = 10
+text = ""
+horizontal_alignment = 1
+
+[node name="BaseCard" type="Button" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow"]
+custom_minimum_size = Vector2(285, 410)
+layout_mode = 2
+focus_mode = 0
+flat = true
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+
+[node name="Panel" type="Panel" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_map_base")
+
+[node name="Banner" type="TextureRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 120.0
+grow_horizontal = 2
+mouse_filter = 2
+texture = ExtResource("7_surv")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="BannerTint" type="TextureRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 120.0
+grow_horizontal = 2
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_base_tint")
+expand_mode = 1
+
+[node name="BannerGradient" type="TextureRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 80.0
+offset_bottom = 120.0
+grow_horizontal = 2
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_banner_fade")
+expand_mode = 1
+
+[node name="SelectionBar" type="ColorRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard"]
+visible = false
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -4.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+color = Color(0.24, 0.72, 0.98, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 122.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="TagBox" type="HBoxContainer" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="CallsignTag" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard/MarginContainer/VBoxContainer/TagBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24, 0.72, 0.98, 0.9)
+theme_override_font_sizes/font_size = 10
+text = "SECTOR // 02"
+
+[node name="Spacer" type="Control" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard/MarginContainer/VBoxContainer/TagBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Callsign" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard/MarginContainer/VBoxContainer/TagBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.4)
+theme_override_font_sizes/font_size = 10
+text = "HABITATION COMPLEX"
+
+[node name="TitleBox" type="VBoxContainer" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Title" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard/MarginContainer/VBoxContainer/TitleBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 20
+text = "SPACE BASE"
+
+[node name="Subtitle" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard/MarginContainer/VBoxContainer/TitleBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24, 0.72, 0.98, 1)
+theme_override_font_sizes/font_size = 10
+text = "COLONY HABITATION & SOLAR RIDGE"
+
+[node name="Divider" type="ColorRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+color = Color(0.24, 0.72, 0.98, 0.25)
+
+[node name="FeaturesBox" type="VBoxContainer" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Feature1" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard/MarginContainer/VBoxContainer/FeaturesBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 0.8)
+theme_override_font_sizes/font_size = 10
+text = "• Modular science & habitation domes"
+
+[node name="Feature2" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard/MarginContainer/VBoxContainer/FeaturesBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 0.8)
+theme_override_font_sizes/font_size = 10
+text = "• Solar power arrays & maintenance corridors"
+
+[node name="Feature3" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard/MarginContainer/VBoxContainer/FeaturesBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 0.8)
+theme_override_font_sizes/font_size = 10
+text = "• Fortified security & testing perimeter"
+
+[node name="Spacer" type="Control" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StatusLabel" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24, 0.72, 0.98, 1)
+theme_override_font_sizes/font_size = 10
+text = ""
+horizontal_alignment = 1
+
+[node name="DockCard" type="Button" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow"]
+custom_minimum_size = Vector2(285, 410)
+layout_mode = 2
+focus_mode = 0
+flat = true
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+
+[node name="Panel" type="Panel" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_map_dock")
+
+[node name="Banner" type="TextureRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 120.0
+grow_horizontal = 2
+mouse_filter = 2
+texture = ExtResource("9_story")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="BannerTint" type="TextureRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 120.0
+grow_horizontal = 2
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_dock_tint")
+expand_mode = 1
+
+[node name="BannerGradient" type="TextureRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 80.0
+offset_bottom = 120.0
+grow_horizontal = 2
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_banner_fade")
+expand_mode = 1
+
+[node name="SelectionBar" type="ColorRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard"]
+visible = false
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -4.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+color = Color(0.25, 0.85, 0.55, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 122.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="TagBox" type="HBoxContainer" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="CallsignTag" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard/MarginContainer/VBoxContainer/TagBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.25, 0.85, 0.55, 0.9)
+theme_override_font_sizes/font_size = 10
+text = "SECTOR // 03"
+
+[node name="Spacer" type="Control" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard/MarginContainer/VBoxContainer/TagBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Callsign" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard/MarginContainer/VBoxContainer/TagBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.4)
+theme_override_font_sizes/font_size = 10
+text = "CARGO EXTRACTION"
+
+[node name="TitleBox" type="VBoxContainer" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Title" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard/MarginContainer/VBoxContainer/TitleBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 20
+text = "TRANSPORT DOCK"
+
+[node name="Subtitle" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard/MarginContainer/VBoxContainer/TitleBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.25, 0.85, 0.55, 1)
+theme_override_font_sizes/font_size = 10
+text = "SHUTTLE RUNWAYS & MINING QUARRY"
+
+[node name="Divider" type="ColorRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+color = Color(0.25, 0.85, 0.55, 0.25)
+
+[node name="FeaturesBox" type="VBoxContainer" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Feature1" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard/MarginContainer/VBoxContainer/FeaturesBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 0.8)
+theme_override_font_sizes/font_size = 10
+text = "• Heavy industrial cranes & transport rigs"
+
+[node name="Feature2" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard/MarginContainer/VBoxContainer/FeaturesBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 0.8)
+theme_override_font_sizes/font_size = 10
+text = "• Orbital shuttle launch runways"
+
+[node name="Feature3" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard/MarginContainer/VBoxContainer/FeaturesBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 0.8)
+theme_override_font_sizes/font_size = 10
+text = "• Deep resource quarry & loading gantries"
+
+[node name="Spacer" type="Control" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StatusLabel" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.25, 0.85, 0.55, 1)
+theme_override_font_sizes/font_size = 10
+text = ""
+horizontal_alignment = 1
+
+[node name="BottomBar" type="MarginContainer" parent="MapSelectScreen"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -68.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 20
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MapSelectScreen/BottomBar"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 0
+
+[node name="ReturnModeButton" type="Button" parent="MapSelectScreen/BottomBar/HBoxContainer"]
+custom_minimum_size = Vector2(210, 48)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_launch_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_launch_pressed")
+theme_override_styles/normal = SubResource("StyleBoxFlat_launch_normal")
+text = "◀  BACK TO GAME MODES"
+
+[node name="Spacer" type="Control" parent="MapSelectScreen/BottomBar/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ProceedButton" type="Button" parent="MapSelectScreen/BottomBar/HBoxContainer"]
+custom_minimum_size = Vector2(360, 48)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(0.06, 0.06, 0.08, 1)
+theme_override_colors/font_pressed_color = Color(0.06, 0.06, 0.08, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_launch_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_launch_pressed")
+theme_override_styles/normal = SubResource("StyleBoxFlat_launch_normal")
+text = "▶  CONFIRM SECTOR & SELECT OPERATIVE"
+
+[node name="Spacer2" type="Control" parent="MapSelectScreen/BottomBar/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HintLabel" type="Label" parent="MapSelectScreen/BottomBar/HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.45, 0.45, 1)
+theme_override_font_sizes/font_size = 11
+text = "[ENTER] PROCEED  •  [1-3 / ARROWS] SELECT"
+vertical_alignment = 1
+
+[node name="SettingsMenu" parent="." instance=ExtResource("5_set")]
+layout_mode = 1

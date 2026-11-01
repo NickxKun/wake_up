@@ -1,0 +1,191 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/vehicles/rover.gd" id="1_mvrq4"]
+[ext_resource type="Script" path="res://scenes/components/health_component.gd" id="2_hc"]
+[ext_resource type="PackedScene" path="res://scenes/vehicles/vehicle_health_bar.tscn" id="3_vhb"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_mg740"]
+size = Vector3(0.65, 0.45, 0.95)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_o1sgp"]
+radius = 2.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gcyyu"]
+transparency = 1
+albedo_color = Color(0.62, 0.35, 0.22, 0.45)
+
+[sub_resource type="SphereMesh" id="SphereMesh_el8sn"]
+material = SubResource("StandardMaterial3D_gcyyu")
+radius = 0.05
+height = 0.1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tail_square"]
+shading_mode = 0
+albedo_color = Color(0.18, 0.04, 0.04, 1)
+emission_enabled = true
+emission = Color(1, 0.15, 0.1, 1)
+emission_energy_multiplier = 0.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_tail_square"]
+material = SubResource("StandardMaterial3D_tail_square")
+size = Vector3(0.065, 0.045, 0.015)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_backup_ground"]
+shading_mode = 0
+transparency = 1
+albedo_color = Color(0.92, 0.96, 1, 0.42)
+
+[sub_resource type="QuadMesh" id="QuadMesh_backup_ground"]
+material = SubResource("StandardMaterial3D_backup_ground")
+size = Vector2(0.48, 0.36)
+
+[sub_resource type="StandardMaterial3D" id="Mat_EngineSmoke"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.18, 0.20, 0.22, 0.7)
+
+[sub_resource type="SphereMesh" id="Mesh_EngineSmoke"]
+material = SubResource("Mat_EngineSmoke")
+radius = 0.08
+height = 0.16
+
+[sub_resource type="StandardMaterial3D" id="Mat_ExplosionDebris"]
+shading_mode = 0
+albedo_color = Color(1, 0.52, 0.1, 1)
+
+[sub_resource type="BoxMesh" id="Mesh_ExplosionChunk"]
+material = SubResource("Mat_ExplosionDebris")
+size = Vector3(0.09, 0.09, 0.09)
+
+[node name="Rover" type="CharacterBody3D" unique_id=2049982693]
+collision_layer = 3
+collision_mask = 3
+floor_constant_speed = true
+floor_max_angle = 0.96
+floor_snap_length = 0.3
+script = ExtResource("1_mvrq4")
+
+[node name="HealthComponent" type="Node" parent="." unique_id=1849204910]
+script = ExtResource("2_hc")
+
+[node name="Collider" type="CollisionShape3D" parent="." unique_id=648512222]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.22, 0)
+shape = SubResource("BoxShape3D_mg740")
+
+[node name="ModelAnchor" type="Node3D" parent="." unique_id=1129427986]
+
+[node name="InteractionArea" type="Area3D" parent="." unique_id=2083385387]
+collision_layer = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractionArea" unique_id=1309044256]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+shape = SubResource("SphereShape3D_o1sgp")
+
+[node name="PromptAnchor" type="Node3D" parent="." unique_id=1443812784]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+
+[node name="DrivePrompt" type="Label3D" parent="PromptAnchor" unique_id=1220916058]
+visible = false
+billboard = 1
+no_depth_test = true
+modulate = Color(1, 0.92, 0.45, 1)
+outline_modulate = Color(0, 0, 0, 0.85)
+text = "[E] Drive Scout Rover"
+font_size = 28
+outline_size = 6
+
+[node name="VehicleHealthBar" parent="PromptAnchor" instance=ExtResource("3_vhb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+
+[node name="RemoteTransform3D" type="RemoteTransform3D" parent="." unique_id=1630345151]
+update_rotation = false
+update_scale = false
+
+[node name="Headlights" type="Node3D" parent="." unique_id=1574845353]
+
+[node name="LeftLight" type="SpotLight3D" parent="Headlights" unique_id=34121074]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.14, 0.18, 0.46)
+visible = false
+light_cull_mask = 1
+light_color = Color(1, 0.96, 0.88, 1)
+light_energy = 0.0
+spot_range = 16.0
+spot_angle = 38.0
+
+[node name="RightLight" type="SpotLight3D" parent="Headlights" unique_id=961729035]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0.14, 0.18, 0.46)
+visible = false
+light_cull_mask = 1
+light_color = Color(1, 0.96, 0.88, 1)
+light_energy = 0.0
+spot_range = 16.0
+spot_angle = 38.0
+
+[node name="Taillights" type="Node3D" parent="." unique_id=1038212891]
+
+[node name="LeftTail" type="OmniLight3D" parent="Taillights" unique_id=1583856075]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.14, 0.2, -0.46)
+visible = false
+light_cull_mask = 1
+light_color = Color(1, 0.15, 0.1, 1)
+light_energy = 0.0
+omni_range = 0.45
+
+[node name="RightTail" type="OmniLight3D" parent="Taillights" unique_id=2086700373]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14, 0.2, -0.46)
+visible = false
+light_cull_mask = 1
+light_color = Color(1, 0.15, 0.1, 1)
+light_energy = 0.0
+omni_range = 0.45
+
+[node name="LeftTailSquare" type="MeshInstance3D" parent="Taillights" unique_id=314918201]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.14, 0.2, -0.465)
+mesh = SubResource("BoxMesh_tail_square")
+
+[node name="RightTailSquare" type="MeshInstance3D" parent="Taillights" unique_id=314918202]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14, 0.2, -0.465)
+mesh = SubResource("BoxMesh_tail_square")
+
+[node name="BackupGroundSquare" type="MeshInstance3D" parent="Taillights" unique_id=314918203]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0.035, -0.82)
+visible = false
+mesh = SubResource("QuadMesh_backup_ground")
+
+[node name="TireDust" type="CPUParticles3D" parent="." unique_id=2067375728]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, -0.22)
+emitting = false
+amount = 12
+lifetime = 0.4
+mesh = SubResource("SphereMesh_el8sn")
+direction = Vector3(0, 0.5, -1)
+spread = 35.0
+gravity = Vector3(0, -4, 0)
+initial_velocity_min = 0.8
+initial_velocity_max = 1.8
+
+[node name="EngineSmoke" type="CPUParticles3D" parent="." unique_id=1948201948]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.28, 0.35)
+emitting = false
+amount = 16
+lifetime = 0.7
+mesh = SubResource("Mesh_EngineSmoke")
+direction = Vector3(0, 1, 0.2)
+spread = 22.0
+gravity = Vector3(0, 1.5, 0)
+initial_velocity_min = 0.6
+initial_velocity_max = 1.4
+
+[node name="ExplosionBurst" type="CPUParticles3D" parent="." unique_id=1948201949]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+emitting = false
+amount = 32
+lifetime = 0.8
+one_shot = true
+explosiveness = 0.95
+mesh = SubResource("Mesh_ExplosionChunk")
+direction = Vector3(0, 1, 0)
+spread = 180.0
+gravity = Vector3(0, -9.8, 0)
+initial_velocity_min = 4.0
+initial_velocity_max = 8.5

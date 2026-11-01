@@ -1,0 +1,95 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/weapons/weapon_model.gd" id="1_wm"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_DarkMetal"]
+albedo_color = Color(0.14, 0.16, 0.2, 1)
+metallic = 0.9
+roughness = 0.25
+
+[sub_resource type="StandardMaterial3D" id="Mat_CyanGlow"]
+shading_mode = 0
+albedo_color = Color(0.3, 0.9, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="Mat_Grip"]
+albedo_color = Color(0.08, 0.1, 0.12, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="Mesh_Slide"]
+material = SubResource("Mat_DarkMetal")
+size = Vector3(0.032, 0.04, 0.12)
+
+[sub_resource type="BoxMesh" id="Mesh_Conduit"]
+material = SubResource("Mat_CyanGlow")
+size = Vector3(0.034, 0.008, 0.08)
+
+[sub_resource type="BoxMesh" id="Mesh_Grip"]
+material = SubResource("Mat_Grip")
+size = Vector3(0.026, 0.06, 0.032)
+
+[sub_resource type="CylinderMesh" id="Mesh_Barrel"]
+material = SubResource("Mat_DarkMetal")
+top_radius = 0.012
+bottom_radius = 0.012
+height = 0.04
+radial_segments = 8
+
+[sub_resource type="StandardMaterial3D" id="Mat_Flash"]
+shading_mode = 0
+albedo_color = Color(0.6, 0.95, 1, 1)
+
+[sub_resource type="SphereMesh" id="Mesh_Flash"]
+material = SubResource("Mat_Flash")
+radius = 0.04
+height = 0.08
+
+[sub_resource type="BoxMesh" id="Mesh_Spark"]
+material = SubResource("Mat_Flash")
+size = Vector3(0.01, 0.04, 0.01)
+
+[node name="ModelPistol" type="Node3D"]
+script = ExtResource("1_wm")
+
+[node name="Slide" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.028, -0.04)
+mesh = SubResource("Mesh_Slide")
+
+[node name="Conduit" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.045, -0.04)
+mesh = SubResource("Mesh_Conduit")
+
+[node name="Grip" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, -0.015, 0.005)
+mesh = SubResource("Mesh_Grip")
+
+[node name="Barrel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0.032, -0.11)
+mesh = SubResource("Mesh_Barrel")
+
+[node name="Muzzle" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.032, -0.13)
+
+[node name="Flash" type="CPUParticles3D" parent="Muzzle"]
+emitting = false
+amount = 1
+lifetime = 0.06
+one_shot = true
+explosiveness = 1.0
+local_coords = true
+mesh = SubResource("Mesh_Flash")
+gravity = Vector3(0, 0, 0)
+
+[node name="Sparks" type="CPUParticles3D" parent="Muzzle"]
+emitting = false
+amount = 5
+lifetime = 0.08
+one_shot = true
+explosiveness = 1.0
+local_coords = true
+mesh = SubResource("Mesh_Spark")
+particle_flag_align_y = true
+direction = Vector3(0, 0, -1)
+spread = 25.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 1.2
+initial_velocity_max = 2.5

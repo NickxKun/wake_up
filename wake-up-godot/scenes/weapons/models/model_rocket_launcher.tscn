@@ -1,0 +1,154 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/weapons/weapon_model.gd" id="1_wm"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_HeavyAlloy"]
+albedo_color = Color(0.18, 0.20, 0.22, 1)
+metallic = 0.9
+roughness = 0.35
+
+[sub_resource type="StandardMaterial3D" id="Mat_DarkMatte"]
+albedo_color = Color(0.08, 0.09, 0.10, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="Mat_HazardOrange"]
+albedo_color = Color(0.95, 0.42, 0.05, 1)
+metallic = 0.4
+roughness = 0.4
+
+[sub_resource type="StandardMaterial3D" id="Mat_ExhaustGlow"]
+shading_mode = 0
+albedo_color = Color(1.0, 0.3, 0.05, 1)
+
+[sub_resource type="CylinderMesh" id="Mesh_MainTube"]
+material = SubResource("Mat_HeavyAlloy")
+top_radius = 0.052
+bottom_radius = 0.052
+height = 0.48
+radial_segments = 12
+
+[sub_resource type="CylinderMesh" id="Mesh_TubeReinforcement"]
+material = SubResource("Mat_DarkMatte")
+top_radius = 0.058
+bottom_radius = 0.058
+height = 0.12
+radial_segments = 12
+
+[sub_resource type="CylinderMesh" id="Mesh_ExhaustBell"]
+material = SubResource("Mat_DarkMatte")
+top_radius = 0.068
+bottom_radius = 0.052
+height = 0.10
+radial_segments = 12
+
+[sub_resource type="SphereMesh" id="Mesh_ExhaustCore"]
+material = SubResource("Mat_ExhaustGlow")
+radius = 0.04
+height = 0.05
+
+[sub_resource type="CylinderMesh" id="Mesh_RocketWarhead"]
+material = SubResource("Mat_HazardOrange")
+top_radius = 0.015
+bottom_radius = 0.048
+height = 0.12
+radial_segments = 12
+
+[sub_resource type="BoxMesh" id="Mesh_Grip"]
+material = SubResource("Mat_DarkMatte")
+size = Vector3(0.028, 0.075, 0.035)
+
+[sub_resource type="BoxMesh" id="Mesh_Foregrip"]
+material = SubResource("Mat_DarkMatte")
+size = Vector3(0.026, 0.065, 0.03)
+
+[sub_resource type="BoxMesh" id="Mesh_Sight"]
+material = SubResource("Mat_DarkMatte")
+size = Vector3(0.04, 0.04, 0.09)
+
+[sub_resource type="StandardMaterial3D" id="Mat_SightScreen"]
+shading_mode = 0
+albedo_color = Color(1.0, 0.5, 0.1, 1)
+
+[sub_resource type="BoxMesh" id="Mesh_SightScreen"]
+material = SubResource("Mat_SightScreen")
+size = Vector3(0.032, 0.028, 0.005)
+
+[sub_resource type="StandardMaterial3D" id="Mat_RocketFlash"]
+shading_mode = 0
+albedo_color = Color(1.0, 0.55, 0.1, 1)
+
+[sub_resource type="SphereMesh" id="Mesh_FlashSphere"]
+material = SubResource("Mat_RocketFlash")
+radius = 0.09
+height = 0.18
+
+[sub_resource type="BoxMesh" id="Mesh_SparkParticle"]
+material = SubResource("Mat_RocketFlash")
+size = Vector3(0.012, 0.12, 0.012)
+
+[node name="ModelRocketLauncher" type="Node3D"]
+script = ExtResource("1_wm")
+
+[node name="MainTube" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0.04, -0.05)
+mesh = SubResource("Mesh_MainTube")
+
+[node name="FrontCollar" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0.04, -0.22)
+mesh = SubResource("Mesh_TubeReinforcement")
+
+[node name="RearCollar" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0.04, 0.12)
+mesh = SubResource("Mesh_TubeReinforcement")
+
+[node name="ExhaustBell" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.04, 0.23)
+mesh = SubResource("Mesh_ExhaustBell")
+
+[node name="ExhaustGlowCore" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0.24)
+mesh = SubResource("Mesh_ExhaustCore")
+
+[node name="RocketWarhead" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0.04, -0.32)
+mesh = SubResource("Mesh_RocketWarhead")
+
+[node name="Grip" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 0, -0.025, 0.02)
+mesh = SubResource("Mesh_Grip")
+
+[node name="Foregrip" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.984808, -0.173648, 0, 0.173648, 0.984808, 0, -0.025, -0.16)
+mesh = SubResource("Mesh_Foregrip")
+
+[node name="OpticSight" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.045, 0.09, -0.06)
+mesh = SubResource("Mesh_Sight")
+
+[node name="SightScreen" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.045, 0.09, 0.038)
+mesh = SubResource("Mesh_SightScreen")
+
+[node name="Muzzle" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, -0.40)
+
+[node name="Flash" type="CPUParticles3D" parent="Muzzle"]
+emitting = false
+amount = 1
+lifetime = 0.08
+one_shot = true
+mesh = SubResource("Mesh_FlashSphere")
+gravity = Vector3(0, 0, 0)
+
+[node name="Sparks" type="CPUParticles3D" parent="Muzzle"]
+emitting = false
+amount = 12
+lifetime = 0.2
+one_shot = true
+explosiveness = 0.9
+mesh = SubResource("Mesh_SparkParticle")
+direction = Vector3(0, 0, -1)
+spread = 35.0
+gravity = Vector3(0, -4, 0)
+initial_velocity_min = 6.0
+initial_velocity_max = 10.0

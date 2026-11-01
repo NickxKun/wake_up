@@ -1,6 +1,26 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/scoreboard.gd" id="1_sb"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.06, 0.08, 0.12, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.22, 0.26, 0.35, 0.8)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.45)
+shadow_size = 6
+shadow_offset = Vector2(0, 3)
+anti_aliasing = true
 
 [node name="Scoreboard" type="CanvasLayer"]
 script = ExtResource("1_sb")
@@ -9,34 +29,70 @@ script = ExtResource("1_sb")
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -160.0
-offset_bottom = 72.0
+offset_left = -165.0
+offset_top = 18.0
+offset_right = -18.0
+offset_bottom = 86.0
 grow_horizontal = 0
 mouse_filter = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 16
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="PanelContainer" type="PanelContainer" parent="MarginContainer"]
 layout_mode = 2
-mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/PanelContainer/MarginContainer"]
+layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="KillsLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="KillsRow" type="HBoxContainer" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 14
-text = "Kills: 0"
-horizontal_alignment = 2
+theme_override_constants/separation = 8
 
-[node name="DeathsLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="KillsTag" type="Label" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/KillsRow"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 14
-text = "Deaths: 0"
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.62, 0.68, 0.78, 1)
+theme_override_font_sizes/font_size = 11
+text = "KILLS"
+vertical_alignment = 1
+
+[node name="KillsValue" type="Label" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/KillsRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.75, 0.22, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 13
+text = "0"
 horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="DeathsRow" type="HBoxContainer" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="DeathsTag" type="Label" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/DeathsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.62, 0.68, 0.78, 1)
+theme_override_font_sizes/font_size = 11
+text = "DEATHS"
+vertical_alignment = 1
+
+[node name="DeathsValue" type="Label" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/DeathsRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.45, 0.45, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 13
+text = "0"
+horizontal_alignment = 2
+vertical_alignment = 1

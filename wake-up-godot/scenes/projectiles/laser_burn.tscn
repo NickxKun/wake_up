@@ -1,0 +1,32 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scenes/projectiles/laser_burn.gd" id="1_burn"]
+
+[sub_resource type="Gradient" id="Gradient_scorch"]
+offsets = PackedFloat32Array(0, 0.25, 0.6, 0.88, 1)
+colors = PackedColorArray(1, 0.8, 0.4, 1, 0.95, 0.35, 0.08, 0.95, 0.08, 0.08, 0.1, 0.9, 0.05, 0.05, 0.06, 0.5, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_burn"]
+gradient = SubResource("Gradient_scorch")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_burn"]
+transparency = 1
+cull_mode = 2
+render_priority = 3
+shading_mode = 0
+albedo_color = Color(1, 1, 1, 1)
+albedo_texture = SubResource("GradientTexture2D_burn")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_burn"]
+material = SubResource("StandardMaterial3D_burn")
+size = Vector2(0.42, 0.42)
+
+[node name="LaserBurn" type="Node3D"]
+script = ExtResource("1_burn")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_burn")

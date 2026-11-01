@@ -1,0 +1,121 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/weapons/weapon_model.gd" id="1_wm"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_Titanium"]
+albedo_color = Color(0.20, 0.22, 0.26, 1)
+metallic = 0.92
+roughness = 0.22
+
+[sub_resource type="StandardMaterial3D" id="Mat_HazardGlow"]
+shading_mode = 0
+albedo_color = Color(1.0, 0.62, 0.12, 1)
+
+[sub_resource type="StandardMaterial3D" id="Mat_KnurledGrip"]
+albedo_color = Color(0.09, 0.10, 0.12, 1)
+roughness = 0.88
+
+[sub_resource type="StandardMaterial3D" id="Mat_Sparks"]
+shading_mode = 0
+albedo_color = Color(1.0, 0.85, 0.35, 1)
+
+[sub_resource type="BoxMesh" id="Mesh_Shaft"]
+material = SubResource("Mat_Titanium")
+size = Vector3(0.024, 0.028, 0.24)
+
+[sub_resource type="BoxMesh" id="Mesh_Grip"]
+material = SubResource("Mat_KnurledGrip")
+size = Vector3(0.028, 0.032, 0.10)
+
+[sub_resource type="BoxMesh" id="Mesh_HeadBase"]
+material = SubResource("Mat_Titanium")
+size = Vector3(0.036, 0.042, 0.05)
+
+[sub_resource type="BoxMesh" id="Mesh_UpperJaw"]
+material = SubResource("Mat_Titanium")
+size = Vector3(0.014, 0.028, 0.065)
+
+[sub_resource type="BoxMesh" id="Mesh_LowerJaw"]
+material = SubResource("Mat_Titanium")
+size = Vector3(0.014, 0.028, 0.065)
+
+[sub_resource type="CylinderMesh" id="Mesh_Bolt"]
+material = SubResource("Mat_HazardGlow")
+top_radius = 0.016
+bottom_radius = 0.016
+height = 0.044
+radial_segments = 10
+
+[sub_resource type="BoxMesh" id="Mesh_Conduit"]
+material = SubResource("Mat_HazardGlow")
+size = Vector3(0.026, 0.007, 0.16)
+
+[sub_resource type="SphereMesh" id="Mesh_Flash"]
+material = SubResource("Mat_Sparks")
+radius = 0.04
+height = 0.08
+
+[sub_resource type="BoxMesh" id="Mesh_Spark"]
+material = SubResource("Mat_Sparks")
+size = Vector3(0.01, 0.035, 0.01)
+
+[node name="ModelWrench" type="Node3D"]
+script = ExtResource("1_wm")
+kick_distance = 0.045
+kick_duration = 0.14
+
+[node name="Shaft" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, -0.06)
+mesh = SubResource("Mesh_Shaft")
+
+[node name="Grip" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0.03)
+mesh = SubResource("Mesh_Grip")
+
+[node name="Conduit" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.035, -0.06)
+mesh = SubResource("Mesh_Conduit")
+
+[node name="HeadBase" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.022, -0.185)
+mesh = SubResource("Mesh_HeadBase")
+
+[node name="PivotBolt" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.022, -0.185)
+mesh = SubResource("Mesh_Bolt")
+
+[node name="UpperJaw" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, -0.018, 0.022, -0.225)
+mesh = SubResource("Mesh_UpperJaw")
+
+[node name="LowerJaw" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, 0.965926, 0.018, 0.022, -0.225)
+mesh = SubResource("Mesh_LowerJaw")
+
+[node name="Muzzle" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.022, -0.24)
+
+[node name="Flash" type="CPUParticles3D" parent="Muzzle"]
+emitting = false
+amount = 1
+lifetime = 0.06
+one_shot = true
+explosiveness = 1.0
+local_coords = true
+mesh = SubResource("Mesh_Flash")
+gravity = Vector3(0, 0, 0)
+
+[node name="Sparks" type="CPUParticles3D" parent="Muzzle"]
+emitting = false
+amount = 8
+lifetime = 0.12
+one_shot = true
+explosiveness = 1.0
+local_coords = true
+mesh = SubResource("Mesh_Spark")
+particle_flag_align_y = true
+direction = Vector3(0, 0, -1)
+spread = 45.0
+gravity = Vector3(0, -2, 0)
+initial_velocity_min = 1.5
+initial_velocity_max = 3.2

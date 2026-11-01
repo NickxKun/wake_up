@@ -1,0 +1,1205 @@
+[gd_scene load_steps=18 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/settings_menu.gd" id="1_set"]
+[ext_resource type="Shader" path="res://scenes/ui/vignette.gdshader" id="2_vig"]
+[ext_resource type="Script" path="res://scenes/ui/menu_emblem.gd" id="3_emb"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vig"]
+shader = ExtResource("2_vig")
+shader_parameter/inner_radius = 0.35
+shader_parameter/outer_radius = 1.05
+shader_parameter/vignette_opacity = 0.65
+shader_parameter/vignette_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_focus"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_search"]
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(1, 1, 1, 0.05)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.2)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_search_focus"]
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(1, 1, 1, 0.08)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.85)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cat_normal"]
+content_margin_left = 16.0
+content_margin_top = 10.0
+content_margin_right = 16.0
+content_margin_bottom = 10.0
+bg_color = Color(1, 1, 1, 0.03)
+border_width_left = 0
+border_width_top = 0
+border_width_right = 0
+border_width_bottom = 0
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cat_hover"]
+content_margin_left = 16.0
+content_margin_top = 10.0
+content_margin_right = 16.0
+content_margin_bottom = 10.0
+bg_color = Color(1, 1, 1, 0.08)
+border_width_left = 0
+border_width_top = 0
+border_width_right = 0
+border_width_bottom = 0
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slider_bg"]
+content_margin_top = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(1, 1, 1, 0.12)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slider_fill"]
+content_margin_top = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(1, 1, 1, 0.92)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_action_btn"]
+content_margin_left = 14.0
+content_margin_top = 8.0
+content_margin_right = 14.0
+content_margin_bottom = 8.0
+bg_color = Color(1, 1, 1, 0.05)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.22)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_action_btn_hover"]
+content_margin_left = 14.0
+content_margin_top = 8.0
+content_margin_right = 14.0
+content_margin_bottom = 8.0
+bg_color = Color(1, 1, 1, 0.15)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.9)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_key_tag"]
+content_margin_left = 10.0
+content_margin_top = 4.0
+content_margin_right = 10.0
+content_margin_bottom = 4.0
+bg_color = Color(1, 1, 1, 0.08)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.28)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card_panel"]
+content_margin_left = 20.0
+content_margin_top = 16.0
+content_margin_right = 20.0
+content_margin_bottom = 16.0
+bg_color = Color(1, 1, 1, 0.025)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.12)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+anti_aliasing = false
+
+[node name="SettingsMenu" type="Control"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_set")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.035, 0.035, 0.045, 0.98)
+
+[node name="Vignette" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_vig")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TopHeader" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 68.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 36
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 36
+
+[node name="MarginContainer" type="MarginContainer" parent="TopHeader"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="TopHeader/MarginContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="BrandBox" type="HBoxContainer" parent="TopHeader/MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="MiniEmblem" type="Control" parent="TopHeader/MarginContainer/HBoxContainer/BrandBox"]
+custom_minimum_size = Vector2(26, 26)
+layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("3_emb")
+base_radius = 11.0
+spin_speed = 0.3
+
+[node name="HeaderLabels" type="VBoxContainer" parent="TopHeader/MarginContainer/HBoxContainer/BrandBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="Title" type="Label" parent="TopHeader/MarginContainer/HBoxContainer/BrandBox/HeaderLabels"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "SYSTEM ARCHITECTURE // SETTINGS"
+
+[node name="Subtitle" type="Label" parent="TopHeader/MarginContainer/HBoxContainer/BrandBox/HeaderLabels"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.65, 0.65, 1)
+theme_override_font_sizes/font_size = 10
+text = "VICTOR'S PROTOCOL 2.4 - HIGH PRECISION INTERFACE"
+
+[node name="Spacer" type="Control" parent="TopHeader/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CloseButton" type="Button" parent="TopHeader/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(130, 36)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_action_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_action_btn_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_action_btn")
+text = "✕  CLOSE [ESC]"
+
+[node name="MainLayout" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 74.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 24
+
+[node name="SidebarMargin" type="MarginContainer" parent="MainLayout"]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+theme_override_constants/margin_left = 36
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_bottom = 24
+
+[node name="Sidebar" type="VBoxContainer" parent="MainLayout/SidebarMargin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="SearchContainer" type="HBoxContainer" parent="MainLayout/SidebarMargin/Sidebar"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SearchIconButton" type="Button" parent="MainLayout/SidebarMargin/Sidebar/SearchContainer"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+focus_mode = 0
+flat = true
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+text = "⌕"
+
+[node name="SearchInput" type="LineEdit" parent="MainLayout/SidebarMargin/Sidebar/SearchContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/caret_color = Color(1, 1, 1, 1)
+theme_override_colors/font_placeholder_color = Color(0.5, 0.5, 0.5, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/focus = SubResource("StyleBoxFlat_search_focus")
+theme_override_styles/normal = SubResource("StyleBoxFlat_search")
+placeholder_text = "Search settings..."
+clear_button_enabled = false
+
+[node name="ClearSearchButton" type="Button" parent="MainLayout/SidebarMargin/Sidebar/SearchContainer"]
+visible = false
+custom_minimum_size = Vector2(32, 36)
+layout_mode = 2
+focus_mode = 0
+flat = true
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+text = "✕"
+
+[node name="CategoryLabel" type="Label" parent="MainLayout/SidebarMargin/Sidebar"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.55, 0.55, 1)
+theme_override_font_sizes/font_size = 10
+text = "// CATEGORIES"
+
+[node name="CategoryList" type="VBoxContainer" parent="MainLayout/SidebarMargin/Sidebar"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="BtnAudio" type="Button" parent="MainLayout/SidebarMargin/Sidebar/CategoryList"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+focus_mode = 0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_cat_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_cat_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_cat_normal")
+
+[node name="ActiveBar" type="ColorRect" parent="MainLayout/SidebarMargin/Sidebar/CategoryList/BtnAudio"]
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 3.0
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 1)
+
+[node name="HBox" type="HBoxContainer" parent="MainLayout/SidebarMargin/Sidebar/CategoryList/BtnAudio"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_right = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Tag" type="Label" parent="MainLayout/SidebarMargin/Sidebar/CategoryList/BtnAudio"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 16.0
+offset_top = -10.0
+offset_right = 36.0
+offset_bottom = 10.0
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 11
+text = "01"
+vertical_alignment = 1
+
+[node name="Title" type="Label" parent="MainLayout/SidebarMargin/Sidebar/CategoryList/BtnAudio"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 44.0
+offset_top = -10.0
+offset_right = 160.0
+offset_bottom = 10.0
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "AUDIO"
+vertical_alignment = 1
+
+[node name="BtnVideo" type="Button" parent="MainLayout/SidebarMargin/Sidebar/CategoryList"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+focus_mode = 0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_cat_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_cat_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_cat_normal")
+
+[node name="ActiveBar" type="ColorRect" parent="MainLayout/SidebarMargin/Sidebar/CategoryList/BtnVideo"]
+visible = false
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 3.0
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 1)
+
+[node name="Tag" type="Label" parent="MainLayout/SidebarMargin/Sidebar/CategoryList/BtnVideo"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 16.0
+offset_top = -10.0
+offset_right = 36.0
+offset_bottom = 10.0
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 11
+text = "02"
+vertical_alignment = 1
+
+[node name="Title" type="Label" parent="MainLayout/SidebarMargin/Sidebar/CategoryList/BtnVideo"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 44.0
+offset_top = -10.0
+offset_right = 160.0
+offset_bottom = 10.0
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "VIDEO"
+vertical_alignment = 1
+
+[node name="BtnControls" type="Button" parent="MainLayout/SidebarMargin/Sidebar/CategoryList"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+focus_mode = 0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_cat_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_cat_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_cat_normal")
+
+[node name="ActiveBar" type="ColorRect" parent="MainLayout/SidebarMargin/Sidebar/CategoryList/BtnControls"]
+visible = false
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 3.0
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 1)
+
+[node name="Tag" type="Label" parent="MainLayout/SidebarMargin/Sidebar/CategoryList/BtnControls"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 16.0
+offset_top = -10.0
+offset_right = 36.0
+offset_bottom = 10.0
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 11
+text = "03"
+vertical_alignment = 1
+
+[node name="Title" type="Label" parent="MainLayout/SidebarMargin/Sidebar/CategoryList/BtnControls"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 44.0
+offset_top = -10.0
+offset_right = 160.0
+offset_bottom = 10.0
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "CONTROLS"
+vertical_alignment = 1
+
+[node name="BtnGuide" type="Button" parent="MainLayout/SidebarMargin/Sidebar/CategoryList"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+focus_mode = 0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_cat_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_cat_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_cat_normal")
+
+[node name="ActiveBar" type="ColorRect" parent="MainLayout/SidebarMargin/Sidebar/CategoryList/BtnGuide"]
+visible = false
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 3.0
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 1)
+
+[node name="Tag" type="Label" parent="MainLayout/SidebarMargin/Sidebar/CategoryList/BtnGuide"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 16.0
+offset_top = -10.0
+offset_right = 36.0
+offset_bottom = 10.0
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 11
+text = "04"
+vertical_alignment = 1
+
+[node name="Title" type="Label" parent="MainLayout/SidebarMargin/Sidebar/CategoryList/BtnGuide"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 44.0
+offset_top = -10.0
+offset_right = 160.0
+offset_bottom = 10.0
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "HOW TO PLAY"
+vertical_alignment = 1
+
+[node name="Spacer" type="Control" parent="MainLayout/SidebarMargin/Sidebar"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SidebarBottom" type="VBoxContainer" parent="MainLayout/SidebarMargin/Sidebar"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ResetButton" type="Button" parent="MainLayout/SidebarMargin/Sidebar/SidebarBottom"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.75, 0.75, 0.75, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 11
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_action_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_action_btn_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_action_btn")
+text = "↺  RESET DEFAULTS"
+
+[node name="BackButton" type="Button" parent="MainLayout/SidebarMargin/Sidebar/SidebarBottom"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.75, 0.75, 0.75, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 11
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_action_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_action_btn_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_action_btn")
+text = "◀  RETURN TO MENU"
+
+[node name="ContentMargin" type="MarginContainer" parent="MainLayout"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 24
+
+[node name="ContentVBox" type="VBoxContainer" parent="MainLayout/ContentMargin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="HeaderBox" type="VBoxContainer" parent="MainLayout/ContentMargin/ContentVBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="CategoryTitle" type="Label" parent="MainLayout/ContentMargin/ContentVBox/HeaderBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 22
+text = "AUDIO CONFIGURATION"
+
+[node name="CategoryDesc" type="Label" parent="MainLayout/ContentMargin/ContentVBox/HeaderBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.65, 0.65, 1)
+theme_override_font_sizes/font_size = 11
+text = "// MANAGE MASTER, SFX & MUSIC VOLUMES WITH DYNAMIC RANGE"
+
+[node name="Divider" type="ColorRect" parent="MainLayout/ContentMargin/ContentVBox/HeaderBox"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+color = Color(1, 1, 1, 0.15)
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MainLayout/ContentMargin/ContentVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="PanelsContainer" type="VBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 24
+
+[node name="NoResultsLabel" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 14
+text = "NO SETTINGS MATCHED YOUR QUERY. TRY SEARCHING FOR 'VOLUME', 'VSYNC', OR 'MOUSE'."
+horizontal_alignment = 1
+
+[node name="AudioPanel" type="VBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="MasterVolSection" type="VBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/AudioPanel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="HBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/AudioPanel/MasterVolSection"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/AudioPanel/MasterVolSection/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+text = "MASTER VOLUME"
+
+[node name="Value" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/AudioPanel/MasterVolSection/Header"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "100%"
+horizontal_alignment = 2
+
+[node name="TestBtn" type="Button" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/AudioPanel/MasterVolSection/Header"]
+custom_minimum_size = Vector2(90, 26)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 11
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_action_btn_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_action_btn")
+text = "▶ TEST"
+
+[node name="Slider" type="HSlider" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/AudioPanel/MasterVolSection"]
+layout_mode = 2
+focus_mode = 0
+theme_override_styles/slider = SubResource("StyleBoxFlat_slider_bg")
+theme_override_styles/grabber_area = SubResource("StyleBoxFlat_slider_fill")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxFlat_slider_fill")
+max_value = 100.0
+step = 1.0
+value = 100.0
+
+[node name="SfxVolSection" type="VBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/AudioPanel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="HBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/AudioPanel/SfxVolSection"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/AudioPanel/SfxVolSection/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+text = "SFX & WEAPONS VOLUME"
+
+[node name="Value" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/AudioPanel/SfxVolSection/Header"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "100%"
+horizontal_alignment = 2
+
+[node name="TestBtn" type="Button" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/AudioPanel/SfxVolSection/Header"]
+custom_minimum_size = Vector2(90, 26)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 11
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_action_btn_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_action_btn")
+text = "▶ TEST"
+
+[node name="Slider" type="HSlider" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/AudioPanel/SfxVolSection"]
+layout_mode = 2
+focus_mode = 0
+theme_override_styles/slider = SubResource("StyleBoxFlat_slider_bg")
+theme_override_styles/grabber_area = SubResource("StyleBoxFlat_slider_fill")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxFlat_slider_fill")
+max_value = 100.0
+step = 1.0
+value = 100.0
+
+[node name="MusicVolSection" type="VBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/AudioPanel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="HBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/AudioPanel/MusicVolSection"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/AudioPanel/MusicVolSection/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+text = "AMBIENT MUSIC VOLUME"
+
+[node name="Value" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/AudioPanel/MusicVolSection/Header"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "100%"
+horizontal_alignment = 2
+
+[node name="Slider" type="HSlider" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/AudioPanel/MusicVolSection"]
+layout_mode = 2
+focus_mode = 0
+theme_override_styles/slider = SubResource("StyleBoxFlat_slider_bg")
+theme_override_styles/grabber_area = SubResource("StyleBoxFlat_slider_fill")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxFlat_slider_fill")
+max_value = 100.0
+step = 1.0
+value = 100.0
+
+[node name="MuteSection" type="HBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/AudioPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/AudioPanel/MuteSection"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+text = "MUTE ALL AUDIO"
+
+[node name="CheckButton" type="CheckButton" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/AudioPanel/MuteSection"]
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "UNMUTED"
+
+[node name="HitmarkerSection" type="HBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/AudioPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/AudioPanel/HitmarkerSection"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+text = "DRONE HIT AUDIO FEEDBACK"
+
+[node name="CheckButton" type="CheckButton" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/AudioPanel/HitmarkerSection"]
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+button_pressed = true
+text = "ENABLED"
+
+[node name="VideoPanel" type="VBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="WindowModeSection" type="HBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/VideoPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/VideoPanel/WindowModeSection"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+text = "WINDOW MODE"
+
+[node name="OptionButton" type="OptionButton" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/VideoPanel/WindowModeSection"]
+custom_minimum_size = Vector2(180, 34)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_action_btn_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_action_btn")
+
+[node name="VsyncSection" type="HBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/VideoPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/VideoPanel/VsyncSection"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+text = "VERTICAL SYNC (V-SYNC)"
+
+[node name="CheckButton" type="CheckButton" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/VideoPanel/VsyncSection"]
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+button_pressed = true
+text = "ON"
+
+[node name="RenderScaleSection" type="HBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/VideoPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/VideoPanel/RenderScaleSection"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+text = "3D RENDER QUALITY PRESET"
+
+[node name="OptionButton" type="OptionButton" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/VideoPanel/RenderScaleSection"]
+custom_minimum_size = Vector2(180, 34)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_action_btn_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_action_btn")
+
+[node name="FpsCapSection" type="HBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/VideoPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/VideoPanel/FpsCapSection"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+text = "FRAME RATE LIMIT"
+
+[node name="OptionButton" type="OptionButton" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/VideoPanel/FpsCapSection"]
+custom_minimum_size = Vector2(180, 34)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_action_btn_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_action_btn")
+
+[node name="VignetteSection" type="VBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/VideoPanel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="HBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/VideoPanel/VignetteSection"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/VideoPanel/VignetteSection/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+text = "ATMOSPHERIC VIGNETTE OPACITY"
+
+[node name="Value" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/VideoPanel/VignetteSection/Header"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "72%"
+horizontal_alignment = 2
+
+[node name="Slider" type="HSlider" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/VideoPanel/VignetteSection"]
+layout_mode = 2
+focus_mode = 0
+theme_override_styles/slider = SubResource("StyleBoxFlat_slider_bg")
+theme_override_styles/grabber_area = SubResource("StyleBoxFlat_slider_fill")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxFlat_slider_fill")
+max_value = 100.0
+step = 1.0
+value = 72.0
+
+[node name="FovSection" type="VBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/VideoPanel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="HBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/VideoPanel/FovSection"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/VideoPanel/FovSection/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+text = "TACTICAL CAMERA FIELD OF VIEW"
+
+[node name="Value" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/VideoPanel/FovSection/Header"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "90°"
+horizontal_alignment = 2
+
+[node name="Slider" type="HSlider" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/VideoPanel/FovSection"]
+layout_mode = 2
+focus_mode = 0
+theme_override_styles/slider = SubResource("StyleBoxFlat_slider_bg")
+theme_override_styles/grabber_area = SubResource("StyleBoxFlat_slider_fill")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxFlat_slider_fill")
+min_value = 70.0
+max_value = 110.0
+step = 1.0
+value = 90.0
+
+[node name="ControlsPanel" type="VBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="SensSection" type="VBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="HBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel/SensSection"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel/SensSection/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+text = "MOUSE AIM SENSITIVITY"
+
+[node name="Value" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel/SensSection/Header"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "1.00x"
+horizontal_alignment = 2
+
+[node name="Slider" type="HSlider" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel/SensSection"]
+layout_mode = 2
+focus_mode = 0
+theme_override_styles/slider = SubResource("StyleBoxFlat_slider_bg")
+theme_override_styles/grabber_area = SubResource("StyleBoxFlat_slider_fill")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxFlat_slider_fill")
+min_value = 0.2
+max_value = 3.0
+step = 0.05
+value = 1.0
+
+[node name="InvertYSection" type="HBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel/InvertYSection"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+text = "INVERT MOUSE Y-AXIS"
+
+[node name="CheckButton" type="CheckButton" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel/InvertYSection"]
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "OFF"
+
+[node name="SprintModeSection" type="HBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel/SprintModeSection"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+text = "SPRINT CONTROL MODE"
+
+[node name="OptionButton" type="OptionButton" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel/SprintModeSection"]
+custom_minimum_size = Vector2(180, 34)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_action_btn_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_action_btn")
+
+[node name="KeybindHeader" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_font_sizes/font_size = 11
+text = "// TACTICAL KEYBINDINGS MAP"
+
+[node name="KeybindGrid" type="GridContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel"]
+layout_mode = 2
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="MoveTag" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel/KeybindGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_key_tag")
+text = "W, A, S, D"
+horizontal_alignment = 1
+
+[node name="MoveDesc" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel/KeybindGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 13
+text = "Move & Strafe in 45° Isometric Grid"
+vertical_alignment = 1
+
+[node name="AimTag" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel/KeybindGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_key_tag")
+text = "Mouse Aim + Left Click"
+horizontal_alignment = 1
+
+[node name="AimDesc" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel/KeybindGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 13
+text = "Aim Weapon / Fire High-Velocity Plasma"
+vertical_alignment = 1
+
+[node name="JumpTag" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel/KeybindGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_key_tag")
+text = "Spacebar"
+horizontal_alignment = 1
+
+[node name="JumpDesc" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel/KeybindGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 13
+text = "Tactical Jump (Leap over incoming low bolts)"
+vertical_alignment = 1
+
+[node name="SprintTag" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel/KeybindGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_key_tag")
+text = "Left Shift"
+horizontal_alignment = 1
+
+[node name="SprintDesc" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel/KeybindGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 13
+text = "Sprint Dash (High velocity evasive maneuver)"
+vertical_alignment = 1
+
+[node name="PauseTag" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel/KeybindGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_key_tag")
+text = "ESC / P"
+horizontal_alignment = 1
+
+[node name="PauseDesc" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel/KeybindGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 13
+text = "Pause Simulation / Open System Settings"
+vertical_alignment = 1
+
+[node name="FreeflyTag" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel/KeybindGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_key_tag")
+text = "` (Tilde)"
+horizontal_alignment = 1
+
+[node name="FreeflyDesc" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/ControlsPanel/KeybindGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 13
+text = "Toggle Noclip Freefly Camera (Sandbox Mode)"
+vertical_alignment = 1
+
+[node name="GuidePanel" type="VBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 22
+
+[node name="LoreCard" type="PanelContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/GuidePanel"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card_panel")
+
+[node name="VBox" type="VBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/GuidePanel/LoreCard"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/GuidePanel/LoreCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "MISSION BRIEFING // STATION BREACH"
+
+[node name="Desc" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/GuidePanel/LoreCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "You awaken deep within an abandoned research habitat on the surface of an arid planetary outpost. Autonomous security drones have entered high-alert quarantine protocols and will neutralize any living entity on sight. Your objective is survival and sector pacification."
+autowrap_mode = 2
+
+[node name="SurvivalCard" type="PanelContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/GuidePanel"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card_panel")
+
+[node name="VBox" type="VBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/GuidePanel/SurvivalCard"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/GuidePanel/SurvivalCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.25, 0.35, 1)
+theme_override_font_sizes/font_size = 15
+text = "PROTOCOL 01 // SURVIVAL DIRECTIVE"
+
+[node name="Desc" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/GuidePanel/SurvivalCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "• Drone spawns scale dynamically in frequency and density as time progresses.\n• Each drone destroyed increments your combat score and adds to your career tally.\n• Health does not passively regenerate—position carefully behind station structures.\n• Upon death, your run score records. Deaths persist across in-game restarts until returning to Title."
+autowrap_mode = 2
+
+[node name="SandboxCard" type="PanelContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/GuidePanel"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card_panel")
+
+[node name="VBox" type="VBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/GuidePanel/SandboxCard"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/GuidePanel/SandboxCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.68, 0.18, 1)
+theme_override_font_sizes/font_size = 15
+text = "PROTOCOL 02 // SANDBOX TESTBED"
+
+[node name="Desc" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/GuidePanel/SandboxCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "• Designed for experimentation, telemetry analysis, and combat tuning.\n• On-screen developer suite provides instant heal, damage injection, and godmode toggles.\n• Test ballistic trajectories, navigation pathfinding mesh behavior, and terrain physics freely."
+autowrap_mode = 2
+
+[node name="TacticsCard" type="PanelContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/GuidePanel"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card_panel")
+
+[node name="VBox" type="VBoxContainer" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/GuidePanel/TacticsCard"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/GuidePanel/TacticsCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "COMBAT & EVASION MASTERY"
+
+[node name="Desc" type="Label" parent="MainLayout/ContentMargin/ContentVBox/ScrollContainer/PanelsContainer/GuidePanel/TacticsCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "• SPRINT DASH: Tap Shift while moving in any direction to burst through choke points.\n• JUMP EVASION: Hostile drone plasma bolts travel horizontally; jumping cleanly evades low-level projectiles.\n• STATION COVER: The orbital complex features fuel depots, container blocks, and communication relays—use them to break line-of-sight against drone swarms."
+autowrap_mode = 2

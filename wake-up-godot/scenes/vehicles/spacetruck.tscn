@@ -1,0 +1,204 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/vehicles/rover.gd" id="1_rv"]
+[ext_resource type="Script" path="res://scenes/components/health_component.gd" id="2_hc"]
+[ext_resource type="PackedScene" path="res://scenes/vehicles/vehicle_health_bar.tscn" id="3_vhb"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/spacetruck_large.fbx" id="4_fbx"]
+[ext_resource type="PackedScene" path="res://scenes/vehicles/gatling_turret.tscn" id="5_gt"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_truck"]
+size = Vector3(0.85, 0.60, 1.45)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_truck"]
+radius = 2.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gcyyu"]
+transparency = 1
+albedo_color = Color(0.62, 0.35, 0.22, 0.45)
+
+[sub_resource type="SphereMesh" id="SphereMesh_el8sn"]
+material = SubResource("StandardMaterial3D_gcyyu")
+radius = 0.06
+height = 0.12
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tail_square"]
+shading_mode = 0
+albedo_color = Color(0.18, 0.04, 0.04, 1)
+emission_enabled = true
+emission = Color(1, 0.15, 0.1, 1)
+emission_energy_multiplier = 0.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_tail_square"]
+material = SubResource("StandardMaterial3D_tail_square")
+size = Vector3(0.08, 0.05, 0.02)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_backup_ground"]
+shading_mode = 0
+transparency = 1
+albedo_color = Color(0.92, 0.96, 1, 0.42)
+
+[sub_resource type="QuadMesh" id="QuadMesh_backup_ground"]
+material = SubResource("StandardMaterial3D_backup_ground")
+size = Vector2(0.6, 0.45)
+
+[sub_resource type="StandardMaterial3D" id="Mat_EngineSmoke"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.18, 0.20, 0.22, 0.7)
+
+[sub_resource type="SphereMesh" id="Mesh_EngineSmoke"]
+material = SubResource("Mat_EngineSmoke")
+radius = 0.1
+height = 0.2
+
+[sub_resource type="StandardMaterial3D" id="Mat_ExplosionDebris"]
+shading_mode = 0
+albedo_color = Color(1, 0.52, 0.1, 1)
+
+[sub_resource type="BoxMesh" id="Mesh_ExplosionChunk"]
+material = SubResource("Mat_ExplosionDebris")
+size = Vector3(0.12, 0.12, 0.12)
+
+[node name="SpaceTruck" type="CharacterBody3D"]
+collision_layer = 3
+collision_mask = 3
+floor_constant_speed = true
+floor_max_angle = 0.96
+floor_snap_length = 0.3
+script = ExtResource("1_rv")
+vehicle_name = "Heavy Space Truck"
+model_scene = ExtResource("4_fbx")
+requires_explorer = true
+max_speed = 4.2
+max_reverse_speed = 2.0
+acceleration = 6.5
+turn_speed = 2.2
+ram_damage_multiplier = 35.0
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("2_hc")
+
+[node name="Collider" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+shape = SubResource("BoxShape3D_truck")
+
+[node name="ModelAnchor" type="Node3D" parent="."]
+
+[node name="GatlingTurret" parent="ModelAnchor" instance=ExtResource("5_gt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.18, -0.22)
+
+[node name="InteractionArea" type="Area3D" parent="."]
+collision_layer = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractionArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+shape = SubResource("SphereShape3D_truck")
+
+[node name="PromptAnchor" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0)
+
+[node name="DrivePrompt" type="Label3D" parent="PromptAnchor"]
+visible = false
+billboard = 1
+no_depth_test = true
+modulate = Color(1, 0.92, 0.45, 1)
+outline_modulate = Color(0, 0, 0, 0.85)
+text = "[E] Drive Heavy Space Truck"
+font_size = 28
+outline_size = 6
+
+[node name="VehicleHealthBar" parent="PromptAnchor" instance=ExtResource("3_vhb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+
+[node name="RemoteTransform3D" type="RemoteTransform3D" parent="."]
+update_rotation = false
+update_scale = false
+
+[node name="Headlights" type="Node3D" parent="."]
+
+[node name="LeftLight" type="SpotLight3D" parent="Headlights"]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.22, 0.25, 0.7)
+visible = false
+light_cull_mask = 1
+light_color = Color(1, 0.96, 0.88, 1)
+light_energy = 0.0
+spot_range = 20.0
+spot_angle = 42.0
+
+[node name="RightLight" type="SpotLight3D" parent="Headlights"]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0.22, 0.25, 0.7)
+visible = false
+light_cull_mask = 1
+light_color = Color(1, 0.96, 0.88, 1)
+light_energy = 0.0
+spot_range = 20.0
+spot_angle = 42.0
+
+[node name="Taillights" type="Node3D" parent="."]
+
+[node name="LeftTail" type="OmniLight3D" parent="Taillights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.22, 0.25, -0.7)
+visible = false
+light_cull_mask = 1
+light_color = Color(1, 0.15, 0.1, 1)
+light_energy = 0.0
+omni_range = 0.6
+
+[node name="RightTail" type="OmniLight3D" parent="Taillights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.22, 0.25, -0.7)
+visible = false
+light_cull_mask = 1
+light_color = Color(1, 0.15, 0.1, 1)
+light_energy = 0.0
+omni_range = 0.6
+
+[node name="LeftTailSquare" type="MeshInstance3D" parent="Taillights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.22, 0.25, -0.71)
+mesh = SubResource("BoxMesh_tail_square")
+
+[node name="RightTailSquare" type="MeshInstance3D" parent="Taillights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.22, 0.25, -0.71)
+mesh = SubResource("BoxMesh_tail_square")
+
+[node name="BackupGroundSquare" type="MeshInstance3D" parent="Taillights"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0.04, -1.1)
+visible = false
+mesh = SubResource("QuadMesh_backup_ground")
+
+[node name="TireDust" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -0.35)
+emitting = false
+amount = 16
+lifetime = 0.45
+mesh = SubResource("SphereMesh_el8sn")
+direction = Vector3(0, 0.5, -1)
+spread = 35.0
+gravity = Vector3(0, -4, 0)
+initial_velocity_min = 1.0
+initial_velocity_max = 2.2
+
+[node name="EngineSmoke" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0.5)
+emitting = false
+amount = 20
+lifetime = 0.8
+mesh = SubResource("Mesh_EngineSmoke")
+direction = Vector3(0, 1, 0.2)
+spread = 22.0
+gravity = Vector3(0, 1.5, 0)
+initial_velocity_min = 0.8
+initial_velocity_max = 1.6
+
+[node name="ExplosionBurst" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+emitting = false
+amount = 40
+lifetime = 0.9
+one_shot = true
+explosiveness = 0.95
+mesh = SubResource("Mesh_ExplosionChunk")
+direction = Vector3(0, 1, 0)
+spread = 180.0
+gravity = Vector3(0, -9.8, 0)
+initial_velocity_min = 5.0
+initial_velocity_max = 10.0

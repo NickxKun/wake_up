@@ -1,70 +1,474 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=13 format=3]
 
-[ext_resource type="Script" path="res://scenes/ui/health_bar.gd" id="1_hb"]
+[ext_resource type="Shader" path="res://scenes/ui/vignette.gdshader" id="1_vig"]
+[ext_resource type="Script" path="res://scenes/ui/health_bar.gd" id="2_hb"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vignette"]
+shader = ExtResource("1_vig")
+shader_parameter/inner_radius = 0.35
+shader_parameter/outer_radius = 1.05
+shader_parameter/vignette_opacity = 0.7
+shader_parameter/vignette_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dmg_bg"]
 content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
 content_margin_bottom = 0.0
-bg_color = Color(0.5, 0.5, 0.5, 0.3)
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_right = 3
-corner_radius_bottom_left = 3
+bg_color = Color(0.04, 0.06, 0.1, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.35, 0.45, 0.58, 0.75)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
 anti_aliasing = true
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fill"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dmg_fill"]
 content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
 content_margin_bottom = 0.0
-bg_color = Color(0.6, 0.6, 0.6, 1)
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_right = 3
-corner_radius_bottom_left = 3
+bg_color = Color(0.98, 0.38, 0.28, 0.95)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+anti_aliasing = true
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_bar_bg"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar_fill"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.12, 0.88, 0.65, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+anti_aliasing = true
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_shield_dmg_bg"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.04, 0.06, 0.1, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.2, 0.45, 0.65, 0.75)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+anti_aliasing = true
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_shield_dmg_fill"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.65, 0.9, 1.0, 0.9)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+anti_aliasing = true
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_shield_fill"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.18, 0.82, 0.98, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+anti_aliasing = true
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cd_bg"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.04, 0.07, 0.12, 0.75)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.25, 0.4, 0.55, 0.6)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+anti_aliasing = true
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cd_fill"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.2, 0.92, 0.88, 0.95)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
 anti_aliasing = true
 
 [node name="HealthBar" type="CanvasLayer"]
-script = ExtResource("1_hb")
+script = ExtResource("2_hb")
+
+[node name="Vignette" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_vignette")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -186.0
-offset_right = 186.0
-offset_bottom = 74.0
-grow_horizontal = 2
-grow_vertical = 1
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 48
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 16
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -132.0
+offset_right = 530.0
+offset_bottom = -18.0
+grow_vertical = 0
+mouse_filter = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 2
+
+[node name="OperativeRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 8
-alignment = 1
+alignment = 0
 
-[node name="ProgressBar" type="ProgressBar" parent="MarginContainer/HBoxContainer"]
-custom_minimum_size = Vector2(300, 10)
+[node name="ClassTag" type="Label" parent="MarginContainer/VBoxContainer/OperativeRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.75, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.85)
+theme_override_constants/outline_size = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 11
+text = "◈ VANGUARD-01 // ASTRONAUT"
+vertical_alignment = 1
+
+[node name="Divider" type="Label" parent="MarginContainer/VBoxContainer/OperativeRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.45)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.85)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 10
+text = "•"
+vertical_alignment = 1
+
+[node name="AbilityTag" type="Label" parent="MarginContainer/VBoxContainer/OperativeRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 0.9)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.85)
+theme_override_constants/outline_size = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 11
+text = "[F] ABILITY"
+vertical_alignment = 1
+
+[node name="AbilityStatus" type="Label" parent="MarginContainer/VBoxContainer/OperativeRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.95, 0.6, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.85)
+theme_override_constants/outline_size = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 11
+text = "READY"
+vertical_alignment = 1
+
+[node name="TurretTag" type="Label" parent="MarginContainer/VBoxContainer/OperativeRow"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.65, 0.15, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.85)
+theme_override_constants/outline_size = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 11
+text = "• TURRET: 100 HP"
+vertical_alignment = 1
+
+[node name="StatsRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 0
+
+[node name="KillsBox" type="HBoxContainer" parent="MarginContainer/VBoxContainer/StatsRow"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="KillsTag" type="Label" parent="MarginContainer/VBoxContainer/StatsRow/KillsBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.85)
+theme_override_constants/outline_size = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 11
+text = "KILLS"
+vertical_alignment = 1
+
+[node name="KillsValue" type="Label" parent="MarginContainer/VBoxContainer/StatsRow/KillsBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.85)
+theme_override_constants/outline_size = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 14
+text = "0"
+vertical_alignment = 1
+
+[node name="Divider" type="Label" parent="MarginContainer/VBoxContainer/StatsRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.6)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.85)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 10
+text = "•"
+vertical_alignment = 1
+
+[node name="DeathsBox" type="HBoxContainer" parent="MarginContainer/VBoxContainer/StatsRow"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="DeathsTag" type="Label" parent="MarginContainer/VBoxContainer/StatsRow/DeathsBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.85)
+theme_override_constants/outline_size = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 11
+text = "DEATHS"
+vertical_alignment = 1
+
+[node name="DeathsValue" type="Label" parent="MarginContainer/VBoxContainer/StatsRow/DeathsBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.85)
+theme_override_constants/outline_size = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 14
+text = "0"
+vertical_alignment = 1
+
+[node name="ShieldRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 0
+
+[node name="ShieldBadge" type="Label" parent="MarginContainer/VBoxContainer/ShieldRow"]
+custom_minimum_size = Vector2(18, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.85, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.85)
+theme_override_constants/outline_size = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 11
+text = "SHD"
+vertical_alignment = 1
+
+[node name="BarContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/ShieldRow"]
+custom_minimum_size = Vector2(210, 8)
 layout_mode = 2
 size_flags_vertical = 4
-theme_override_styles/background = SubResource("StyleBoxFlat_bg")
-theme_override_styles/fill = SubResource("StyleBoxFlat_fill")
-step = 1.0
+
+[node name="DamageBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/ShieldRow/BarContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme_override_styles/background = SubResource("StyleBoxFlat_shield_dmg_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_shield_dmg_fill")
+step = 0.1
 value = 100.0
 show_percentage = false
 
-[node name="HealthValue" type="Label" parent="MarginContainer/HBoxContainer"]
-custom_minimum_size = Vector2(32, 0)
+[node name="ProgressBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/ShieldRow/BarContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme_override_styles/background = SubResource("StyleBoxEmpty_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_shield_fill")
+step = 0.1
+value = 100.0
+show_percentage = false
+
+[node name="ShieldValue" type="Label" parent="MarginContainer/VBoxContainer/ShieldRow"]
+custom_minimum_size = Vector2(36, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.85, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.85)
+theme_override_constants/outline_size = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 13
+text = "100"
+vertical_alignment = 1
+
+[node name="ShieldStatus" type="Label" parent="MarginContainer/VBoxContainer/ShieldRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.85, 1, 0.85)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.85)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 10
+text = "READY"
+vertical_alignment = 1
+
+[node name="HealthRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 0
+
+[node name="HpBadge" type="Label" parent="MarginContainer/VBoxContainer/HealthRow"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 4
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.85)
+theme_override_constants/outline_size = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 12
+text = "HP"
+vertical_alignment = 1
+
+[node name="BarContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HealthRow"]
+custom_minimum_size = Vector2(210, 8)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="DamageBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/HealthRow/BarContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme_override_styles/background = SubResource("StyleBoxFlat_dmg_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_dmg_fill")
+step = 0.1
+value = 100.0
+show_percentage = false
+
+[node name="ProgressBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/HealthRow/BarContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme_override_styles/background = SubResource("StyleBoxEmpty_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_bar_fill")
+step = 0.1
+value = 100.0
+show_percentage = false
+
+[node name="HealthValue" type="Label" parent="MarginContainer/VBoxContainer/HealthRow"]
+custom_minimum_size = Vector2(36, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.85)
+theme_override_constants/outline_size = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 1
 theme_override_font_sizes/font_size = 14
 text = "100"
-horizontal_alignment = 0
+vertical_alignment = 1
+
+[node name="DashDivider" type="Label" parent="MarginContainer/VBoxContainer/HealthRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.35)
+theme_override_font_sizes/font_size = 12
+text = "|"
+vertical_alignment = 1
+
+[node name="DashRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HealthRow"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 0
+
+[node name="DashBadge" type="Label" parent="MarginContainer/VBoxContainer/HealthRow/DashRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.85)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 11
+text = "DASH"
+vertical_alignment = 1
+
+[node name="PipsBox" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HealthRow/DashRow"]
+layout_mode = 2
+theme_override_constants/separation = 3
+alignment = 1
+
+[node name="Pip0" type="ColorRect" parent="MarginContainer/VBoxContainer/HealthRow/DashRow/PipsBox"]
+custom_minimum_size = Vector2(10, 6)
+layout_mode = 2
+size_flags_vertical = 4
+color = Color(0.2, 0.95, 0.9, 1)
+
+[node name="Pip1" type="ColorRect" parent="MarginContainer/VBoxContainer/HealthRow/DashRow/PipsBox"]
+custom_minimum_size = Vector2(10, 6)
+layout_mode = 2
+size_flags_vertical = 4
+color = Color(0.2, 0.95, 0.9, 1)
+
+[node name="Pip2" type="ColorRect" parent="MarginContainer/VBoxContainer/HealthRow/DashRow/PipsBox"]
+custom_minimum_size = Vector2(10, 6)
+layout_mode = 2
+size_flags_vertical = 4
+color = Color(0.2, 0.95, 0.9, 1)
+
+[node name="CooldownContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HealthRow/DashRow"]
+custom_minimum_size = Vector2(36, 6)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="CooldownBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/HealthRow/DashRow/CooldownContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme_override_styles/background = SubResource("StyleBoxFlat_cd_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_cd_fill")
+step = 0.1
+value = 100.0
+show_percentage = false
+
+[node name="CooldownStatus" type="Label" parent="MarginContainer/VBoxContainer/HealthRow/DashRow"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.95, 0.9, 0.95)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.85)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 10
+text = "READY"
 vertical_alignment = 1

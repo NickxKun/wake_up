@@ -1,0 +1,64 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/minimap.gd" id="1_script"]
+
+[node name="Minimap" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1_script")
+
+[node name="RootControl" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Container" type="VBoxContainer" parent="RootControl"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -174.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = 194.0
+grow_horizontal = 0
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="RadarCanvas" type="Control" parent="RootControl/Container"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="TelemetryRow" type="HBoxContainer" parent="RootControl/Container"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="CoordsLabel" type="Label" parent="RootControl/Container/TelemetryRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 0.45)
+theme_override_font_sizes/font_size = 9
+text = "+00.0, +00.0"
+vertical_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="RootControl/Container/TelemetryRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.88, 0.95, 0.85)
+theme_override_font_sizes/font_size = 9
+text = "NOMINAL"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="KeyHint" type="Label" parent="RootControl/Container/TelemetryRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.3)
+theme_override_font_sizes/font_size = 9
+text = "[M]"
+horizontal_alignment = 2
+vertical_alignment = 1

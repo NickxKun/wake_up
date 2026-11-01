@@ -1,0 +1,114 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/weapons/weapon_model.gd" id="1_wm"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_Gunmetal"]
+albedo_color = Color(0.18, 0.2, 0.24, 1)
+metallic = 0.95
+roughness = 0.3
+
+[sub_resource type="StandardMaterial3D" id="Mat_AmberGlow"]
+shading_mode = 0
+albedo_color = Color(1, 0.62, 0.15, 1)
+
+[sub_resource type="StandardMaterial3D" id="Mat_Grip"]
+albedo_color = Color(0.1, 0.08, 0.06, 1)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="Mesh_Receiver"]
+material = SubResource("Mat_Gunmetal")
+size = Vector3(0.045, 0.065, 0.18)
+
+[sub_resource type="BoxMesh" id="Mesh_HeatShield"]
+material = SubResource("Mat_AmberGlow")
+size = Vector3(0.048, 0.012, 0.14)
+
+[sub_resource type="CylinderMesh" id="Mesh_BarrelUpper"]
+material = SubResource("Mat_Gunmetal")
+top_radius = 0.015
+bottom_radius = 0.015
+height = 0.16
+radial_segments = 8
+
+[sub_resource type="CylinderMesh" id="Mesh_BarrelLower"]
+material = SubResource("Mat_Gunmetal")
+top_radius = 0.015
+bottom_radius = 0.015
+height = 0.16
+radial_segments = 8
+
+[sub_resource type="BoxMesh" id="Mesh_Pump"]
+material = SubResource("Mat_Grip")
+size = Vector3(0.046, 0.035, 0.09)
+
+[sub_resource type="BoxMesh" id="Mesh_Stock"]
+material = SubResource("Mat_Grip")
+size = Vector3(0.035, 0.06, 0.12)
+
+[sub_resource type="StandardMaterial3D" id="Mat_FlashAmber"]
+shading_mode = 0
+albedo_color = Color(1, 0.85, 0.4, 1)
+
+[sub_resource type="SphereMesh" id="Mesh_Flash"]
+material = SubResource("Mat_FlashAmber")
+radius = 0.065
+height = 0.13
+
+[sub_resource type="BoxMesh" id="Mesh_Spark"]
+material = SubResource("Mat_FlashAmber")
+size = Vector3(0.015, 0.06, 0.015)
+
+[node name="ModelShotgun" type="Node3D"]
+script = ExtResource("1_wm")
+
+[node name="Receiver" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, -0.05)
+mesh = SubResource("Mesh_Receiver")
+
+[node name="HeatShield" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.065, -0.09)
+mesh = SubResource("Mesh_HeatShield")
+
+[node name="BarrelUpper" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0.045, -0.16)
+mesh = SubResource("Mesh_BarrelUpper")
+
+[node name="BarrelLower" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0.018, -0.16)
+mesh = SubResource("Mesh_BarrelLower")
+
+[node name="Pump" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.005, -0.14)
+mesh = SubResource("Mesh_Pump")
+
+[node name="Stock" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 0.005, 0.07)
+mesh = SubResource("Mesh_Stock")
+
+[node name="Muzzle" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.032, -0.25)
+
+[node name="Flash" type="CPUParticles3D" parent="Muzzle"]
+emitting = false
+amount = 2
+lifetime = 0.08
+one_shot = true
+explosiveness = 1.0
+local_coords = true
+mesh = SubResource("Mesh_Flash")
+gravity = Vector3(0, 0, 0)
+
+[node name="Sparks" type="CPUParticles3D" parent="Muzzle"]
+emitting = false
+amount = 10
+lifetime = 0.1
+one_shot = true
+explosiveness = 1.0
+local_coords = true
+mesh = SubResource("Mesh_Spark")
+particle_flag_align_y = true
+direction = Vector3(0, 0, -1)
+spread = 45.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 2.0
+initial_velocity_max = 4.0

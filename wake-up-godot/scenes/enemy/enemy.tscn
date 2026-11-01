@@ -16,7 +16,12 @@ content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
 content_margin_bottom = 0.0
-bg_color = Color(0.5, 0.5, 0.5, 0.3)
+bg_color = Color(0.06, 0.08, 0.12, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.2, 0.25, 0.35, 0.7)
 corner_radius_top_left = 3
 corner_radius_top_right = 3
 corner_radius_bottom_right = 3
@@ -28,17 +33,20 @@ content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
 content_margin_bottom = 0.0
-bg_color = Color(0.6, 0.6, 0.6, 1)
+bg_color = Color(0.95, 0.28, 0.25, 1)
 corner_radius_top_left = 3
 corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 anti_aliasing = true
 
-[node name="Enemy" type="CharacterBody3D"]
+[node name="Enemy" type="CharacterBody3D" groups=["enemy"]]
 collision_layer = 2
-collision_mask = 1
-safe_margin = 0.01
+collision_mask = 3
+floor_constant_speed = true
+floor_max_angle = 0.96
+floor_snap_length = 0.25
+safe_margin = 0.02
 script = ExtResource("1_ene")
 
 [node name="HealthComponent" type="Node" parent="."]
@@ -52,8 +60,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
 shape = SubResource("CapsuleShape3D_ene")
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
-path_desired_distance = 0.15
-target_desired_distance = 0.15
+path_desired_distance = 0.4
+target_desired_distance = 0.35
 path_height_offset = 0.0
 radius = 0.2
 height = 0.6
@@ -75,25 +83,14 @@ script = ExtResource("3_hb")
 
 [node name="SubViewport" type="SubViewport" parent="HealthBar3D"]
 transparent_bg = true
-size = Vector2i(80, 14)
+size = Vector2i(70, 7)
 render_target_update_mode = 4
 
 [node name="ProgressBar" type="ProgressBar" parent="HealthBar3D/SubViewport"]
-offset_right = 80.0
-offset_bottom = 14.0
+offset_right = 70.0
+offset_bottom = 7.0
 theme_override_styles/background = SubResource("StyleBoxFlat_bg")
 theme_override_styles/fill = SubResource("StyleBoxFlat_fill")
-step = 1.0
+step = 0.5
 value = 100.0
 show_percentage = false
-
-[node name="HealthValue" type="Label" parent="HealthBar3D/SubViewport"]
-offset_right = 80.0
-offset_bottom = 14.0
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 10
-text = "100/100"
-horizontal_alignment = 1
-vertical_alignment = 1

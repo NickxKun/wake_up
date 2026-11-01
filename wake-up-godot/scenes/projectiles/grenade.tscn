@@ -1,0 +1,70 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scenes/projectiles/grenade.gd" id="1_grn"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_grn"]
+radius = 0.14
+
+[sub_resource type="StandardMaterial3D" id="Mat_GrenadeBody"]
+albedo_color = Color(0.16, 0.19, 0.22, 1)
+metallic = 0.92
+roughness = 0.28
+
+[sub_resource type="StandardMaterial3D" id="Mat_GrenadeBands"]
+albedo_color = Color(0.2, 0.75, 1, 1)
+metallic = 0.6
+roughness = 0.4
+
+[sub_resource type="StandardMaterial3D" id="Mat_GrenadeLED"]
+shading_mode = 0
+albedo_color = Color(1.0, 0.3, 0.2, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_body"]
+material = SubResource("Mat_GrenadeBody")
+top_radius = 0.065
+bottom_radius = 0.065
+height = 0.16
+radial_segments = 12
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_band"]
+material = SubResource("Mat_GrenadeBands")
+top_radius = 0.072
+bottom_radius = 0.072
+height = 0.03
+radial_segments = 12
+
+[sub_resource type="SphereMesh" id="SphereMesh_led"]
+material = SubResource("Mat_GrenadeLED")
+radius = 0.025
+height = 0.05
+
+[node name="Grenade" type="Area3D" groups=["grenade", "projectile"]]
+collision_layer = 0
+collision_mask = 7
+script = ExtResource("1_grn")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_grn")
+
+[node name="GrenadeMesh" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="GrenadeMesh"]
+mesh = SubResource("CylinderMesh_body")
+
+[node name="BandTop" type="MeshInstance3D" parent="GrenadeMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.045, 0)
+mesh = SubResource("CylinderMesh_band")
+
+[node name="BandBottom" type="MeshInstance3D" parent="GrenadeMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.045, 0)
+mesh = SubResource("CylinderMesh_band")
+
+[node name="FuseLED" type="MeshInstance3D" parent="GrenadeMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.088, 0)
+mesh = SubResource("SphereMesh_led")
+
+[node name="FuseLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
+light_color = Color(1, 0.35, 0.2, 1)
+light_energy = 1.8
+omni_range = 2.5

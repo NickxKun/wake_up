@@ -1,0 +1,59 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/vehicles/vehicle_health_bar.gd" id="1_vhb"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+content_margin_left = 1.0
+content_margin_top = 1.0
+content_margin_right = 1.0
+content_margin_bottom = 1.0
+bg_color = Color(0.04, 0.07, 0.11, 0.88)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.2, 0.55, 0.8, 0.65)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+anti_aliasing = true
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fill"]
+bg_color = Color(0.2, 0.8, 1, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+anti_aliasing = true
+
+[node name="VehicleHealthBar" type="Sprite3D"]
+billboard = 1
+no_depth_test = true
+render_priority = 2
+pixel_size = 0.0055
+script = ExtResource("1_vhb")
+
+[node name="SubViewport" type="SubViewport" parent="."]
+transparent_bg = true
+size = Vector2i(100, 8)
+render_target_update_mode = 4
+
+[node name="ProgressBar" type="ProgressBar" parent="SubViewport"]
+offset_right = 100.0
+offset_bottom = 8.0
+theme_override_styles/background = SubResource("StyleBoxFlat_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_fill")
+step = 1.0
+value = 100.0
+show_percentage = false
+
+[node name="Label" type="Label" parent="SubViewport/ProgressBar"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = ""

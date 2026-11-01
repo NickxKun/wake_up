@@ -1,59 +1,395 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scenes/debug/health_debug.gd" id="1_hd"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+bg_color = Color(0.04, 0.06, 0.09, 0.76)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.96, 0.68, 0.18, 0.35)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn"]
+content_margin_left = 6.0
+content_margin_top = 4.0
+content_margin_right = 6.0
+content_margin_bottom = 4.0
+bg_color = Color(0.07, 0.11, 0.17, 0.75)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.24, 0.42, 0.62, 0.35)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_hover"]
+content_margin_left = 6.0
+content_margin_top = 4.0
+content_margin_right = 6.0
+content_margin_bottom = 4.0
+bg_color = Color(0.12, 0.20, 0.30, 0.90)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.96, 0.68, 0.18, 0.80)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_toggle"]
+content_margin_left = 10.0
+content_margin_top = 4.0
+content_margin_right = 10.0
+content_margin_bottom = 4.0
+bg_color = Color(0.05, 0.08, 0.13, 0.80)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.96, 0.68, 0.18, 0.45)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_toggle_hover"]
+content_margin_left = 10.0
+content_margin_top = 4.0
+content_margin_right = 10.0
+content_margin_bottom = 4.0
+bg_color = Color(0.10, 0.16, 0.24, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.96, 0.75, 0.25, 0.90)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
 [node name="HealthDebug" type="CanvasLayer"]
+layer = 25
 script = ExtResource("1_hd")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
+[node name="ToggleBar" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -170.0
+offset_top = 14.0
+offset_right = -18.0
+offset_bottom = 40.0
+grow_horizontal = 0
+
+[node name="ToggleButton" type="Button" parent="ToggleBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -60.0
-offset_top = -112.0
-offset_right = 60.0
-offset_bottom = -76.0
 grow_horizontal = 2
-grow_vertical = 0
-alignment = 1
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.96, 0.78, 0.35, 0.95)
+theme_override_colors/font_hover_color = Color(1.0, 0.92, 0.55, 1.0)
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("StyleBoxFlat_toggle")
+theme_override_styles/hover = SubResource("StyleBoxFlat_toggle_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_toggle_hover")
+text = "◈ SANDBOX TOOLS  ▲"
 
-[node name="UpButton" type="Button" parent="HBoxContainer"]
+[node name="DebugPanel" type="PanelContainer" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -320.0
+offset_top = 46.0
+offset_right = -18.0
+offset_bottom = 410.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="DebugPanel"]
 layout_mode = 2
-focus_mode = 0
-text = "Up"
+theme_override_constants/separation = 4
 
-[node name="DownButton" type="Button" parent="HBoxContainer"]
+[node name="ContentBox" type="VBoxContainer" parent="DebugPanel/VBoxContainer"]
 layout_mode = 2
-focus_mode = 0
-text = "Down"
+theme_override_constants/separation = 6
 
-; #TEST ONLY
-[node name="ResetButton" type="Button" parent="HBoxContainer"]
+[node name="CheatsLabel" type="Label" parent="DebugPanel/VBoxContainer/ContentBox"]
 layout_mode = 2
-focus_mode = 0
-text = "Reset"
+theme_override_colors/font_color = Color(0.96, 0.72, 0.25, 0.85)
+theme_override_font_sizes/font_size = 9
+text = "// CHEAT PROTOCOLS"
 
-; #TEST ONLY
-[node name="AmountContainer" type="HBoxContainer" parent="."]
-offset_left = 16.0
-offset_top = 16.0
-offset_right = 176.0
-offset_bottom = 47.0
-
-; #TEST ONLY
-[node name="AmountLabel" type="Label" parent="AmountContainer"]
+[node name="CheatsRow" type="HBoxContainer" parent="DebugPanel/VBoxContainer/ContentBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-text = "Amount"
+theme_override_constants/separation = 5
 
-; #TEST ONLY
-[node name="AmountBox" type="SpinBox" parent="AmountContainer"]
-custom_minimum_size = Vector2(120, 0)
+[node name="GodmodeBtn" type="Button" parent="DebugPanel/VBoxContainer/ContentBox/CheatsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 9
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "GODMODE: OFF"
+
+[node name="StaminaBtn" type="Button" parent="DebugPanel/VBoxContainer/ContentBox/CheatsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 9
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "∞ STAMINA: OFF"
+
+[node name="AmmoBtn" type="Button" parent="DebugPanel/VBoxContainer/ContentBox/CheatsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 9
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "∞ AMMO: OFF"
+
+[node name="OperativesLabel" type="Label" parent="DebugPanel/VBoxContainer/ContentBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.72, 0.25, 0.85)
+theme_override_font_sizes/font_size = 9
+text = "// OPERATIVE CLASS"
+
+[node name="OperativesRow" type="HBoxContainer" parent="DebugPanel/VBoxContainer/ContentBox"]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="AstroBtn" type="Button" parent="DebugPanel/VBoxContainer/ContentBox/OperativesRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "ASTRO"
+
+[node name="EngiBtn" type="Button" parent="DebugPanel/VBoxContainer/ContentBox/OperativesRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "ENGINEER"
+
+[node name="MedicBtn" type="Button" parent="DebugPanel/VBoxContainer/ContentBox/OperativesRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "MEDIC"
+
+[node name="ExplorerBtn" type="Button" parent="DebugPanel/VBoxContainer/ContentBox/OperativesRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "EXPLORER"
+
+[node name="WeaponsLabel" type="Label" parent="DebugPanel/VBoxContainer/ContentBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.72, 0.25, 0.85)
+theme_override_font_sizes/font_size = 9
+text = "// WEAPON ARSENAL"
+
+[node name="WeaponsRow" type="HBoxContainer" parent="DebugPanel/VBoxContainer/ContentBox"]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="PistolBtn" type="Button" parent="DebugPanel/VBoxContainer/ContentBox/WeaponsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "PISTOL"
+
+[node name="ShotgunBtn" type="Button" parent="DebugPanel/VBoxContainer/ContentBox/WeaponsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "SHOTGUN"
+
+[node name="SniperBtn" type="Button" parent="DebugPanel/VBoxContainer/ContentBox/WeaponsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "SNIPER"
+
+[node name="DualBtn" type="Button" parent="DebugPanel/VBoxContainer/ContentBox/WeaponsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "DUAL"
+
+[node name="RocketBtn" type="Button" parent="DebugPanel/VBoxContainer/ContentBox/WeaponsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "ROCKET"
+
+[node name="MapLabel" type="Label" parent="DebugPanel/VBoxContainer/ContentBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.72, 0.25, 0.85)
+theme_override_font_sizes/font_size = 9
+text = "// SECTOR TESTBED"
+
+[node name="MapRow" type="HBoxContainer" parent="DebugPanel/VBoxContainer/ContentBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Map0Btn" type="Button" parent="DebugPanel/VBoxContainer/ContentBox/MapRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "01 CANYON"
+
+[node name="Map1Btn" type="Button" parent="DebugPanel/VBoxContainer/ContentBox/MapRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "02 BASE"
+
+[node name="Map2Btn" type="Button" parent="DebugPanel/VBoxContainer/ContentBox/MapRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "03 DOCK"
+
+[node name="EnvLabel" type="Label" parent="DebugPanel/VBoxContainer/ContentBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.72, 0.25, 0.85)
+theme_override_font_sizes/font_size = 9
+text = "// ENVIRONMENT & MOBILITY"
+
+[node name="UtilRow" type="HBoxContainer" parent="DebugPanel/VBoxContainer/ContentBox"]
+layout_mode = 2
+
+[node name="SpawnVehicleBtn" type="Button" parent="DebugPanel/VBoxContainer/ContentBox/UtilRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 0.9)
+theme_override_colors/font_hover_color = Color(0.96, 0.75, 0.25, 1)
+theme_override_font_sizes/font_size = 9
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "SPAWN SCOUT ROVER"
+
+[node name="TimeRow" type="HBoxContainer" parent="DebugPanel/VBoxContainer/ContentBox"]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="DawnBtn" type="Button" parent="DebugPanel/VBoxContainer/ContentBox/TimeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "DAWN"
+
+[node name="NoonBtn" type="Button" parent="DebugPanel/VBoxContainer/ContentBox/TimeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "NOON"
+
+[node name="DuskBtn" type="Button" parent="DebugPanel/VBoxContainer/ContentBox/TimeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "DUSK"
+
+[node name="NightBtn" type="Button" parent="DebugPanel/VBoxContainer/ContentBox/TimeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "NIGHT"
+
+[node name="PauseBtn" type="Button" parent="DebugPanel/VBoxContainer/ContentBox/TimeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "PAUSE"
+
+[node name="HealthLabel" type="Label" parent="DebugPanel/VBoxContainer/ContentBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.72, 0.25, 0.85)
+theme_override_font_sizes/font_size = 9
+text = "// VITALITY ADJUSTER"
+
+[node name="HealthRow" type="HBoxContainer" parent="DebugPanel/VBoxContainer/ContentBox"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="AmountBox" type="SpinBox" parent="DebugPanel/VBoxContainer/ContentBox/HealthRow"]
 layout_mode = 2
 min_value = 1.0
 max_value = 100.0
-value = 1.0
-rounded = true
-editable = true
+value = 25.0
+
+[node name="UpButton" type="Button" parent="DebugPanel/VBoxContainer/ContentBox/HealthRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 9
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "+ HP"
+
+[node name="DownButton" type="Button" parent="DebugPanel/VBoxContainer/ContentBox/HealthRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 9
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "- HP"
+
+[node name="ResetButton" type="Button" parent="DebugPanel/VBoxContainer/ContentBox/HealthRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 9
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "MAX HP"

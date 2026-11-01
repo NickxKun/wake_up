@@ -86,7 +86,7 @@ void fragment() {
 
 
 	ALBEDO = texture(SCREEN_TEXTURE, SCREEN_UV).rgb;
-	lineMask = clamp(0.1, lineAlpha, (depthDifference + normalDifference * 5.0));
+	lineMask = clamp(depthDifference + normalDifference * 5.0, 0.1, lineAlpha);
 
 
 	if (!useLighting){
@@ -100,10 +100,9 @@ void light (){
 		vec4 normal = texture(NORMAL_TEXTURE, screenUV);
 		normal = normal * 2.0 - 1.0;
 
-		// Calculate light direction
-		float dotNL = dot(normal.rgb, LIGHT);
-		dotNL = pow(dotNL, 2.5);
-		dotNL = clamp(dotNL, 0.0, 1.0);
+		// Calculate light direction safely without NaN from negative dot product
+		float dotNL = clamp(dot(normal.rgb, LIGHT), 0.0, 1.0);
+		dotNL = pow(dotNL, 1.8);
 
 		if(LIGHT_IS_DIRECTIONAL)
 			DIFFUSE_LIGHT += mix(vec3(1.0), dotNL * LIGHT_COLOR * lightIntensity, lineMask);

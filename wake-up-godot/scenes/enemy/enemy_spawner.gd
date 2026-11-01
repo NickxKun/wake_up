@@ -14,12 +14,25 @@ func _ready() -> void:
 	_spawn.call_deferred()
 
 func _spawn() -> void:
-	var enemy : CharacterBody3D = enemy_scene.instantiate()
-	enemy.bullet_damage = first_enemy_damage + _spawn_count
-	_spawn_count += 1
-	get_parent().add_child(enemy)
-	enemy.global_transform = global_transform
-	enemy.health_component.health_depleted.connect(_on_enemy_died)
+	if not is_inside_tree() or enemy_scene == null:
+		return
+	var parent : Node = get_parent()
+	if parent == null or not parent.is_inside_tree():
+		return
+	var enemy : Node3D = enemy_scene.instantiate() as Node3D
+	if enemy != null:
+		if "bullet_damage" in enemy:
+			enemy.set("bullet_damage", first_enemy_damage + _spawn_count)
+		_spawn_count += 1
+		parent.add_child(enemy)
+		enemy.global_transform = global_transform
+		var hc : HealthComponent = enemy.get_node_or_null("HealthComponent") as HealthComponent
+		if hc != null:
+			hc.health_depleted.connect(_on_enemy_died)
 
 func _on_enemy_died() -> void:
-	get_tree().create_timer(respawn_delay).timeout.connect(_spawn)
+	if not is_inside_tree():
+		return
+	var tree : SceneTree = get_tree()
+	if tree != null:
+		tree.create_timer(respawn_delay).timeout.connect(_spawn)

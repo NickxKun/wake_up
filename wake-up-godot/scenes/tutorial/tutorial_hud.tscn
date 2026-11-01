@@ -1,0 +1,246 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scenes/tutorial/tutorial_hud.gd" id="1_hud"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_obj_panel"]
+content_margin_left = 18.0
+content_margin_top = 16.0
+content_margin_right = 18.0
+content_margin_bottom = 16.0
+bg_color = Color(0.04, 0.05, 0.08, 0.78)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.2, 0.65, 0.95, 0.45)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0, 0, 0, 0.45)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_normal"]
+content_margin_left = 18.0
+content_margin_top = 10.0
+content_margin_right = 18.0
+content_margin_bottom = 10.0
+bg_color = Color(0.1, 0.12, 0.18, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.25, 0.7, 1, 0.6)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_hover"]
+content_margin_left = 18.0
+content_margin_top = 10.0
+content_margin_right = 18.0
+content_margin_bottom = 10.0
+bg_color = Color(0.2, 0.75, 1, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_primary"]
+content_margin_left = 20.0
+content_margin_top = 10.0
+content_margin_right = 20.0
+content_margin_bottom = 10.0
+bg_color = Color(0.92, 0.65, 0.18, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_focus"]
+
+[node name="TutorialHud" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TopLeftMargin" type="MarginContainer" parent="Root"]
+layout_mode = 1
+offset_right = 380.0
+offset_bottom = 220.0
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+
+[node name="ObjectivePanel" type="PanelContainer" parent="Root/TopLeftMargin"]
+custom_minimum_size = Vector2(340, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_obj_panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Root/TopLeftMargin/ObjectivePanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HeaderBox" type="HBoxContainer" parent="Root/TopLeftMargin/ObjectivePanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Emblem" type="Label" parent="Root/TopLeftMargin/ObjectivePanel/VBoxContainer/HeaderBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.25, 0.75, 1, 1)
+theme_override_font_sizes/font_size = 11
+text = "◈"
+
+[node name="PhaseLabel" type="Label" parent="Root/TopLeftMargin/ObjectivePanel/VBoxContainer/HeaderBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.25, 0.75, 1, 0.9)
+theme_override_font_sizes/font_size = 10
+text = "CADET TRAINING // PHASE 1 OF 5"
+
+[node name="TitleLabel" type="Label" parent="Root/TopLeftMargin/ObjectivePanel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "LOCOMOTION & JUMPING"
+
+[node name="InstructionLabel" type="Label" parent="Root/TopLeftMargin/ObjectivePanel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.85, 0.9, 0.8)
+theme_override_font_sizes/font_size = 11
+text = "Move with [W, A, S, D] and Sprint with [Shift]. Vault over the barrier with [Space]."
+autowrap_mode = 2
+
+[node name="Separator" type="ColorRect" parent="Root/TopLeftMargin/ObjectivePanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+color = Color(1, 1, 1, 0.1)
+
+[node name="TasksContainer" type="VBoxContainer" parent="Root/TopLeftMargin/ObjectivePanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="WaypointLabel" type="Label" parent="Root/TopLeftMargin/ObjectivePanel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.85, 1, 0.95)
+theme_override_font_sizes/font_size = 10
+text = "◈ WAYPOINT // 12.4 M"
+
+[node name="VictoryModal" type="Control" parent="Root"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Backdrop" type="ColorRect" parent="Root/VictoryModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.03, 0.04, 0.06, 0.88)
+
+[node name="CenterContainer" type="CenterContainer" parent="Root/VictoryModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Root/VictoryModal/CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="HeaderLabel" type="Label" parent="Root/VictoryModal/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.8, 1, 0.9)
+theme_override_font_sizes/font_size = 12
+text = "// CADET QUALIFICATION COMPLETE"
+horizontal_alignment = 1
+
+[node name="TitleLabel" type="Label" parent="Root/VictoryModal/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 36
+text = "TUTORIAL COMPLETED"
+horizontal_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="Root/VictoryModal/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+text = "ALL MOBILITY, MARKSMANSHIP & VEHICLE PROTOCOLS CERTIFIED"
+horizontal_alignment = 1
+
+[node name="StatsLabel" type="Label" parent="Root/VictoryModal/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.82, 0.28, 0.95)
+theme_override_font_sizes/font_size = 12
+text = "COURSE TIME: 01:45   •   TARGETS HIT: 3/3   •   HOSTILES NEUTRALIZED: 3"
+horizontal_alignment = 1
+
+[node name="Margin" type="Control" parent="Root/VictoryModal/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+
+[node name="ButtonsRow" type="HBoxContainer" parent="Root/VictoryModal/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="BtnSurvival" type="Button" parent="Root/VictoryModal/CenterContainer/VBoxContainer/ButtonsRow"]
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.05, 0.05, 0.07, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_primary")
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_primary")
+text = "▶  ENTER SURVIVAL ARENA"
+
+[node name="BtnReplay" type="Button" parent="Root/VictoryModal/CenterContainer/VBoxContainer/ButtonsRow"]
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.9, 0.9, 0.95, 1)
+theme_override_colors/font_hover_color = Color(0.05, 0.05, 0.07, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_normal")
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+text = "↺  REPLAY TUTORIAL"
+
+[node name="BtnMenu" type="Button" parent="Root/VictoryModal/CenterContainer/VBoxContainer/ButtonsRow"]
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.9, 0.9, 0.95, 1)
+theme_override_colors/font_hover_color = Color(0.05, 0.05, 0.07, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_normal")
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+text = "⌂  MAIN MENU"

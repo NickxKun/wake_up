@@ -1,0 +1,310 @@
+[gd_scene load_steps=48 format=3]
+
+[ext_resource type="Script" path="res://scenes/level/space_station_map.gd" id="1_map"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/basemodule_A.fbx" id="2_basemodule_A"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/basemodule_B.fbx" id="3_basemodule_B"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/basemodule_E.fbx" id="4_basemodule_E"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/basemodule_garage.fbx" id="5_basemodule_garage"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/cargo_A.fbx" id="6_cargo_A"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/cargo_A_packed.fbx" id="7_cargo_A_packed"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/cargo_A_stacked.fbx" id="8_cargo_A_stacked"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/cargo_B.fbx" id="9_cargo_B"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/cargo_B_packed.fbx" id="10_cargo_B_packed"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/cargo_B_stacked.fbx" id="11_cargo_B_stacked"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/cargodepot_A.fbx" id="12_cargodepot_A"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/cargodepot_B.fbx" id="13_cargodepot_B"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/cargodepot_C.fbx" id="14_cargodepot_C"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/containers_A.fbx" id="15_containers_A"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/containers_B.fbx" id="16_containers_B"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/containers_C.fbx" id="17_containers_C"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/containers_D.fbx" id="18_containers_D"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/drill_structure.fbx" id="19_drill_structure"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/lander_A.fbx" id="20_lander_A"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/lander_B.fbx" id="21_lander_B"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/landingpad_large.fbx" id="22_landingpad_large"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/landingpad_small.fbx" id="23_landingpad_small"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/lights.fbx" id="24_lights"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/rock_A.fbx" id="25_rock_A"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/rock_B.fbx" id="26_rock_B"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/rocks_A.fbx" id="27_rocks_A"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/rocks_B.fbx" id="28_rocks_B"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/roofmodule_cargo_A.fbx" id="29_roofmodule_cargo_A"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/roofmodule_cargo_B.fbx" id="30_roofmodule_cargo_B"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/roofmodule_solarpanels.fbx" id="31_roofmodule_solarpanels"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/solarpanel.fbx" id="32_solarpanel"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/spacetruck.fbx" id="33_spacetruck"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/spacetruck_large.fbx" id="34_spacetruck_large"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/spacetruck_trailer.fbx" id="35_spacetruck_trailer"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/structure_low.fbx" id="36_structure_low"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/structure_tall.fbx" id="37_structure_tall"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/terrain_low.fbx" id="38_terrain_low"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/terrain_mining.fbx" id="39_terrain_mining"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/terrain_tall.fbx" id="40_terrain_tall"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/tunnel_diagonal_long_A.fbx" id="41_tunnel_diagonal_long_A"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/tunnel_straight_A.fbx" id="42_tunnel_straight_A"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/windturbine_low.fbx" id="43_windturbine_low"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/windturbine_tall.fbx" id="44_windturbine_tall"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/basemodule_C.fbx" id="45_basemodule_C"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/basemodule_D.fbx" id="46_basemodule_D"]
+[ext_resource type="PackedScene" path="res://assets/models/fbx/roofmodule_base.fbx" id="47_roofmodule_base"]
+[ext_resource type="PackedScene" path="res://scenes/vehicles/rover.tscn" id="48_rover"]
+
+[node name="SpaceStation" type="Node3D"]
+script = ExtResource("1_map")
+ground_size = Vector2(80, 80)
+
+[node name="Sector_Terrain" type="Node3D" parent="."]
+
+[node name="Sector_Habitation" type="Node3D" parent="."]
+
+[node name="CommandHab_A" parent="Sector_Habitation" instance=ExtResource("2_basemodule_A")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.06, -6)
+
+[node name="CommandHab_SolarRoof" parent="Sector_Habitation" instance=ExtResource("31_roofmodule_solarpanels")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.06, -6)
+
+[node name="Corridor_North" parent="Sector_Habitation" instance=ExtResource("42_tunnel_straight_A")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -6, 0.06, -8)
+
+[node name="ScienceLab_North" parent="Sector_Habitation" instance=ExtResource("4_basemodule_E")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.06, -10)
+
+[node name="Corridor_South" parent="Sector_Habitation" instance=ExtResource("42_tunnel_straight_A")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -6, 0.06, -4)
+
+[node name="CrewQuarters_South" parent="Sector_Habitation" instance=ExtResource("3_basemodule_B")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.06, -2)
+
+[node name="CrewQuarters_RoofCargo" parent="Sector_Habitation" instance=ExtResource("29_roofmodule_cargo_A")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.06, -2)
+
+[node name="Corridor_West" parent="Sector_Habitation" instance=ExtResource("42_tunnel_straight_A")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0.06, -6)
+
+[node name="MedBay_West" parent="Sector_Habitation" instance=ExtResource("45_basemodule_C")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0.06, -6)
+
+[node name="MedBay_RoofBase" parent="Sector_Habitation" instance=ExtResource("47_roofmodule_base")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 1.06, -6)
+
+[node name="Corridor_East" parent="Sector_Habitation" instance=ExtResource("42_tunnel_straight_A")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0.06, -6)
+
+[node name="Airlock_East" parent="Sector_Habitation" instance=ExtResource("46_basemodule_D")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.06, -6)
+
+[node name="Airlock_RoofCargo" parent="Sector_Habitation" instance=ExtResource("30_roofmodule_cargo_B")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1.06, -6)
+
+[node name="CommsTower_Tall" parent="Sector_Habitation" instance=ExtResource("37_structure_tall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0.06, -10)
+
+[node name="LifeSupport_Substation" parent="Sector_Habitation" instance=ExtResource("36_structure_low")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.06, -10)
+
+[node name="Hab_Crate_A" parent="Sector_Habitation" instance=ExtResource("6_cargo_A")]
+transform = Transform3D(0.96593, 0, 0.25882, 0, 1, 0, -0.25882, 0, 0.96593, -9.5, 0.06, -3.5)
+
+[node name="Hab_Crate_B" parent="Sector_Habitation" instance=ExtResource("9_cargo_B")]
+transform = Transform3D(0.98481, 0, -0.17365, 0, 1, 0, 0.17365, 0, 0.98481, -9, 0.06, -4.2)
+
+[node name="Hab_Canisters_A" parent="Sector_Habitation" instance=ExtResource("15_containers_A")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.06, -4)
+
+[node name="Hab_Canisters_C" parent="Sector_Habitation" instance=ExtResource("17_containers_C")]
+transform = Transform3D(0.70711, 0, 0.70711, 0, 1, 0, -0.70711, 0, 0.70711, -3, 0.06, -3)
+
+[node name="Hab_Light_Entry" parent="Sector_Habitation" instance=ExtResource("24_lights")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -1, 0.06, -6)
+
+[node name="Sector_Logistics" type="Node3D" parent="."]
+
+[node name="LandingPad_Main" parent="Sector_Logistics" instance=ExtResource("22_landingpad_large")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -8.5, 0.06, 5)
+
+[node name="Shuttle_Lander_A" parent="Sector_Logistics" instance=ExtResource("20_lander_A")]
+transform = Transform3D(0.70711, 0, -0.70711, 0, 1, 0, 0.70711, 0, 0.70711, -8.5, 0.56, 5)
+
+[node name="Pad_Light_NW" parent="Sector_Logistics" instance=ExtResource("24_lights")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -9.8, 0.06, 3.6)
+
+[node name="Pad_Light_SE" parent="Sector_Logistics" instance=ExtResource("24_lights")]
+transform = Transform3D(-1, 0, 1.2246e-16, 0, 1, 0, -1.2246e-16, 0, -1, -7.2, 0.06, 6.4)
+
+[node name="LandingPad_Aux" parent="Sector_Logistics" instance=ExtResource("23_landingpad_small")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -4.8, 0.06, 9.2)
+
+[node name="Scout_Lander_B" parent="Sector_Logistics" instance=ExtResource("21_lander_B")]
+transform = Transform3D(0.86603, 0, 0.5, 0, 1, 0, -0.5, 0, 0.86603, -4.8, 0.56, 9.2)
+
+[node name="Rover_Garage" parent="Sector_Logistics" instance=ExtResource("5_basemodule_garage")]
+transform = Transform3D(6.1232e-17, 0, 1, 0, 1, 0, -1, 0, 6.1232e-17, -9.5, 0.06, 0.5)
+
+[node name="Rover_Truck" parent="Sector_Logistics" instance=ExtResource("48_rover")]
+transform = Transform3D(0.90631, 0, -0.42262, 0, 1, 0, 0.42262, 0, 0.90631, -6.5, 0.14, 0.8)
+
+[node name="Heavy_Hauler" parent="Sector_Logistics" instance=ExtResource("34_spacetruck_large")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -9, 0.2, -2)
+
+[node name="Hauler_Trailer" parent="Sector_Logistics" instance=ExtResource("35_spacetruck_trailer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -9, 0.21, -3.2)
+
+[node name="CargoDepot_South" parent="Sector_Logistics" instance=ExtResource("12_cargodepot_A")]
+transform = Transform3D(6.1232e-17, 0, 1, 0, 1, 0, -1, 0, 6.1232e-17, -11, 0.06, 8.5)
+
+[node name="CargoDepot_West" parent="Sector_Logistics" instance=ExtResource("14_cargodepot_C")]
+transform = Transform3D(6.1232e-17, 0, 1, 0, 1, 0, -1, 0, 6.1232e-17, -11.2, 0.06, 3)
+
+[node name="Freight_Stack_A1" parent="Sector_Logistics" instance=ExtResource("8_cargo_A_stacked")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -6.2, 0.06, 3.5)
+
+[node name="Freight_Stack_B1" parent="Sector_Logistics" instance=ExtResource("11_cargo_B_stacked")]
+transform = Transform3D(6.1232e-17, 0, 1, 0, 1, 0, -1, 0, 6.1232e-17, -6.8, 0.06, 7.5)
+
+[node name="Freight_Packed_A" parent="Sector_Logistics" instance=ExtResource("7_cargo_A_packed")]
+transform = Transform3D(0.96593, 0, 0.25882, 0, 1, 0, -0.25882, 0, 0.96593, -4.5, 0.06, 6.5)
+
+[node name="Freight_Packed_B" parent="Sector_Logistics" instance=ExtResource("10_cargo_B_packed")]
+transform = Transform3D(0.98481, 0, -0.17365, 0, 1, 0, 0.17365, 0, 0.98481, -5.5, 0.06, 4.8)
+
+[node name="Freight_Containers_B" parent="Sector_Logistics" instance=ExtResource("16_containers_B")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -7.5, 0.06, 1.8)
+
+[node name="Freight_Containers_D" parent="Sector_Logistics" instance=ExtResource("18_containers_D")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -9.8, 0.06, 7.5)
+
+[node name="Sector_MiningQuarry" type="Node3D" parent="."]
+
+[node name="Extraction_Drill" parent="Sector_MiningQuarry" instance=ExtResource("19_drill_structure")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 8, 0.06, 6)
+
+[node name="Ore_Depot_B" parent="Sector_MiningQuarry" instance=ExtResource("13_cargodepot_B")]
+transform = Transform3D(-1, 0, 1.2246e-16, 0, 1, 0, -1.2246e-16, 0, -1, 10, 0.06, 2.5)
+
+[node name="Ore_Truck" parent="Sector_MiningQuarry" instance=ExtResource("48_rover")]
+transform = Transform3D(0.70711, 0, 0.70711, 0, 1, 0, -0.70711, 0, 0.70711, 5.2, 0.14, 3.2)
+
+[node name="Mineral_Slag_B" parent="Sector_MiningQuarry" instance=ExtResource("28_rocks_B")]
+transform = Transform3D(0.70711, 0, 0.70711, 0, 1, 0, -0.70711, 0, 0.70711, 10.5, 0.08, 6.5)
+
+[node name="Quarry_Rocks_A" parent="Sector_MiningQuarry" instance=ExtResource("27_rocks_A")]
+transform = Transform3D(0.86603, 0, -0.5, 0, 1, 0, 0.5, 0, 0.86603, 8.8, 0.08, 8.8)
+
+[node name="Quarry_Boulder_B" parent="Sector_MiningQuarry" instance=ExtResource("26_rock_B")]
+transform = Transform3D(0.93969, 0, 0.34202, 0, 1, 0, -0.34202, 0, 0.93969, 5.5, 0.08, 7.5)
+
+[node name="Quarry_Boulder_A" parent="Sector_MiningQuarry" instance=ExtResource("25_rock_A")]
+transform = Transform3D(0.96593, 0, -0.25882, 0, 1, 0, 0.25882, 0, 0.96593, 6.8, 0.08, 2.8)
+
+[node name="Quarry_Packed_Crates" parent="Sector_MiningQuarry" instance=ExtResource("10_cargo_B_packed")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 9.2, 0.06, 4.2)
+
+[node name="Quarry_Barrels" parent="Sector_MiningQuarry" instance=ExtResource("15_containers_A")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 7.5, 0.06, 2.8)
+
+[node name="Quarry_Floodlight" parent="Sector_MiningQuarry" instance=ExtResource("24_lights")]
+transform = Transform3D(0.70711, 0, 0.70711, 0, 1, 0, -0.70711, 0, 0.70711, 5.8, 0.06, 4.8)
+
+[node name="Sector_PowerGrid" type="Node3D" parent="."]
+
+[node name="Power_Substation" parent="Sector_PowerGrid" instance=ExtResource("36_structure_low")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 9, 0.06, -6)
+
+[node name="Substation_RoofGear" parent="Sector_PowerGrid" instance=ExtResource("30_roofmodule_cargo_B")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 9, 1.06, -6)
+
+[node name="Turbine_Tall" parent="Sector_PowerGrid" instance=ExtResource("44_windturbine_tall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 5.5, 0.06, -9.5)
+
+[node name="Turbine_Low" parent="Sector_PowerGrid" instance=ExtResource("43_windturbine_low")]
+transform = Transform3D(0.70711, 0, 0.70711, 0, 1, 0, -0.70711, 0, 0.70711, 8.5, 0.06, -10.5)
+
+[node name="SolarPanel_1A" parent="Sector_PowerGrid" instance=ExtResource("32_solarpanel")]
+transform = Transform3D(0.98481, 0, 0.17365, 0, 1, 0, -0.17365, 0, 0.98481, 4, 0.06, -5.5)
+
+[node name="SolarPanel_1B" parent="Sector_PowerGrid" instance=ExtResource("32_solarpanel")]
+transform = Transform3D(0.98481, 0, 0.17365, 0, 1, 0, -0.17365, 0, 0.98481, 5.5, 0.06, -5.5)
+
+[node name="SolarPanel_1C" parent="Sector_PowerGrid" instance=ExtResource("32_solarpanel")]
+transform = Transform3D(0.98481, 0, 0.17365, 0, 1, 0, -0.17365, 0, 0.98481, 7, 0.06, -5.5)
+
+[node name="SolarPanel_2A" parent="Sector_PowerGrid" instance=ExtResource("32_solarpanel")]
+transform = Transform3D(0.98481, 0, 0.17365, 0, 1, 0, -0.17365, 0, 0.98481, 4.8, 0.06, -3.5)
+
+[node name="SolarPanel_2B" parent="Sector_PowerGrid" instance=ExtResource("32_solarpanel")]
+transform = Transform3D(0.98481, 0, 0.17365, 0, 1, 0, -0.17365, 0, 0.98481, 6.3, 0.06, -3.5)
+
+[node name="BatteryBank_C" parent="Sector_PowerGrid" instance=ExtResource("17_containers_C")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 8.6, 0.06, -4.2)
+
+[node name="BatteryBank_D" parent="Sector_PowerGrid" instance=ExtResource("18_containers_D")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 9.5, 0.06, -4.2)
+
+[node name="PowerGrid_Light" parent="Sector_PowerGrid" instance=ExtResource("24_lights")]
+transform = Transform3D(0.70711, 0, -0.70711, 0, 1, 0, 0.70711, 0, 0.70711, 3.5, 0.06, -4)
+
+[node name="Sector_Courtyard" type="Node3D" parent="."]
+
+[node name="Center_Beacon_Light" parent="Sector_Courtyard" instance=ExtResource("24_lights")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0.06, 0)
+
+[node name="Cover_Crate_A" parent="Sector_Courtyard" instance=ExtResource("6_cargo_A")]
+transform = Transform3D(0.97815, 0, 0.20791, 0, 1, 0, -0.20791, 0, 0.97815, -1.4, 0.06, 0.6)
+
+[node name="Cover_Crate_B" parent="Sector_Courtyard" instance=ExtResource("9_cargo_B")]
+transform = Transform3D(0.95106, 0, -0.30902, 0, 1, 0, 0.30902, 0, 0.95106, 1.4, 0.06, -0.6)
+
+[node name="Cover_Pallet_A" parent="Sector_Courtyard" instance=ExtResource("7_cargo_A_packed")]
+transform = Transform3D(0.70711, 0, 0.70711, 0, 1, 0, -0.70711, 0, 0.70711, -0.8, 0.06, -1.8)
+
+[node name="Cover_Canister_A" parent="Sector_Courtyard" instance=ExtResource("15_containers_A")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0.6, 0.06, 1.6)
+
+[node name="Cover_Canister_B" parent="Sector_Courtyard" instance=ExtResource("16_containers_B")]
+transform = Transform3D(6.1232e-17, 0, 1, 0, 1, 0, -1, 0, 6.1232e-17, -1.8, 0.06, -0.5)
+
+[node name="Cover_Rock_Central" parent="Sector_Courtyard" instance=ExtResource("25_rock_A")]
+transform = Transform3D(0.81915, 0, 0.57358, 0, 1, 0, -0.57358, 0, 0.81915, 1.8, 0.08, 1.2)
+
+[node name="Sector_Checkpoint" type="Node3D" parent="."]
+
+[node name="Gate_Stack_B" parent="Sector_Checkpoint" instance=ExtResource("11_cargo_B_stacked")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 1.5, 0.06, 8.5)
+
+[node name="Gate_Crate_A" parent="Sector_Checkpoint" instance=ExtResource("6_cargo_A")]
+transform = Transform3D(0.96593, 0, 0.25882, 0, 1, 0, -0.25882, 0, 0.96593, -0.5, 0.06, 8.8)
+
+[node name="Gate_Canisters_C" parent="Sector_Checkpoint" instance=ExtResource("17_containers_C")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -1.8, 0.06, 9.2)
+
+[node name="Gate_Light" parent="Sector_Checkpoint" instance=ExtResource("24_lights")]
+transform = Transform3D(-1, 0, 1.2246e-16, 0, 1, 0, -1.2246e-16, 0, -1, 0.5, 0.06, 8)
+
+[node name="Gate_Ridge_Rock" parent="Sector_Checkpoint" instance=ExtResource("27_rocks_A")]
+transform = Transform3D(0.70711, 0, -0.70711, 0, 1, 0, 0.70711, 0, 0.70711, 3.2, 0.08, 9.5)
+
+[node name="Sector_NaturalRocks" type="Node3D" parent="."]
+
+[node name="North_Boulders_A" parent="Sector_NaturalRocks" instance=ExtResource("28_rocks_B")]
+transform = Transform3D(0.86603, 0, 0.5, 0, 1, 0, -0.5, 0, 0.86603, -2.8, 0.08, -12.2)
+
+[node name="North_Boulders_B" parent="Sector_NaturalRocks" instance=ExtResource("27_rocks_A")]
+transform = Transform3D(0.76604, 0, -0.64279, 0, 1, 0, 0.64279, 0, 0.76604, 3.5, 0.08, -12.5)
+
+[node name="East_Boulders_A" parent="Sector_NaturalRocks" instance=ExtResource("27_rocks_A")]
+transform = Transform3D(0.96593, 0, 0.25882, 0, 1, 0, -0.25882, 0, 0.96593, 12.2, 0.08, -2.5)
+
+[node name="East_Boulders_B" parent="Sector_NaturalRocks" instance=ExtResource("28_rocks_B")]
+transform = Transform3D(0.5, 0, -0.86603, 0, 1, 0, 0.86603, 0, 0.5, 12, 0.08, 4.2)
+
+[node name="South_Boulders_A" parent="Sector_NaturalRocks" instance=ExtResource("28_rocks_B")]
+transform = Transform3D(0.25882, 0, 0.96593, 0, 1, 0, -0.96593, 0, 0.25882, -3.2, 0.08, 12.2)
+
+[node name="South_Boulders_B" parent="Sector_NaturalRocks" instance=ExtResource("27_rocks_A")]
+transform = Transform3D(0.90631, 0, -0.42262, 0, 1, 0, 0.42262, 0, 0.90631, 4.2, 0.08, 12)
+
+[node name="West_Boulders_A" parent="Sector_NaturalRocks" instance=ExtResource("27_rocks_A")]
+transform = Transform3D(0.70711, 0, 0.70711, 0, 1, 0, -0.70711, 0, 0.70711, -12.2, 0.08, -2)
+
+[node name="West_Boulders_B" parent="Sector_NaturalRocks" instance=ExtResource("28_rocks_B")]
+transform = Transform3D(0.86603, 0, -0.5, 0, 1, 0, 0.5, 0, 0.86603, -12.2, 0.08, 5)

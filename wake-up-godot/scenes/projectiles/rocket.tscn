@@ -1,0 +1,95 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/projectiles/rocket.gd" id="1_r4mtq"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_r4bah"]
+radius = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_l0y3s"]
+albedo_color = Color(0.2, 0.22, 0.26, 1)
+metallic = 0.7
+roughness = 0.3
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_8rgcg"]
+top_radius = 0.05
+bottom_radius = 0.05
+height = 0.28
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dtva2"]
+albedo_color = Color(0.95, 0.3, 0.1, 1)
+emission_enabled = true
+emission = Color(1, 0.4, 0.1, 1)
+emission_energy_multiplier = 2.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_xkdbd"]
+top_radius = 0.0
+bottom_radius = 0.05
+height = 0.12
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xuuf8"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.85, 0.85, 0.9, 0.6)
+
+[sub_resource type="SphereMesh" id="SphereMesh_dn23c"]
+material = SubResource("StandardMaterial3D_xuuf8")
+radius = 0.04
+height = 0.08
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qhvef"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 0.5, 0.1, 0.9)
+
+[sub_resource type="SphereMesh" id="SphereMesh_x1cjs"]
+material = SubResource("StandardMaterial3D_qhvef")
+radius = 0.07
+height = 0.14
+
+[node name="Rocket" type="Area3D" unique_id=1811582531]
+collision_layer = 0
+collision_mask = 3
+script = ExtResource("1_r4mtq")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1817286885]
+shape = SubResource("SphereShape3D_r4bah")
+
+[node name="RocketMesh" type="Node3D" parent="." unique_id=1381239299]
+
+[node name="Fuselage" type="MeshInstance3D" parent="RocketMesh" unique_id=1862126891]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_l0y3s")
+mesh = SubResource("CylinderMesh_8rgcg")
+
+[node name="WarheadTip" type="MeshInstance3D" parent="RocketMesh" unique_id=751112104]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0.18)
+material_override = SubResource("StandardMaterial3D_dtva2")
+mesh = SubResource("CylinderMesh_xkdbd")
+
+[node name="SmokeTrail" type="CPUParticles3D" parent="." unique_id=1131964782]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.16)
+amount = 20
+lifetime = 0.22
+mesh = SubResource("SphereMesh_dn23c")
+direction = Vector3(0, 0, -1)
+spread = 12.0
+gravity = Vector3(0, 0.5, 0)
+initial_velocity_min = 1.0
+initial_velocity_max = 2.5
+
+[node name="ExplosionBurst" type="CPUParticles3D" parent="." unique_id=326587018]
+emitting = false
+amount = 36
+lifetime = 0.35
+one_shot = true
+explosiveness = 0.95
+mesh = SubResource("SphereMesh_x1cjs")
+spread = 180.0
+gravity = Vector3(0, -2, 0)
+initial_velocity_min = 3.5
+initial_velocity_max = 8.0
+
+[node name="WarheadLight" type="OmniLight3D" parent="." unique_id=143456090]
+light_color = Color(1, 0.55, 0.15, 1)
+light_energy = 2.0
+omni_range = 3.5

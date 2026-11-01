@@ -1,0 +1,325 @@
+[gd_scene load_steps=15 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/pause_menu.gd" id="1_pm"]
+[ext_resource type="Shader" path="res://scenes/ui/vignette.gdshader" id="2_vig"]
+[ext_resource type="Script" path="res://scenes/ui/menu_emblem.gd" id="3_emb"]
+[ext_resource type="PackedScene" path="res://scenes/ui/settings_menu.tscn" id="4_set"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vig"]
+shader = ExtResource("2_vig")
+shader_parameter/inner_radius = 0.36
+shader_parameter/outer_radius = 1.05
+shader_parameter/vignette_opacity = 0.72
+shader_parameter/vignette_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_focus"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_modal"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.045, 0.045, 0.06, 0.98)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+shadow_color = Color(0, 0, 0, 0.85)
+shadow_size = 28
+shadow_offset = Vector2(0, 4)
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_telemetry_box"]
+content_margin_left = 14.0
+content_margin_top = 8.0
+content_margin_right = 14.0
+content_margin_bottom = 8.0
+bg_color = Color(1, 1, 1, 0.03)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary_normal"]
+content_margin_left = 18.0
+content_margin_top = 11.0
+content_margin_right = 18.0
+content_margin_bottom = 11.0
+bg_color = Color(1, 1, 1, 0.08)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.75)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary_hover"]
+content_margin_left = 18.0
+content_margin_top = 11.0
+content_margin_right = 18.0
+content_margin_bottom = 11.0
+bg_color = Color(1, 1, 1, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+shadow_color = Color(1, 1, 1, 0.25)
+shadow_size = 10
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary_pressed"]
+content_margin_left = 18.0
+content_margin_top = 11.0
+content_margin_right = 18.0
+content_margin_bottom = 11.0
+bg_color = Color(0.85, 0.85, 0.85, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sec_normal"]
+content_margin_left = 16.0
+content_margin_top = 10.0
+content_margin_right = 16.0
+content_margin_bottom = 10.0
+bg_color = Color(1, 1, 1, 0.04)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.18)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sec_hover"]
+content_margin_left = 16.0
+content_margin_top = 10.0
+content_margin_right = 16.0
+content_margin_bottom = 10.0
+bg_color = Color(1, 1, 1, 0.14)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.9)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+shadow_color = Color(1, 1, 1, 0.12)
+shadow_size = 6
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_danger_hover"]
+content_margin_left = 16.0
+content_margin_top = 10.0
+content_margin_right = 16.0
+content_margin_bottom = 10.0
+bg_color = Color(0.92, 0.22, 0.32, 0.18)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.92, 0.22, 0.32, 0.95)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+shadow_color = Color(0.92, 0.22, 0.32, 0.2)
+shadow_size = 8
+anti_aliasing = false
+
+[node name="PauseMenu" type="CanvasLayer"]
+process_mode = 3
+layer = 100
+script = ExtResource("1_pm")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.025, 0.025, 0.035, 0.88)
+
+[node name="Vignette" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_vig")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ModalPanel" type="PanelContainer" parent="CenterContainer"]
+custom_minimum_size = Vector2(340, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_modal")
+
+[node name="MarginContainer" type="MarginContainer" parent="CenterContainer/ModalPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 28
+
+[node name="ContentBox" type="VBoxContainer" parent="CenterContainer/ModalPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="HeaderBox" type="VBoxContainer" parent="CenterContainer/ModalPanel/MarginContainer/ContentBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="EmblemBox" type="CenterContainer" parent="CenterContainer/ModalPanel/MarginContainer/ContentBox/HeaderBox"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Emblem" type="Control" parent="CenterContainer/ModalPanel/MarginContainer/ContentBox/HeaderBox/EmblemBox"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("3_emb")
+base_radius = 20.0
+spin_speed = 0.25
+
+[node name="Labels" type="VBoxContainer" parent="CenterContainer/ModalPanel/MarginContainer/ContentBox/HeaderBox"]
+layout_mode = 2
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="Eyebrow" type="Label" parent="CenterContainer/ModalPanel/MarginContainer/ContentBox/HeaderBox/Labels"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.75, 0.75, 0.8)
+theme_override_font_sizes/font_size = 11
+text = "// SIMULATION SUSPENDED"
+horizontal_alignment = 1
+
+[node name="Title" type="Label" parent="CenterContainer/ModalPanel/MarginContainer/ContentBox/HeaderBox/Labels"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 26
+text = "TACTICAL PAUSE"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="CenterContainer/ModalPanel/MarginContainer/ContentBox/HeaderBox/Labels"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 11
+text = "STANDBY MODE // ALL THREATS HELD"
+horizontal_alignment = 1
+
+[node name="TelemetryBox" type="PanelContainer" parent="CenterContainer/ModalPanel/MarginContainer/ContentBox"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_telemetry_box")
+
+[node name="TelemetryLabel" type="Label" parent="CenterContainer/ModalPanel/MarginContainer/ContentBox/TelemetryBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.75, 0.75, 1)
+theme_override_font_sizes/font_size = 11
+text = "SURVIVAL // PROTOCOL 01  •  HOSTILES: 0  •  DEATHS: 0"
+horizontal_alignment = 1
+
+[node name="MainView" type="VBoxContainer" parent="CenterContainer/ModalPanel/MarginContainer/ContentBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ResumeButton" type="Button" parent="CenterContainer/ModalPanel/MarginContainer/ContentBox/MainView"]
+custom_minimum_size = Vector2(220, 44)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(0.06, 0.06, 0.08, 1)
+theme_override_colors/font_pressed_color = Color(0.06, 0.06, 0.08, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_primary_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_primary_pressed")
+theme_override_styles/normal = SubResource("StyleBoxFlat_primary_normal")
+text = "▶  RESUME SIMULATION [ESC / P]"
+
+[node name="SettingsButton" type="Button" parent="CenterContainer/ModalPanel/MarginContainer/ContentBox/MainView"]
+custom_minimum_size = Vector2(220, 40)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.88, 0.88, 0.88, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_sec_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_sec_normal")
+theme_override_styles/normal = SubResource("StyleBoxFlat_sec_normal")
+text = "⚙  SYSTEM SETTINGS"
+
+[node name="RestartButton" type="Button" parent="CenterContainer/ModalPanel/MarginContainer/ContentBox/MainView"]
+custom_minimum_size = Vector2(220, 40)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.88, 0.88, 0.88, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_sec_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_sec_normal")
+theme_override_styles/normal = SubResource("StyleBoxFlat_sec_normal")
+text = "↺  REDEPLOY PROTOCOL"
+
+[node name="MenuButton" type="Button" parent="CenterContainer/ModalPanel/MarginContainer/ContentBox/MainView"]
+custom_minimum_size = Vector2(220, 40)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.88, 0.88, 0.88, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_sec_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_sec_normal")
+theme_override_styles/normal = SubResource("StyleBoxFlat_sec_normal")
+text = "⌂  RETURN TO COMMAND"
+
+[node name="QuitButton" type="Button" parent="CenterContainer/ModalPanel/MarginContainer/ContentBox/MainView"]
+custom_minimum_size = Vector2(220, 40)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_colors/font_hover_color = Color(1, 0.35, 0.45, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_danger_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_sec_normal")
+theme_override_styles/normal = SubResource("StyleBoxFlat_sec_normal")
+text = "✕  ABORT SIMULATION [QUIT]"
+
+[node name="SettingsMenu" parent="." instance=ExtResource("4_set")]
+layout_mode = 1

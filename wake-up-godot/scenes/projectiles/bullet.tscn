@@ -19,6 +19,13 @@ emission_enabled = true
 emission = Color(0.3, 0.85, 1, 1)
 emission_energy_multiplier = 4.0
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_crit"]
+albedo_color = Color(1, 0.85, 0.25, 1)
+roughness = 0.0
+emission_enabled = true
+emission = Color(1, 0.85, 0.25, 1)
+emission_energy_multiplier = 8.0
+
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_bul"]
 material = SubResource("StandardMaterial3D_enemy")
 radius = 0.03
@@ -31,6 +38,7 @@ collision_layer = 0
 collision_mask = 3
 script = ExtResource("1_bul")
 player_material = SubResource("StandardMaterial3D_player")
+crit_material = SubResource("StandardMaterial3D_crit")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("SphereShape3D_bul")

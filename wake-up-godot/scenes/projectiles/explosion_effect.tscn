@@ -1,0 +1,128 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://scenes/projectiles/explosion_effect.gd" id="1_exp"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_ThickSmoke"]
+transparency = 1
+shading_mode = 2
+diffuse_mode = 3
+roughness = 0.92
+albedo_color = Color(0.24, 0.25, 0.28, 0.94)
+
+[sub_resource type="SphereMesh" id="Mesh_SmokePuff"]
+material = SubResource("Mat_ThickSmoke")
+radius = 0.46
+height = 0.92
+radial_segments = 6
+rings = 4
+
+[sub_resource type="StandardMaterial3D" id="Mat_StemSmoke"]
+transparency = 1
+shading_mode = 2
+diffuse_mode = 3
+roughness = 0.9
+albedo_color = Color(0.22, 0.22, 0.25, 0.95)
+
+[sub_resource type="SphereMesh" id="Mesh_StemPuff"]
+material = SubResource("Mat_StemSmoke")
+radius = 0.28
+height = 0.56
+radial_segments = 5
+rings = 3
+
+[sub_resource type="StandardMaterial3D" id="Mat_Embers"]
+shading_mode = 0
+albedo_color = Color(1, 0.65, 0.15, 1)
+
+[sub_resource type="BoxMesh" id="Mesh_EmberChunk"]
+material = SubResource("Mat_Embers")
+size = Vector3(0.1, 0.1, 0.1)
+
+[sub_resource type="StandardMaterial3D" id="Mat_Fireball"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 0.65, 0.12, 0.96)
+
+[sub_resource type="SphereMesh" id="Mesh_FireballCore"]
+material = SubResource("Mat_Fireball")
+radius = 0.5
+height = 1.0
+radial_segments = 6
+rings = 4
+
+[sub_resource type="StandardMaterial3D" id="Mat_Shockwave"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 0.85, 0.45, 0.75)
+
+[sub_resource type="TorusMesh" id="Mesh_ShockwaveTorus"]
+material = SubResource("Mat_Shockwave")
+inner_radius = 0.85
+outer_radius = 1.0
+rings = 8
+ring_segments = 6
+
+[node name="ExplosionEffect" type="Node3D"]
+script = ExtResource("1_exp")
+
+[node name="SmokeCloud" type="CPUParticles3D" parent="."]
+emitting = false
+amount = 64
+lifetime = 1.8
+one_shot = true
+explosiveness = 0.92
+mesh = SubResource("Mesh_SmokePuff")
+emission_shape = 1
+emission_sphere_radius = 0.4
+direction = Vector3(0, 1, 0)
+spread = 90.0
+gravity = Vector3(0, 2, 0)
+initial_velocity_min = 2.5
+initial_velocity_max = 5.5
+damping_min = 1.6
+damping_max = 2.8
+scale_amount_min = 1.0
+scale_amount_max = 2.8
+
+[node name="MushroomStem" type="CPUParticles3D" parent="."]
+emitting = false
+amount = 32
+lifetime = 1.5
+one_shot = true
+explosiveness = 0.9
+mesh = SubResource("Mesh_StemPuff")
+emission_shape = 1
+emission_sphere_radius = 0.2
+direction = Vector3(0, 1, 0)
+spread = 18.0
+gravity = Vector3(0, 0.8, 0)
+initial_velocity_min = 4.2
+initial_velocity_max = 7.2
+damping_min = 2.2
+damping_max = 3.6
+scale_amount_min = 0.9
+scale_amount_max = 2.2
+
+[node name="Embers" type="CPUParticles3D" parent="."]
+emitting = false
+amount = 24
+lifetime = 0.75
+one_shot = true
+explosiveness = 0.95
+mesh = SubResource("Mesh_EmberChunk")
+direction = Vector3(0, 1, 0)
+spread = 180.0
+gravity = Vector3(0, -7, 0)
+initial_velocity_min = 5.0
+initial_velocity_max = 10.5
+
+[node name="Fireball" type="MeshInstance3D" parent="."]
+mesh = SubResource("Mesh_FireballCore")
+
+[node name="Shockwave" type="MeshInstance3D" parent="."]
+mesh = SubResource("Mesh_ShockwaveTorus")
+
+[node name="FlashLight" type="OmniLight3D" parent="."]
+light_color = Color(1, 0.65, 0.2, 1)
+light_energy = 5.0
+omni_range = 7.5

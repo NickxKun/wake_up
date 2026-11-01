@@ -1,0 +1,183 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/player/dash_particles.gd" id="1_d1b7n"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ggw4m"]
+resource_name = "PressurizedStreamMaterial"
+render_priority = 1
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_0yr87"]
+resource_name = "RCSStreamMesh"
+material = SubResource("StandardMaterial3D_ggw4m")
+top_radius = 0.004
+bottom_radius = 0.009
+height = 0.06
+radial_segments = 6
+rings = 1
+
+[sub_resource type="Curve" id="Curve_8xvsu"]
+_limits = [0.0, 1.2, 0.0, 1.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.4, 0.92), 0.0, 0.0, 0, 0, Vector2(0.8, 0.78), 0.0, 0.0, 0, 0, Vector2(1, 0.6), 0.0, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="Gradient" id="Gradient_storr"]
+offsets = PackedFloat32Array(0, 0.35, 0.75, 1)
+colors = PackedColorArray(0.98, 0.99, 1, 0.95, 0.92, 0.95, 0.99, 0.85, 0.85, 0.9, 0.96, 0.45, 0.75, 0.82, 0.9, 0)
+
+[node name="DashParticles" type="Node3D" unique_id=27451793]
+script = ExtResource("1_d1b7n")
+
+[node name="CPUParticles3D" type="CPUParticles3D" parent="." unique_id=1221002562]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05, 0, 0)
+emitting = false
+amount = 20
+lifetime = 0.05
+lifetime_randomness = 0.1
+local_coords = true
+mesh = SubResource("CylinderMesh_0yr87")
+particle_flag_align_y = true
+direction = Vector3(0, 0, 1)
+spread = 2.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 6.0
+initial_velocity_max = 8.5
+scale_amount_min = 0.75
+scale_amount_max = 0.95
+scale_amount_curve = SubResource("Curve_8xvsu")
+color_ramp = SubResource("Gradient_storr")
+
+[node name="CPUParticles3D_Right" type="CPUParticles3D" parent="." unique_id=1330770901]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05, 0, 0)
+emitting = false
+amount = 20
+lifetime = 0.05
+lifetime_randomness = 0.1
+local_coords = true
+mesh = SubResource("CylinderMesh_0yr87")
+particle_flag_align_y = true
+direction = Vector3(0, 0, 1)
+spread = 2.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 6.0
+initial_velocity_max = 8.5
+scale_amount_min = 0.75
+scale_amount_max = 0.95
+scale_amount_curve = SubResource("Curve_8xvsu")
+color_ramp = SubResource("Gradient_storr")
+
+[node name="SideParticles_Left" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09, 0, 0)
+emitting = false
+amount = 20
+lifetime = 0.05
+lifetime_randomness = 0.1
+local_coords = true
+mesh = SubResource("CylinderMesh_0yr87")
+particle_flag_align_y = true
+direction = Vector3(1, 0, 0)
+spread = 2.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 6.0
+initial_velocity_max = 8.5
+scale_amount_min = 0.75
+scale_amount_max = 0.95
+scale_amount_curve = SubResource("Curve_8xvsu")
+color_ramp = SubResource("Gradient_storr")
+
+[node name="SideParticles_Right" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.09, 0, 0)
+emitting = false
+amount = 20
+lifetime = 0.05
+lifetime_randomness = 0.1
+local_coords = true
+mesh = SubResource("CylinderMesh_0yr87")
+particle_flag_align_y = true
+direction = Vector3(-1, 0, 0)
+spread = 2.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 6.0
+initial_velocity_max = 8.5
+scale_amount_min = 0.75
+scale_amount_max = 0.95
+scale_amount_curve = SubResource("Curve_8xvsu")
+color_ramp = SubResource("Gradient_storr")
+
+[node name="FrontParticles_Left" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05, 0.02, -0.26)
+emitting = false
+amount = 20
+lifetime = 0.05
+lifetime_randomness = 0.1
+local_coords = true
+mesh = SubResource("CylinderMesh_0yr87")
+particle_flag_align_y = true
+direction = Vector3(0, 0, -1)
+spread = 2.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 6.0
+initial_velocity_max = 8.5
+scale_amount_min = 0.75
+scale_amount_max = 0.95
+scale_amount_curve = SubResource("Curve_8xvsu")
+color_ramp = SubResource("Gradient_storr")
+
+[node name="FrontParticles_Right" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05, 0.02, -0.26)
+emitting = false
+amount = 20
+lifetime = 0.05
+lifetime_randomness = 0.1
+local_coords = true
+mesh = SubResource("CylinderMesh_0yr87")
+particle_flag_align_y = true
+direction = Vector3(0, 0, -1)
+spread = 2.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 6.0
+initial_velocity_max = 8.5
+scale_amount_min = 0.75
+scale_amount_max = 0.95
+scale_amount_curve = SubResource("Curve_8xvsu")
+color_ramp = SubResource("Gradient_storr")
+
+[node name="FlightParticles" type="CPUParticles3D" parent="." unique_id=1626748450]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05, -0.09, 0)
+emitting = false
+amount = 20
+lifetime = 0.05
+lifetime_randomness = 0.1
+local_coords = true
+mesh = SubResource("CylinderMesh_0yr87")
+particle_flag_align_y = true
+direction = Vector3(0, -1, 0)
+spread = 2.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 6.0
+initial_velocity_max = 8.5
+scale_amount_min = 0.75
+scale_amount_max = 0.95
+scale_amount_curve = SubResource("Curve_8xvsu")
+color_ramp = SubResource("Gradient_storr")
+
+[node name="FlightParticles_Right" type="CPUParticles3D" parent="." unique_id=250221342]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05, -0.09, 0)
+emitting = false
+amount = 20
+lifetime = 0.05
+lifetime_randomness = 0.1
+local_coords = true
+mesh = SubResource("CylinderMesh_0yr87")
+particle_flag_align_y = true
+direction = Vector3(0, -1, 0)
+spread = 2.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 6.0
+initial_velocity_max = 8.5
+scale_amount_min = 0.75
+scale_amount_max = 0.95
+scale_amount_curve = SubResource("Curve_8xvsu")
+color_ramp = SubResource("Gradient_storr")

@@ -1,0 +1,955 @@
+class_name SpaceStationMap
+extends Node3D
+
+## Space Station & Planetary Outpost Map Manager.
+## Manages 3 distinct themed maps:
+##   0 = CANYON WASTELAND (Pure natural desert terrain & rocks, zero equipment)
+##   1 = SPACE BASE (Colony research outpost with habitation, science labs & power grid)
+##   2 = TRANSPORT DOCK (Planetary logistics terminal, shuttle pads & mining quarry)
+## Features smooth outer desert lands, seamless contour slope geometry,
+## height-adapted demarcation lines, and navigation meshes.
+
+enum MapTheme {
+	CANYON_WASTELAND = 0,
+	SPACE_BASE = 1,
+	TRANSPORT_DOCK = 2,
+}
+
+@export var map_theme : MapTheme = MapTheme.SPACE_BASE
+@export var ground_size : Vector2 = Vector2(80.0, 80.0)
+@export var safe_zone_half_size : float = 15.5
+
+# Natural Desert Terrain & Rock Asset Preloads
+const SCENE_ROCK_A : PackedScene = preload("res://assets/models/fbx/rock_A.fbx")
+const SCENE_ROCK_B : PackedScene = preload("res://assets/models/fbx/rock_B.fbx")
+const SCENE_ROCKS_A : PackedScene = preload("res://assets/models/fbx/rocks_A.fbx")
+const SCENE_ROCKS_B : PackedScene = preload("res://assets/models/fbx/rocks_B.fbx")
+const SCENE_TERRAIN_MINING : PackedScene = preload("res://assets/models/fbx/terrain_mining.fbx")
+const SCENE_TERRAIN_SLOPE : PackedScene = preload("res://assets/models/fbx/terrain_slope.fbx")
+const SCENE_TERRAIN_SLOPE_INNER : PackedScene = preload("res://assets/models/fbx/terrain_slope_inner_corner.fbx")
+const SCENE_TERRAIN_SLOPE_OUTER : PackedScene = preload("res://assets/models/fbx/terrain_slope_outer_corner.fbx")
+const SCENE_TERRAIN_TALL : PackedScene = preload("res://assets/models/fbx/terrain_tall.fbx")
+const SCENE_TERRAIN_LOW : PackedScene = preload("res://assets/models/fbx/terrain_low.fbx")
+
+# POI Equipment Preloads for dynamic map themes
+const SCENE_DRILL : PackedScene = preload("res://assets/models/fbx/drill_structure.fbx")
+const SCENE_SPACETRUCK : PackedScene = preload("res://assets/models/fbx/spacetruck.fbx")
+const SCENE_ROVER : PackedScene = preload("res://scenes/vehicles/rover.tscn")
+const SCENE_WEAPONS_BOX : PackedScene = preload("res://scenes/weapons/weapons_box.tscn")
+const SCENE_CARGO_PACKED : PackedScene = preload("res://assets/models/fbx/cargo_B_packed.fbx")
+const SCENE_CONTAINERS_A : PackedScene = preload("res://assets/models/fbx/containers_A.fbx")
+const SCENE_LIGHTS : PackedScene = preload("res://assets/models/fbx/lights.fbx")
+
+# Terrain Grid Constants (21x21 tiles, 2m modular grid covering -20m to +20m)
+const TERRAIN_GRID_W : int = 21
+const TERRAIN_GRID_D : int = 21
+const TERRAIN_TILE_SIZE : float = 2.0
+const TERRAIN_ORIGIN_X : float = -20.0
+const TERRAIN_ORIGIN_Z : float = -20.0
+
+# Lookup mapping 4 corner heights (NW, NE, SW, SE) to exact FBX scene and Y-rotation
+const TILE_LOOKUP := {
+	Vector4i(0,0,0,0): {"scene": SCENE_TERRAIN_LOW, "rot": 0},
+	Vector4i(1,1,1,1): {"scene": SCENE_TERRAIN_TALL, "rot": 0},
+	# Outer corners (1 high corner, 3 low corners)
+	Vector4i(0,1,0,0): {"scene": SCENE_TERRAIN_SLOPE_OUTER, "rot": 0},
+	Vector4i(1,0,0,0): {"scene": SCENE_TERRAIN_SLOPE_OUTER, "rot": 90},
+	Vector4i(0,0,1,0): {"scene": SCENE_TERRAIN_SLOPE_OUTER, "rot": 180},
+	Vector4i(0,0,0,1): {"scene": SCENE_TERRAIN_SLOPE_OUTER, "rot": 270},
+	# Inner corners (3 high corners, 1 low corner)
+	Vector4i(1,1,0,1): {"scene": SCENE_TERRAIN_SLOPE_INNER, "rot": 0},
+	Vector4i(1,1,1,0): {"scene": SCENE_TERRAIN_SLOPE_INNER, "rot": 90},
+	Vector4i(1,0,1,1): {"scene": SCENE_TERRAIN_SLOPE_INNER, "rot": 180},
+	Vector4i(0,1,1,1): {"scene": SCENE_TERRAIN_SLOPE_INNER, "rot": 270},
+	# Straight slopes (2 high corners along an edge, 2 low along opposite)
+	Vector4i(0,1,0,1): {"scene": SCENE_TERRAIN_SLOPE, "rot": 0},    # High East (+X)
+	Vector4i(1,1,0,0): {"scene": SCENE_TERRAIN_SLOPE, "rot": 90},   # High North (-Z)
+	Vector4i(1,0,1,0): {"scene": SCENE_TERRAIN_SLOPE, "rot": 180},  # High West (-X)
+	Vector4i(0,0,1,1): {"scene": SCENE_TERRAIN_SLOPE, "rot": 270},  # High South (+Z)
+}
+
+var _terrain_H : Array[Array] = []
+var _is_ready : bool = false
+
+func _ready() -> void:
+	add_to_group("navigation_geometry")
+
+	# Pull active theme from global HUD singleton if available
+	var hud : Node = get_node_or_null("/root/PlayerHealthHud")
+	if hud != null and "selected_map_theme" in hud:
+		map_theme = hud.selected_map_theme as MapTheme
+
+	_build_ground()
+	_build_terrain()
+	_configure_sectors_for_theme()
+	_spawn_weapons_box()
+	_build_demarcation_line()
+	_build_outer_sectors()
+	_build_outer_fog()
+	_build_perimeter_boundaries()
+	_setup_prop_collisions(self)
+	_snap_enemy_spawners()
+	_ensure_player_spawn_safe()
+	_is_ready = true
+
+## Returns true once all level collisions are established.
+func is_geometry_ready() -> bool:
+	return _is_ready
+
+## Returns the exact ground elevation at world coordinate (x, z) using bilinear interpolation.
+func get_terrain_height(x: float, z: float) -> float:
+	if _terrain_H.is_empty():
+		return 0.0
+	var v_origin_x : float = TERRAIN_ORIGIN_X - 1.0
+	var v_origin_z : float = TERRAIN_ORIGIN_Z - 1.0
+	var gx : float = (x - v_origin_x) / TERRAIN_TILE_SIZE
+	var gz : float = (z - v_origin_z) / TERRAIN_TILE_SIZE
+	if gx < 0.0 or gx >= float(TERRAIN_GRID_W) or gz < 0.0 or gz >= float(TERRAIN_GRID_D):
+		return 0.0
+	var ix : int = clampi(int(floor(gx)), 0, TERRAIN_GRID_W - 1)
+	var iz : int = clampi(int(floor(gz)), 0, TERRAIN_GRID_D - 1)
+	var u : float = clampf(gx - float(ix), 0.0, 1.0)
+	var v : float = clampf(gz - float(iz), 0.0, 1.0)
+	var nw : float = float(_terrain_H[iz][ix])
+	var ne : float = float(_terrain_H[iz][ix + 1])
+	var sw : float = float(_terrain_H[iz + 1][ix])
+	var se : float = float(_terrain_H[iz + 1][ix + 1])
+	return (1.0 - u) * (1.0 - v) * nw + u * (1.0 - v) * ne + (1.0 - u) * v * sw + u * v * se
+
+## Creates a solid, seamless ground foundation extending across the entire expanded sector.
+func _build_ground() -> void:
+	var ground_body := StaticBody3D.new()
+	ground_body.name = "GroundBase"
+	ground_body.collision_layer = 1
+	ground_body.collision_mask = 1
+	ground_body.add_to_group("navigation_geometry")
+
+	var col_shape := CollisionShape3D.new()
+	var box := BoxShape3D.new()
+	box.size = Vector3(ground_size.x, 1.0, ground_size.y)
+	col_shape.shape = box
+	col_shape.position = Vector3(0.0, -0.5, 0.0)
+	ground_body.add_child(col_shape)
+
+	# Visual extended desert floor for the surrounding wasteland
+	# Matches the exact terracotta sand color of the SpaceBits terrain palette (#9e482a)
+	# Sized 260m x 260m so the desert floor extends far into the horizon with zero gaps
+	var mesh_inst := MeshInstance3D.new()
+	mesh_inst.name = "GroundVisual"
+	mesh_inst.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var plane := PlaneMesh.new()
+	plane.size = Vector2(260.0, 260.0)
+	mesh_inst.mesh = plane
+
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color(0.6196, 0.2863, 0.1725, 1.0)
+	mat.roughness = 1.0
+	mesh_inst.material_override = mat
+	mesh_inst.position = Vector3(0.0, -0.01, 0.0)
+	ground_body.add_child(mesh_inst)
+
+	add_child(ground_body)
+
+## Configures level sectors based on the selected theme, completely removing unused facilities
+## so that structures sit naturally on flat foundations without clipping into elevated terrain.
+func _configure_sectors_for_theme() -> void:
+	var hab : Node = get_node_or_null("Sector_Habitation")
+	var logist : Node = get_node_or_null("Sector_Logistics")
+	var quarry : Node = get_node_or_null("Sector_MiningQuarry")
+	var power : Node = get_node_or_null("Sector_PowerGrid")
+	var court : Node = get_node_or_null("Sector_Courtyard")
+	var checkp : Node = get_node_or_null("Sector_Checkpoint")
+
+	match map_theme:
+		MapTheme.CANYON_WASTELAND:
+			# Pure natural desert canyon: zero equipment, only terrain and rocks
+			_remove_nodes([hab, logist, quarry, power, checkp])
+			if court != null:
+				for c in court.get_children():
+					if not c.name.begins_with("Cover_Rock"):
+						c.queue_free()
+			_spawn_wasteland_tactical_rocks()
+
+		MapTheme.SPACE_BASE:
+			# Colony research outpost: Habitation Complex, Power Grid, Excavation Dig Site, and Courtyard
+			_remove_nodes([logist, quarry, checkp])
+			_spawn_spacebase_pois()
+
+		MapTheme.TRANSPORT_DOCK:
+			# Freight terminal & logistics: Landing Pads, Shuttles, Haulers, Quarry, and Checkpoint
+			_remove_nodes([hab, power])
+
+func _remove_nodes(nodes: Array) -> void:
+	for n in nodes:
+		if is_instance_valid(n):
+			n.queue_free()
+
+## Spawns dense natural rock clusters, crags, and towering boulders across Map 1 (Canyon Wasteland)
+## to provide tactical cover, winding canyon passes, and dramatic alien geological vistas.
+func _spawn_wasteland_tactical_rocks() -> void:
+	var rocks_root : Node3D = get_node_or_null("Sector_NaturalRocks") as Node3D
+	if rocks_root == null:
+		rocks_root = Node3D.new()
+		rocks_root.name = "Sector_NaturalRocks"
+		add_child(rocks_root)
+
+	var extra_rock_coords := [
+		# 1. Central Arroyo Arena (Mid-range tactical cover for firefights)
+		{"pos": Vector3(0.0, 0.0, 0.0), "scene": SCENE_ROCKS_A, "rot": 45.0, "scale": Vector3(1.2, 1.1, 1.2)},
+		{"pos": Vector3(-2.8, 0.0, -2.0), "scene": SCENE_ROCK_A, "rot": 15.0, "scale": Vector3(1.0, 1.0, 1.0)},
+		{"pos": Vector3(2.8, 0.0, 2.0), "scene": SCENE_ROCK_B, "rot": -75.0, "scale": Vector3(1.1, 1.0, 1.1)},
+		{"pos": Vector3(-6.5, 0.0, 3.5), "scene": SCENE_ROCK_B, "rot": 120.0, "scale": Vector3(0.9, 0.9, 0.9)},
+		{"pos": Vector3(3.5, 0.0, -2.5), "scene": SCENE_ROCK_A, "rot": -45.0, "scale": Vector3(1.0, 1.0, 1.0)},
+		{"pos": Vector3(-1.8, 0.0, 4.2), "scene": SCENE_ROCK_B, "rot": 85.0, "scale": Vector3(0.85, 0.85, 0.85)},
+		{"pos": Vector3(1.8, 0.0, -4.2), "scene": SCENE_ROCK_A, "rot": -110.0, "scale": Vector3(0.95, 0.95, 0.95)},
+		{"pos": Vector3(-5.0, 0.0, 0.0), "scene": SCENE_ROCKS_B, "rot": 30.0, "scale": Vector3(1.1, 1.2, 1.1)},
+		{"pos": Vector3(5.0, 0.0, 0.0), "scene": SCENE_ROCKS_A, "rot": -60.0, "scale": Vector3(1.1, 1.1, 1.1)},
+
+		# 2. North-West Mesa Bluff & Overhangs (Elevated rock rim)
+		{"pos": Vector3(-13.5, 0.0, -13.5), "scene": SCENE_ROCKS_B, "rot": 45.0, "scale": Vector3(2.2, 2.4, 2.2)},
+		{"pos": Vector3(-11.0, 0.0, -14.0), "scene": SCENE_ROCKS_A, "rot": -30.0, "scale": Vector3(1.8, 1.9, 1.8)},
+		{"pos": Vector3(-14.0, 0.0, -10.5), "scene": SCENE_ROCKS_A, "rot": 90.0, "scale": Vector3(1.7, 1.8, 1.7)},
+		{"pos": Vector3(-8.5, 0.0, -12.5), "scene": SCENE_ROCKS_B, "rot": 15.0, "scale": Vector3(1.3, 1.4, 1.3)},
+		{"pos": Vector3(-12.5, 0.0, -7.0), "scene": SCENE_ROCK_A, "rot": -75.0, "scale": Vector3(1.2, 1.3, 1.2)},
+		{"pos": Vector3(-6.5, 0.0, -10.5), "scene": SCENE_ROCK_B, "rot": 135.0, "scale": Vector3(1.1, 1.1, 1.1)},
+		{"pos": Vector3(-10.0, 0.0, -6.5), "scene": SCENE_ROCK_A, "rot": 60.0, "scale": Vector3(1.0, 1.0, 1.0)},
+		{"pos": Vector3(-4.5, 0.0, -13.5), "scene": SCENE_ROCK_B, "rot": -20.0, "scale": Vector3(1.0, 1.0, 1.0)},
+
+		# 3. North Canyon Pass (Defile portal boulders)
+		{"pos": Vector3(-3.5, 0.0, -9.0), "scene": SCENE_ROCKS_A, "rot": 35.0, "scale": Vector3(1.4, 1.5, 1.4)},
+		{"pos": Vector3(3.5, 0.0, -9.0), "scene": SCENE_ROCKS_B, "rot": -45.0, "scale": Vector3(1.4, 1.6, 1.4)},
+		{"pos": Vector3(-3.2, 0.0, -12.0), "scene": SCENE_ROCK_A, "rot": 70.0, "scale": Vector3(1.2, 1.2, 1.2)},
+		{"pos": Vector3(3.2, 0.0, -12.0), "scene": SCENE_ROCK_B, "rot": -80.0, "scale": Vector3(1.2, 1.2, 1.2)},
+
+		# 4. North-East Ridge & Stone Crests
+		{"pos": Vector3(13.5, 0.0, -13.5), "scene": SCENE_ROCKS_B, "rot": -60.0, "scale": Vector3(2.0, 2.2, 2.0)},
+		{"pos": Vector3(11.0, 0.0, -14.0), "scene": SCENE_ROCKS_A, "rot": 120.0, "scale": Vector3(1.7, 1.8, 1.7)},
+		{"pos": Vector3(14.0, 0.0, -10.0), "scene": SCENE_ROCKS_B, "rot": -15.0, "scale": Vector3(1.8, 1.9, 1.8)},
+		{"pos": Vector3(8.5, 0.0, -12.5), "scene": SCENE_ROCKS_A, "rot": 45.0, "scale": Vector3(1.4, 1.4, 1.4)},
+		{"pos": Vector3(7.0, 0.0, -10.0), "scene": SCENE_ROCK_A, "rot": -90.0, "scale": Vector3(1.2, 1.2, 1.2)},
+		{"pos": Vector3(10.0, 0.0, -7.0), "scene": SCENE_ROCK_B, "rot": 160.0, "scale": Vector3(1.1, 1.1, 1.1)},
+		{"pos": Vector3(12.5, 0.0, -6.0), "scene": SCENE_ROCK_A, "rot": 30.0, "scale": Vector3(1.1, 1.1, 1.1)},
+
+		# 5. South-West Ravine & Dry Gulch
+		{"pos": Vector3(-13.5, 0.0, 13.5), "scene": SCENE_ROCKS_A, "rot": 120.0, "scale": Vector3(2.1, 2.2, 2.1)},
+		{"pos": Vector3(-10.5, 0.0, 13.5), "scene": SCENE_ROCKS_B, "rot": -45.0, "scale": Vector3(1.7, 1.9, 1.7)},
+		{"pos": Vector3(-14.0, 0.0, 10.0), "scene": SCENE_ROCKS_B, "rot": 75.0, "scale": Vector3(1.8, 2.0, 1.8)},
+		{"pos": Vector3(-7.5, 0.0, 8.5), "scene": SCENE_ROCKS_A, "rot": -30.0, "scale": Vector3(1.3, 1.3, 1.3)},
+		{"pos": Vector3(-11.0, 0.0, 6.5), "scene": SCENE_ROCK_A, "rot": 105.0, "scale": Vector3(1.2, 1.2, 1.2)},
+		{"pos": Vector3(-6.5, 0.0, 11.5), "scene": SCENE_ROCK_B, "rot": -60.0, "scale": Vector3(1.1, 1.1, 1.1)},
+		{"pos": Vector3(-9.5, 0.0, 11.0), "scene": SCENE_ROCK_A, "rot": 40.0, "scale": Vector3(1.0, 1.0, 1.0)},
+
+		# 6. South Canyon Pass (Portal boulders)
+		{"pos": Vector3(-3.5, 0.0, 9.0), "scene": SCENE_ROCKS_B, "rot": -45.0, "scale": Vector3(1.4, 1.5, 1.4)},
+		{"pos": Vector3(3.5, 0.0, 9.0), "scene": SCENE_ROCKS_A, "rot": 60.0, "scale": Vector3(1.4, 1.5, 1.4)},
+		{"pos": Vector3(-3.2, 0.0, 12.0), "scene": SCENE_ROCK_B, "rot": -100.0, "scale": Vector3(1.2, 1.2, 1.2)},
+		{"pos": Vector3(3.2, 0.0, 12.0), "scene": SCENE_ROCK_A, "rot": 85.0, "scale": Vector3(1.2, 1.2, 1.2)},
+
+		# 7. South-East Twin Spires & Boulder Scree
+		{"pos": Vector3(8.5, 0.0, 8.5), "scene": SCENE_ROCKS_B, "rot": 35.0, "scale": Vector3(2.4, 2.8, 2.4)},
+		{"pos": Vector3(12.0, 0.0, 10.5), "scene": SCENE_ROCKS_B, "rot": -80.0, "scale": Vector3(2.5, 3.0, 2.5)},
+		{"pos": Vector3(6.5, 0.0, 11.0), "scene": SCENE_ROCKS_A, "rot": 140.0, "scale": Vector3(1.5, 1.5, 1.5)},
+		{"pos": Vector3(10.0, 0.0, 13.5), "scene": SCENE_ROCKS_A, "rot": -25.0, "scale": Vector3(1.6, 1.7, 1.6)},
+		{"pos": Vector3(13.5, 0.0, 13.5), "scene": SCENE_ROCKS_A, "rot": 90.0, "scale": Vector3(2.0, 2.1, 2.0)},
+		{"pos": Vector3(7.0, 0.0, 6.5), "scene": SCENE_ROCK_A, "rot": -45.0, "scale": Vector3(1.2, 1.2, 1.2)},
+		{"pos": Vector3(10.5, 0.0, 6.0), "scene": SCENE_ROCK_B, "rot": 115.0, "scale": Vector3(1.1, 1.1, 1.1)},
+		{"pos": Vector3(13.5, 0.0, 7.5), "scene": SCENE_ROCK_A, "rot": -15.0, "scale": Vector3(1.3, 1.3, 1.3)},
+
+		# 8. West and East Flanking Escarpments
+		{"pos": Vector3(-10.5, 0.0, -3.5), "scene": SCENE_ROCKS_A, "rot": 75.0, "scale": Vector3(1.5, 1.6, 1.5)},
+		{"pos": Vector3(-13.0, 0.0, -0.5), "scene": SCENE_ROCKS_B, "rot": -110.0, "scale": Vector3(1.9, 2.2, 1.9)},
+		{"pos": Vector3(-10.5, 0.0, 3.5), "scene": SCENE_ROCKS_A, "rot": 30.0, "scale": Vector3(1.4, 1.5, 1.4)},
+		{"pos": Vector3(-7.5, 0.0, 0.0), "scene": SCENE_ROCK_B, "rot": -65.0, "scale": Vector3(1.1, 1.1, 1.1)},
+
+		{"pos": Vector3(10.5, 0.0, -3.5), "scene": SCENE_ROCKS_B, "rot": -75.0, "scale": Vector3(1.5, 1.7, 1.5)},
+		{"pos": Vector3(13.0, 0.0, 0.5), "scene": SCENE_ROCKS_A, "rot": 110.0, "scale": Vector3(1.9, 2.0, 1.9)},
+		{"pos": Vector3(10.5, 0.0, 3.5), "scene": SCENE_ROCKS_B, "rot": -30.0, "scale": Vector3(1.4, 1.6, 1.4)},
+		{"pos": Vector3(7.5, 0.0, 0.0), "scene": SCENE_ROCK_A, "rot": 65.0, "scale": Vector3(1.1, 1.1, 1.1)},
+	]
+	for r in extra_rock_coords:
+		var sc : Vector3 = r["scale"] if r.has("scale") else Vector3.ONE
+		_spawn_prop(rocks_root, r["scene"], r["pos"], r["rot"], sc)
+
+## Spawns dynamic Points of Interest across Map 2 (Space Base):
+## 1. Geological Crater Excavation Dig Site on the elevated South-East ridge with drill rig, rover, and floodlights.
+## 2. Southwest Auxiliary Staging Yard with delivery rover, cargo containers, and service floodlight.
+## 3. High-ground tactical lookout points along the perimeter bluffs.
+func _spawn_spacebase_pois() -> void:
+	var dig_root : Node3D = get_node_or_null("Sector_ResearchDig") as Node3D
+	if dig_root == null:
+		dig_root = Node3D.new()
+		dig_root.name = "Sector_ResearchDig"
+		add_child(dig_root)
+
+	var poi_props := [
+		# 1. Geological Crater Excavation Dig Site (perched on the South-East Ridge at (10, 8))
+		{"scene": SCENE_DRILL, "pos": Vector3(7.5, 0.06, 6.5), "rot": 40.0, "scale": Vector3.ONE},
+		{"scene": SCENE_ROVER, "pos": Vector3(7.0, 0.14, 10.0), "rot": -45.0, "scale": Vector3.ONE},
+		{"scene": SCENE_CARGO_PACKED, "pos": Vector3(8.5, 0.06, 9.5), "rot": 15.0, "scale": Vector3.ONE},
+		{"scene": SCENE_CONTAINERS_A, "pos": Vector3(6.5, 0.06, 8.0), "rot": 0.0, "scale": Vector3.ONE},
+		{"scene": SCENE_LIGHTS, "pos": Vector3(8.0, 0.06, 7.5), "rot": 35.0, "scale": Vector3.ONE},
+		{"scene": SCENE_ROCKS_A, "pos": Vector3(12.5, 0.0, 11.5), "rot": -60.0, "scale": Vector3(1.3, 1.4, 1.3)},
+		{"scene": SCENE_ROCK_B, "pos": Vector3(6.0, 0.0, 11.5), "rot": 120.0, "scale": Vector3(1.1, 1.1, 1.1)},
+
+		# 2. Southwest Auxiliary Staging Yard
+		{"scene": SCENE_ROVER, "pos": Vector3(-3.5, 0.14, 5.0), "rot": 20.0, "scale": Vector3.ONE},
+		{"scene": SCENE_CARGO_PACKED, "pos": Vector3(-4.8, 0.06, 4.5), "rot": -15.0, "scale": Vector3.ONE},
+		{"scene": SCENE_CONTAINERS_A, "pos": Vector3(-2.5, 0.06, 5.5), "rot": 90.0, "scale": Vector3.ONE},
+		{"scene": SCENE_LIGHTS, "pos": Vector3(-3.0, 0.06, 3.8), "rot": 180.0, "scale": Vector3.ONE},
+
+		# 3. Perimeter Overlook Tactical Outposts
+		{"scene": SCENE_ROCKS_B, "pos": Vector3(-14.0, 0.0, -14.0), "rot": 45.0, "scale": Vector3(1.6, 1.8, 1.6)},
+		{"scene": SCENE_ROCKS_A, "pos": Vector3(14.0, 0.0, -14.0), "rot": -45.0, "scale": Vector3(1.5, 1.7, 1.5)},
+		{"scene": SCENE_ROCK_A, "pos": Vector3(13.5, 0.0, 0.0), "rot": 90.0, "scale": Vector3(1.2, 1.2, 1.2)},
+	]
+
+	for p in poi_props:
+		var sc : Vector3 = p["scale"] if p.has("scale") else Vector3.ONE
+		_spawn_prop(dig_root, p["scene"], p["pos"], p["rot"], sc)
+
+## Evaluates the height at grid vertex (x, z) for the active theme.
+## Ensures outer boundaries drop smoothly to Y = 0.0 for seamless outer desert continuity,
+## and guarantees building foundations are 100% flat at Y = 0.0 to prevent any clipping.
+func _get_elevation_raw(x: float, z: float) -> int:
+	# Ensure the outer perimeter of the 21x21 grid is flat (Y = 0) everywhere
+	# This creates a mathematically perfect, seamless transition to the outer desert floor
+	if absf(x) >= 19.0 or absf(z) >= 19.0:
+		return 0
+
+	match map_theme:
+		MapTheme.CANYON_WASTELAND:
+			return _get_elev_wasteland(x, z)
+		MapTheme.SPACE_BASE:
+			return _get_elev_spacebase(x, z)
+		MapTheme.TRANSPORT_DOCK:
+			return _get_elev_transportdock(x, z)
+		_:
+			return _get_elev_spacebase(x, z)
+
+## Map 1: Desolate Canyon - Dramatic alien canyon amphitheater, zero equipment, natural ridges & passes
+func _get_elev_wasteland(x: float, z: float) -> int:
+	# Central combat arena wash is open
+	if Vector2(x, z).length() < 6.0:
+		return 0
+	# Natural canyon entrance passes at North and South
+	if absf(x) <= 3.5 and absf(z) >= 9.0:
+		return 0
+	# Sinuous East and West canyon ridges
+	if (x <= -9.0 or x >= 9.0) and (z <= -5.0 or z >= 5.0):
+		return 1
+	if x <= -13.0 or x >= 13.0:
+		return 1
+	if z <= -13.0 or z >= 13.0:
+		return 1
+	return 0
+
+## Map 2: Space Base - Tactical colony outpost with elevated geological research ridges,
+## dramatic perimeter cliff bluffs, and flat foundations for the modular base and power grid.
+func _get_elev_spacebase(x: float, z: float) -> int:
+	# Flat building foundation for Habitation Complex (-12..1, -12..1)
+	if -12.0 <= x and x <= 1.0 and -12.0 <= z and z <= 1.0:
+		return 0
+	# Flat building foundation for Power Grid (3..12, -12..-3)
+	if 3.0 <= x and x <= 12.0 and -12.0 <= z and z <= -3.0:
+		return 0
+	# Flat central crossroads plaza (-3..4, -3..3)
+	if -3.0 <= x and x <= 4.0 and -3.0 <= z and z <= 3.0:
+		return 0
+	# Flat south canyon corridor (-4..4, 3..18)
+	if -4.0 <= x and x <= 4.0 and z >= 3.0:
+		return 0
+
+	# 1. Northern mountain ridge shielding the base from the north
+	if z <= -13.0:
+		return 1
+	# 2. Northwest protective mesa cliff
+	if x <= -13.0 and z <= -7.0:
+		return 1
+	# 3. Eastern overlook escarpment
+	if x >= 13.0 and z <= 14.0:
+		return 1
+	# 4. Southeast Excavation & Geological Ridge (houses the crater pit)
+	if 5.0 <= x and x <= 13.0 and 5.0 <= z and z <= 13.0:
+		return 1
+	# 5. Southwest crags & high ground
+	if -14.0 <= x and x <= -6.0 and 6.0 <= z and z <= 14.0:
+		return 1
+	if x <= -14.0 or z >= 15.0 or x >= 15.0:
+		return 1
+	return 0
+
+## Map 3: Transport Dock - Shuttle landing pads, logistics tarmac & mining quarry
+func _get_elev_transportdock(x: float, z: float) -> int:
+	# Flat flight tarmac & logistics runway: covers Landing Pads (-12..-4, -3..11), Drill floor (5..11, 2..8), Checkpoint (-3..3, 7..10)
+	if -14.0 <= x and x <= 12.0 and -3.5 <= z and z <= 12.0:
+		return 0
+	# Courtyard transit
+	if -4.5 <= x and x <= 4.5 and -5.0 <= z and z <= 5.0:
+		return 0
+	# Northern mountain rim behind runway
+	if z <= -7.0:
+		return 1
+	# Eastern quarry escarpment rising behind the extraction drill
+	if x >= 12.5 and z >= 1.0:
+		return 1
+	# West buffer crags
+	if x <= -14.0 and z >= -3.0:
+		return 1
+	if z >= 13.0 and (x <= -7.0 or x >= 7.0):
+		return 1
+	return 0
+
+## Builds the varied, seamlessly connected modular terrain grid using slopes and raised plateaus.
+func _build_terrain() -> void:
+	var terrain_node : Node3D = get_node_or_null("Sector_Terrain") as Node3D
+	if terrain_node == null:
+		terrain_node = Node3D.new()
+		terrain_node.name = "Sector_Terrain"
+		add_child(terrain_node)
+	else:
+		# Clear any previous placeholder nodes
+		for child in terrain_node.get_children():
+			child.queue_free()
+
+	# Compute 22x22 vertex heightfield
+	_terrain_H.clear()
+	for vz in range(TERRAIN_GRID_D + 1):
+		var row : Array[int] = []
+		for vx in range(TERRAIN_GRID_W + 1):
+			var x : float = TERRAIN_ORIGIN_X - 1.0 + float(vx) * TERRAIN_TILE_SIZE
+			var z : float = TERRAIN_ORIGIN_Z - 1.0 + float(vz) * TERRAIN_TILE_SIZE
+			row.append(_get_elevation_raw(x, z))
+		_terrain_H.append(row)
+
+	# Topological saddle resolution (ensures every single tile matches valid geometry)
+	for vz in range(TERRAIN_GRID_D):
+		for vx in range(TERRAIN_GRID_W):
+			var nw : int = _terrain_H[vz][vx]
+			var ne : int = _terrain_H[vz][vx + 1]
+			var sw : int = _terrain_H[vz + 1][vx]
+			var se : int = _terrain_H[vz + 1][vx + 1]
+			if nw == 1 and ne == 0 and sw == 0 and se == 1:
+				_terrain_H[vz + 1][vx + 1] = 0
+			elif nw == 0 and ne == 1 and sw == 1 and se == 0:
+				_terrain_H[vz + 1][vx] = 0
+
+	# Instantiate matching modular tiles for each 2x2m cell
+	for vz in range(TERRAIN_GRID_D):
+		for vx in range(TERRAIN_GRID_W):
+			var nw : int = _terrain_H[vz][vx]
+			var ne : int = _terrain_H[vz][vx + 1]
+			var sw : int = _terrain_H[vz + 1][vx]
+			var se : int = _terrain_H[vz + 1][vx + 1]
+			var key := Vector4i(nw, ne, sw, se)
+
+			if not TILE_LOOKUP.has(key):
+				continue
+
+			var data : Dictionary = TILE_LOOKUP[key]
+			var scene : PackedScene = data["scene"]
+			var rot : float = float(data["rot"])
+			var tile_x : float = TERRAIN_ORIGIN_X + float(vx) * TERRAIN_TILE_SIZE
+			var tile_z : float = TERRAIN_ORIGIN_Z + float(vz) * TERRAIN_TILE_SIZE
+
+			# On Map 2 (Space Base), exactly one crater excavation pit tile is placed at (10.0, 8.0)
+			if map_theme == MapTheme.SPACE_BASE and key == Vector4i(1,1,1,1) and absf(tile_x - 10.0) < 0.5 and absf(tile_z - 8.0) < 0.5:
+				scene = SCENE_TERRAIN_MINING
+
+			# On Map 3 (Transport Dock), elevated quarry terraces use mining excavation tiles sparingly
+			if map_theme == MapTheme.TRANSPORT_DOCK and key == Vector4i(1,1,1,1) and absf(tile_x - 14.0) < 0.5 and (absf(tile_z - 4.0) < 0.5 or absf(tile_z - 6.0) < 0.5):
+				scene = SCENE_TERRAIN_MINING
+
+			var inst : Node3D = scene.instantiate() as Node3D
+			inst.name = "%s_%d_%d" % [scene.resource_path.get_file().get_basename(), vx, vz]
+			inst.position = Vector3(tile_x, 0.0, tile_z)
+			inst.rotation_degrees.y = rot
+			terrain_node.add_child(inst)
+
+## Creates the visual demarcation line and perimeter tripwire beacons indicating where the safe zone ends.
+## Uses SurfaceTool to generate continuous, pitch-adapted surface ribbons that hug slopes, ridges, and corners
+## with 100% precision, zero gaps, zero clipping, and zero hovering.
+func _build_demarcation_line() -> void:
+	var demarcation := Node3D.new()
+	demarcation.name = "DemarcationLine"
+
+	var hz : float = safe_zone_half_size # 15.5m
+
+	# Luminous Amber Warning Stripe Material
+	var stripe_mat := StandardMaterial3D.new()
+	stripe_mat.albedo_color = Color(1.0, 0.62, 0.14, 1.0)
+	stripe_mat.emission_enabled = true
+	stripe_mat.emission = Color(1.0, 0.52, 0.08)
+	stripe_mat.emission_energy_multiplier = 3.2
+	stripe_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+
+	# Tripwire Laser Beam Material
+	var laser_mat := StandardMaterial3D.new()
+	laser_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	laser_mat.albedo_color = Color(1.0, 0.55, 0.12, 0.8)
+	laser_mat.emission_enabled = true
+	laser_mat.emission = Color(1.0, 0.48, 0.06)
+	laser_mat.emission_energy_multiplier = 2.8
+	laser_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+
+	# Compute continuous perimeter sample loop (clockwise: North -> East -> South -> West)
+	var steps_per_side : int = 62
+	var perimeter_pts : Array[Vector3] = []
+	var perimeter_tangents : Array[Vector3] = []
+
+	# 1. North Edge: (-hz, -hz) -> (+hz, -hz)
+	for i in range(steps_per_side):
+		var frac : float = float(i) / float(steps_per_side)
+		var x : float = -hz + 2.0 * hz * frac
+		var z : float = -hz
+		perimeter_pts.append(Vector3(x, get_terrain_height(x, z), z))
+		perimeter_tangents.append(Vector3(1, 0, 0))
+
+	# 2. East Edge: (+hz, -hz) -> (+hz, +hz)
+	for i in range(steps_per_side):
+		var frac : float = float(i) / float(steps_per_side)
+		var x : float = hz
+		var z : float = -hz + 2.0 * hz * frac
+		perimeter_pts.append(Vector3(x, get_terrain_height(x, z), z))
+		perimeter_tangents.append(Vector3(0, 0, 1))
+
+	# 3. South Edge: (+hz, +hz) -> (-hz, +hz)
+	for i in range(steps_per_side):
+		var frac : float = float(i) / float(steps_per_side)
+		var x : float = hz - 2.0 * hz * frac
+		var z : float = hz
+		perimeter_pts.append(Vector3(x, get_terrain_height(x, z), z))
+		perimeter_tangents.append(Vector3(-1, 0, 0))
+
+	# 4. West Edge: (-hz, +hz) -> (-hz, -hz)
+	for i in range(steps_per_side):
+		var frac : float = float(i) / float(steps_per_side)
+		var x : float = -hz
+		var z : float = hz - 2.0 * hz * frac
+		perimeter_pts.append(Vector3(x, get_terrain_height(x, z), z))
+		perimeter_tangents.append(Vector3(0, 0, -1))
+
+	var total_pts : int = perimeter_pts.size()
+
+	# Generate continuous ground stripe ribbon mesh
+	var st_stripe := SurfaceTool.new()
+	st_stripe.begin(Mesh.PRIMITIVE_TRIANGLES)
+	st_stripe.set_material(stripe_mat)
+
+	var half_w : float = 0.08
+	for i in range(total_pts):
+		var next_i : int = (i + 1) % total_pts
+		var p0 : Vector3 = perimeter_pts[i]
+		var p1 : Vector3 = perimeter_pts[next_i]
+
+		var t0 : Vector3 = perimeter_tangents[i]
+		var t1 : Vector3 = perimeter_tangents[next_i]
+		var n0 : Vector3 = Vector3(-t0.z, 0.0, t0.x).normalized()
+		var n1 : Vector3 = Vector3(-t1.z, 0.0, t1.x).normalized()
+
+		# Ground offset of 0.02 avoids z-fighting with the underlying terrain surface
+		var v0_l : Vector3 = p0 - n0 * half_w + Vector3(0.0, 0.02, 0.0)
+		var v0_r : Vector3 = p0 + n0 * half_w + Vector3(0.0, 0.02, 0.0)
+		var v1_l : Vector3 = p1 - n1 * half_w + Vector3(0.0, 0.02, 0.0)
+		var v1_r : Vector3 = p1 + n1 * half_w + Vector3(0.0, 0.02, 0.0)
+
+		# Quad triangles
+		st_stripe.add_vertex(v0_l)
+		st_stripe.add_vertex(v1_l)
+		st_stripe.add_vertex(v1_r)
+
+		st_stripe.add_vertex(v0_l)
+		st_stripe.add_vertex(v1_r)
+		st_stripe.add_vertex(v0_r)
+
+	st_stripe.generate_normals()
+	var stripe_mesh : ArrayMesh = st_stripe.commit()
+	var stripe_inst := MeshInstance3D.new()
+	stripe_inst.name = "GroundStripeMesh"
+	stripe_inst.mesh = stripe_mesh
+	stripe_inst.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	demarcation.add_child(stripe_inst)
+
+	# Generate continuous vertical laser beam curtain
+	var st_laser := SurfaceTool.new()
+	st_laser.begin(Mesh.PRIMITIVE_TRIANGLES)
+	st_laser.set_material(laser_mat)
+
+	for i in range(total_pts):
+		var next_i : int = (i + 1) % total_pts
+		var p0 : Vector3 = perimeter_pts[i]
+		var p1 : Vector3 = perimeter_pts[next_i]
+
+		var v0_bot : Vector3 = p0 + Vector3(0.0, 0.28, 0.0)
+		var v0_top : Vector3 = p0 + Vector3(0.0, 0.36, 0.0)
+		var v1_bot : Vector3 = p1 + Vector3(0.0, 0.28, 0.0)
+		var v1_top : Vector3 = p1 + Vector3(0.0, 0.36, 0.0)
+
+		st_laser.add_vertex(v0_bot)
+		st_laser.add_vertex(v1_bot)
+		st_laser.add_vertex(v1_top)
+
+		st_laser.add_vertex(v0_bot)
+		st_laser.add_vertex(v1_top)
+		st_laser.add_vertex(v0_top)
+
+	st_laser.generate_normals()
+	var laser_mesh : ArrayMesh = st_laser.commit()
+	var laser_inst := MeshInstance3D.new()
+	laser_inst.name = "TripwireLaserMesh"
+	laser_inst.mesh = laser_mesh
+	laser_inst.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	demarcation.add_child(laser_inst)
+
+	# Regular Sensor Pylon Stakes along the perimeter (corners + evenly spaced every 5m)
+	var pylon_coords : Array[Vector3] = []
+	# 4 true corner stakes
+	pylon_coords.append(Vector3(-hz, get_terrain_height(-hz, -hz), -hz))
+	pylon_coords.append(Vector3(hz, get_terrain_height(hz, -hz), -hz))
+	pylon_coords.append(Vector3(hz, get_terrain_height(hz, hz), hz))
+	pylon_coords.append(Vector3(-hz, get_terrain_height(-hz, hz), hz))
+
+	# Intermediate edge stakes
+	for offset in [-10.0, -5.0, 0.0, 5.0, 10.0]:
+		pylon_coords.append(Vector3(offset, get_terrain_height(offset, -hz), -hz)) # North
+		pylon_coords.append(Vector3(offset, get_terrain_height(offset, hz), hz))   # South
+		pylon_coords.append(Vector3(-hz, get_terrain_height(-hz, offset), offset)) # West
+		pylon_coords.append(Vector3(hz, get_terrain_height(hz, offset), offset))   # East
+
+	var pylon_body_mat := StandardMaterial3D.new()
+	pylon_body_mat.albedo_color = Color(0.18, 0.22, 0.28, 1.0)
+	pylon_body_mat.metallic = 0.8
+	pylon_body_mat.roughness = 0.4
+
+	for pt in pylon_coords:
+		var pylon_node := Node3D.new()
+		pylon_node.position = pt
+
+		# Metal Stake post
+		var post_mesh := MeshInstance3D.new()
+		var cyl := CylinderMesh.new()
+		cyl.top_radius = 0.04
+		cyl.bottom_radius = 0.05
+		cyl.height = 0.44
+		post_mesh.mesh = cyl
+		post_mesh.position = Vector3(0.0, 0.22, 0.0)
+		post_mesh.material_override = pylon_body_mat
+		post_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		pylon_node.add_child(post_mesh)
+
+		# Glowing Beacon Sensor Head
+		var beacon_mesh := MeshInstance3D.new()
+		var sph := SphereMesh.new()
+		sph.radius = 0.055
+		sph.height = 0.11
+		beacon_mesh.mesh = sph
+		beacon_mesh.position = Vector3(0.0, 0.45, 0.0)
+		beacon_mesh.material_override = stripe_mat
+		beacon_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		pylon_node.add_child(beacon_mesh)
+
+		demarcation.add_child(pylon_node)
+
+	add_child(demarcation)
+
+## Fleshes out all 4 outer sectors purely with smooth, natural desert rocks and boulders.
+## Eliminates all disconnected cubic blocks on the outer lands, creating a genuinely smooth,
+## vast alien desert landscape with continuous dunes and weathered rock formations.
+func _build_outer_sectors() -> void:
+	var outer_root := Node3D.new()
+	outer_root.name = "OuterSectors"
+
+	# -------------------------------------------------------------------------
+	# Sector 1: North Desert (Smooth Boulder Fields & Weathered Rocks)
+	# -------------------------------------------------------------------------
+	var sec_north := Node3D.new()
+	sec_north.name = "Sector_Outer_North"
+
+	_spawn_prop(sec_north, SCENE_ROCKS_A, Vector3(-20.0, 0.0, -22.0), 45.0)
+	_spawn_prop(sec_north, SCENE_ROCKS_A, Vector3(-10.0, 0.0, -25.0), -30.0)
+	_spawn_prop(sec_north, SCENE_ROCKS_A, Vector3(14.0, 0.0, -24.0), 75.0)
+	_spawn_prop(sec_north, SCENE_ROCKS_A, Vector3(25.0, 0.0, -26.0), -60.0)
+	_spawn_prop(sec_north, SCENE_ROCKS_B, Vector3(-15.0, 0.0, -28.0), 15.0)
+	_spawn_prop(sec_north, SCENE_ROCKS_B, Vector3(8.0, 0.0, -22.0), 120.0)
+	_spawn_prop(sec_north, SCENE_ROCKS_B, Vector3(20.0, 0.0, -28.0), -90.0)
+	_spawn_prop(sec_north, SCENE_ROCKS_B, Vector3(-28.0, 0.0, -25.0), 35.0)
+
+	_spawn_prop(sec_north, SCENE_ROCK_A, Vector3(-5.0, 0.0, -21.0), 60.0)
+	_spawn_prop(sec_north, SCENE_ROCK_A, Vector3(2.0, 0.0, -22.0), -45.0)
+	_spawn_prop(sec_north, SCENE_ROCK_A, Vector3(22.0, 0.0, -21.0), 90.0)
+	_spawn_prop(sec_north, SCENE_ROCK_A, Vector3(-22.0, 0.0, -21.0), -120.0)
+	_spawn_prop(sec_north, SCENE_ROCK_B, Vector3(-26.0, 0.0, -20.0), 15.0)
+	_spawn_prop(sec_north, SCENE_ROCK_B, Vector3(16.0, 0.0, -20.0), -70.0)
+	_spawn_prop(sec_north, SCENE_ROCK_B, Vector3(0.0, 0.0, -24.0), 180.0)
+	_spawn_prop(sec_north, SCENE_ROCK_B, Vector3(-12.0, 0.0, -21.0), 40.0)
+
+	outer_root.add_child(sec_north)
+
+	# -------------------------------------------------------------------------
+	# Sector 2: South Desert (Ancient Canyon Wash Boulders)
+	# -------------------------------------------------------------------------
+	var sec_south := Node3D.new()
+	sec_south.name = "Sector_Outer_South"
+
+	_spawn_prop(sec_south, SCENE_ROCKS_A, Vector3(-22.0, 0.0, 23.0), 120.0)
+	_spawn_prop(sec_south, SCENE_ROCKS_A, Vector3(-12.0, 0.0, 21.0), -45.0)
+	_spawn_prop(sec_south, SCENE_ROCKS_A, Vector3(10.0, 0.0, 22.0), 30.0)
+	_spawn_prop(sec_south, SCENE_ROCKS_A, Vector3(26.0, 0.0, 26.0), -110.0)
+	_spawn_prop(sec_south, SCENE_ROCKS_B, Vector3(-18.0, 0.0, 26.0), 45.0)
+	_spawn_prop(sec_south, SCENE_ROCKS_B, Vector3(4.0, 0.0, 22.0), -60.0)
+	_spawn_prop(sec_south, SCENE_ROCKS_B, Vector3(18.0, 0.0, 25.0), 100.0)
+	_spawn_prop(sec_south, SCENE_ROCKS_B, Vector3(-28.0, 0.0, 24.0), -30.0)
+
+	_spawn_prop(sec_south, SCENE_ROCK_A, Vector3(-6.0, 0.0, 21.0), 45.0)
+	_spawn_prop(sec_south, SCENE_ROCK_A, Vector3(14.0, 0.0, 21.0), -85.0)
+	_spawn_prop(sec_south, SCENE_ROCK_A, Vector3(22.0, 0.0, 23.0), 15.0)
+	_spawn_prop(sec_south, SCENE_ROCK_A, Vector3(-24.0, 0.0, 21.0), -70.0)
+	_spawn_prop(sec_south, SCENE_ROCK_B, Vector3(-15.0, 0.0, 21.0), 90.0)
+	_spawn_prop(sec_south, SCENE_ROCK_B, Vector3(2.0, 0.0, 21.0), 0.0)
+	_spawn_prop(sec_south, SCENE_ROCK_B, Vector3(20.0, 0.0, 21.0), 140.0)
+	_spawn_prop(sec_south, SCENE_ROCK_B, Vector3(-2.0, 0.0, 25.0), -20.0)
+
+	outer_root.add_child(sec_south)
+
+	# -------------------------------------------------------------------------
+	# Sector 3: East Desert (Crater Ridge Rock Outcrops)
+	# -------------------------------------------------------------------------
+	var sec_east := Node3D.new()
+	sec_east.name = "Sector_Outer_East"
+
+	_spawn_prop(sec_east, SCENE_ROCKS_A, Vector3(21.0, 0.0, -6.0), 30.0)
+	_spawn_prop(sec_east, SCENE_ROCKS_A, Vector3(22.0, 0.0, 7.0), -75.0)
+	_spawn_prop(sec_east, SCENE_ROCKS_A, Vector3(27.0, 0.0, -2.0), 120.0)
+	_spawn_prop(sec_east, SCENE_ROCKS_A, Vector3(30.0, 0.0, 6.0), -40.0)
+	_spawn_prop(sec_east, SCENE_ROCKS_B, Vector3(21.0, 0.0, 2.0), 45.0)
+	_spawn_prop(sec_east, SCENE_ROCKS_B, Vector3(26.0, 0.0, -10.0), -30.0)
+	_spawn_prop(sec_east, SCENE_ROCKS_B, Vector3(26.0, 0.0, 11.0), 85.0)
+	_spawn_prop(sec_east, SCENE_ROCKS_B, Vector3(32.0, 0.0, -6.0), -110.0)
+
+	_spawn_prop(sec_east, SCENE_ROCK_A, Vector3(20.0, 0.0, -10.0), 0.0)
+	_spawn_prop(sec_east, SCENE_ROCK_A, Vector3(20.0, 0.0, 12.0), 90.0)
+	_spawn_prop(sec_east, SCENE_ROCK_A, Vector3(24.0, 0.0, -1.0), -45.0)
+	_spawn_prop(sec_east, SCENE_ROCK_A, Vector3(29.0, 0.0, 2.0), 60.0)
+	_spawn_prop(sec_east, SCENE_ROCK_B, Vector3(20.0, 0.0, -2.0), -90.0)
+	_spawn_prop(sec_east, SCENE_ROCK_B, Vector3(20.0, 0.0, 5.0), 45.0)
+	_spawn_prop(sec_east, SCENE_ROCK_B, Vector3(25.0, 0.0, 0.0), 180.0)
+	_spawn_prop(sec_east, SCENE_ROCK_B, Vector3(28.0, 0.0, -12.0), -60.0)
+
+	outer_root.add_child(sec_east)
+
+	# -------------------------------------------------------------------------
+	# Sector 4: West Desert (Sandstone Plateau Boulders)
+	# -------------------------------------------------------------------------
+	var sec_west := Node3D.new()
+	sec_west.name = "Sector_Outer_West"
+
+	_spawn_prop(sec_west, SCENE_ROCKS_A, Vector3(-21.0, 0.0, -5.0), -45.0)
+	_spawn_prop(sec_west, SCENE_ROCKS_A, Vector3(-22.0, 0.0, 6.0), 60.0)
+	_spawn_prop(sec_west, SCENE_ROCKS_A, Vector3(-27.0, 0.0, -2.0), -120.0)
+	_spawn_prop(sec_west, SCENE_ROCKS_A, Vector3(-30.0, 0.0, 7.0), 35.0)
+	_spawn_prop(sec_west, SCENE_ROCKS_B, Vector3(-21.0, 0.0, 2.0), -45.0)
+	_spawn_prop(sec_west, SCENE_ROCKS_B, Vector3(-26.0, 0.0, -10.0), 60.0)
+	_spawn_prop(sec_west, SCENE_ROCKS_B, Vector3(-26.0, 0.0, 11.0), -85.0)
+	_spawn_prop(sec_west, SCENE_ROCKS_B, Vector3(-32.0, 0.0, -6.0), 110.0)
+
+	_spawn_prop(sec_west, SCENE_ROCK_A, Vector3(-20.0, 0.0, -10.0), 180.0)
+	_spawn_prop(sec_west, SCENE_ROCK_A, Vector3(-20.0, 0.0, 12.0), -90.0)
+	_spawn_prop(sec_west, SCENE_ROCK_A, Vector3(-24.0, 0.0, -1.0), 45.0)
+	_spawn_prop(sec_west, SCENE_ROCK_A, Vector3(-29.0, 0.0, 2.0), -60.0)
+	_spawn_prop(sec_west, SCENE_ROCK_B, Vector3(-20.0, 0.0, -2.0), 90.0)
+	_spawn_prop(sec_west, SCENE_ROCK_B, Vector3(-20.0, 0.0, 5.0), -45.0)
+	_spawn_prop(sec_west, SCENE_ROCK_B, Vector3(-25.0, 0.0, 0.0), 0.0)
+	_spawn_prop(sec_west, SCENE_ROCK_B, Vector3(-28.0, 0.0, -12.0), 60.0)
+
+	outer_root.add_child(sec_west)
+
+	# -------------------------------------------------------------------------
+	# Outer Corner Natural Rock Formations
+	# -------------------------------------------------------------------------
+	_spawn_prop(outer_root, SCENE_ROCKS_A, Vector3(-32.0, 0.0, -32.0), 0.0)
+	_spawn_prop(outer_root, SCENE_ROCKS_B, Vector3(32.0, 0.0, -32.0), 90.0)
+	_spawn_prop(outer_root, SCENE_ROCKS_B, Vector3(-32.0, 0.0, 32.0), -90.0)
+	_spawn_prop(outer_root, SCENE_ROCKS_A, Vector3(32.0, 0.0, 32.0), 180.0)
+
+	add_child(outer_root)
+
+## Builds subtle high-altitude horizon atmospheric dust bands in the far distance
+## without discoloring or obscuring the outer terrain ground.
+func _build_outer_fog() -> void:
+	var fog_root := Node3D.new()
+	fog_root.name = "OuterAtmosphere"
+
+	var mist_mat := StandardMaterial3D.new()
+	mist_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	# Very subtle atmospheric desert dust haze along the far perimeter boundary
+	mist_mat.albedo_color = Color(0.65, 0.35, 0.20, 0.04)
+	mist_mat.roughness = 1.0
+	mist_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mist_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+
+	# Subtle horizon bands positioned along the far perimeter edge (36m out, high in the sky)
+	var haze_zones := [
+		{"pos": Vector3(0.0, 4.5, -36.0), "size": Vector2(72.0, 6.0)}, # North Horizon
+		{"pos": Vector3(0.0, 4.5, 36.0), "size": Vector2(72.0, 6.0)},   # South Horizon
+		{"pos": Vector3(-36.0, 4.5, 0.0), "size": Vector2(6.0, 72.0)},  # West Horizon
+		{"pos": Vector3(36.0, 4.5, 0.0), "size": Vector2(6.0, 72.0)},   # East Horizon
+	]
+
+	for z in haze_zones:
+		var mi := MeshInstance3D.new()
+		var plane := PlaneMesh.new()
+		plane.size = z["size"]
+		mi.mesh = plane
+		mi.position = z["pos"]
+		mi.material_override = mist_mat
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		fog_root.add_child(mi)
+
+	add_child(fog_root)
+
+## Helper to instantiate an FBX prop safely with position, rotation, and scale.
+## Automatically snaps the prop to local terrain elevation so it sits naturally on the ground.
+func _spawn_prop(parent: Node, scene_res: PackedScene, pos: Vector3, rot_deg_y: float = 0.0, p_scale: Vector3 = Vector3.ONE) -> Node3D:
+	if scene_res == null:
+		return null
+	var inst : Node3D = scene_res.instantiate() as Node3D
+	if inst == null:
+		return null
+	var ground_y : float = get_terrain_height(pos.x, pos.z)
+	inst.position = Vector3(pos.x, ground_y + pos.y, pos.z)
+	inst.rotation_degrees.y = rot_deg_y
+	inst.scale = p_scale
+	parent.add_child(inst)
+	return inst
+
+## Snaps all enemy spawners in the scene to the local ground surface.
+func _snap_enemy_spawners() -> void:
+	var root_node : Node = get_parent()
+	if root_node == null:
+		return
+	for c in root_node.get_children():
+		if c.name.begins_with("EnemySpawner") and (c is Node3D):
+			var n3d := c as Node3D
+			var gy : float = get_terrain_height(n3d.global_position.x, n3d.global_position.z)
+			n3d.global_position.y = gy + 0.1
+
+## Guarantees the player spawns securely atop the terrain without colliding with rocks or underground geometry.
+func _ensure_player_spawn_safe() -> void:
+	var tree : SceneTree = get_tree()
+	var player : Node3D = tree.get_first_node_in_group("player") as Node3D if tree != null else null
+	if player == null and get_parent() != null:
+		player = get_parent().find_child("ProtoController", true, false) as Node3D
+	if player != null and is_instance_valid(player) and player.is_inside_tree():
+		var gy : float = get_terrain_height(player.global_position.x, player.global_position.z)
+		player.global_position.y = maxf(player.global_position.y, gy + 0.15)
+
+## Creates the outer true boundary barriers at the edge of the expanded map to prevent falling off.
+## Perfectly aligns North, South, East, and West walls so corners meet cleanly with zero overlapping tails.
+func _build_perimeter_boundaries() -> void:
+	var half_x : float = ground_size.x * 0.48 # 38.4m
+	var half_z : float = ground_size.y * 0.48 # 38.4m
+	var wall_height : float = 8.0
+	var thickness : float = 2.0
+	var span_x : float = half_x * 2.0 # 76.8m
+	var span_z : float = half_z * 2.0 # 76.8m
+
+	var boundaries := [
+		{"pos": Vector3(0, wall_height * 0.5, -half_z), "size": Vector3(span_x, wall_height, thickness)}, # North
+		{"pos": Vector3(0, wall_height * 0.5, half_z), "size": Vector3(span_x, wall_height, thickness)},  # South
+		{"pos": Vector3(-half_x, wall_height * 0.5, 0), "size": Vector3(thickness, wall_height, span_z)}, # West
+		{"pos": Vector3(half_x, wall_height * 0.5, 0), "size": Vector3(thickness, wall_height, span_z)},  # East
+	]
+
+	var walls_node := StaticBody3D.new()
+	walls_node.name = "PerimeterBarriers"
+	walls_node.collision_layer = 1
+	walls_node.collision_mask = 1
+	walls_node.add_to_group("navigation_geometry")
+
+	var b_mat := StandardMaterial3D.new()
+	b_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	b_mat.albedo_color = Color(0.2, 0.7, 0.95, 0.25)
+	b_mat.emission_enabled = true
+	b_mat.emission = Color(0.15, 0.55, 0.85)
+	b_mat.emission_energy_multiplier = 0.8
+
+	for b in boundaries:
+		var col := CollisionShape3D.new()
+		var box := BoxShape3D.new()
+		box.size = b["size"]
+		col.shape = box
+		col.position = b["pos"]
+		walls_node.add_child(col)
+
+		# Visual containment barrier grid at the perimeter
+		var barrier_mesh := MeshInstance3D.new()
+		var box_mesh := BoxMesh.new()
+		var b_size : Vector3 = b["size"]
+		box_mesh.size = Vector3(b_size.x, 3.0, 0.08) if b_size.x > b_size.z else Vector3(0.08, 3.0, b_size.z)
+
+		barrier_mesh.mesh = box_mesh
+		barrier_mesh.position = Vector3(b["pos"].x, 1.5, b["pos"].z)
+		barrier_mesh.material_override = b_mat
+		barrier_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		walls_node.add_child(barrier_mesh)
+
+	# Corner containment pylon columns at the 4 perimeter corners
+	for corner in [Vector3(-half_x, 0, -half_z), Vector3(half_x, 0, -half_z), Vector3(half_x, 0, half_z), Vector3(-half_x, 0, half_z)]:
+		var p_mesh := MeshInstance3D.new()
+		var cyl := CylinderMesh.new()
+		cyl.top_radius = 0.2
+		cyl.bottom_radius = 0.2
+		cyl.height = 3.4
+		p_mesh.mesh = cyl
+		p_mesh.position = Vector3(corner.x, 1.7, corner.z)
+		p_mesh.material_override = b_mat
+		p_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		walls_node.add_child(p_mesh)
+
+	add_child(walls_node)
+
+## Spawns the central Weapons Box Dispenser for the active map theme.
+func _spawn_weapons_box() -> void:
+	var box_pos := Vector3(0.0, 0.0, 0.0)
+	match map_theme:
+		MapTheme.CANYON_WASTELAND:
+			box_pos = Vector3(0.0, 0.0, 2.5)
+		MapTheme.SPACE_BASE:
+			box_pos = Vector3(0.0, 0.0, 0.0)
+		MapTheme.TRANSPORT_DOCK:
+			box_pos = Vector3(0.0, 0.0, 0.0)
+	_spawn_prop(self, SCENE_WEAPONS_BOX, box_pos)
+
+## Recursively creates convex collisions on all MeshInstance3Ds that lack colliders.
+## Crater/mining hole tiles receive concave trimesh collisions so the hollow crater interior is walkable.
+## Skips dynamic vehicles, weapons box, and CharacterBodies so physics remains dynamic.
+func _setup_prop_collisions(node: Node) -> void:
+	if node == null:
+		return
+	if node.is_in_group("vehicle") or node.is_in_group("weapons_box") or node is CharacterBody3D:
+		return
+	if node is MeshInstance3D:
+		var mi := node as MeshInstance3D
+		# terrain_low tiles are visual floor blocks; GroundBase provides seamless continuous floor collision.
+		# All other props (terrain_tall, terrain_slope, terrain_slope_inner_corner, terrain_slope_outer_corner, terrain_mining, rocks, modules) get colliders.
+		if mi.mesh != null and not _has_static_body_child(mi) and not mi.name.begins_with("terrain_low"):
+			# True concave trimesh collision for crater/excavation hole tiles so players and entities can walk inside the crater
+			if mi.name.begins_with("terrain_mining") or "mining" in mi.name.to_lower():
+				mi.create_trimesh_collision()
+			else:
+				mi.create_convex_collision(true, false)
+			for c in mi.get_children():
+				if c is StaticBody3D:
+					c.collision_layer = 1
+					c.collision_mask = 1
+					c.add_to_group("navigation_geometry")
+
+	for child in node.get_children():
+		# Do not add collisions to ground plane, perimeter barrier lines, demarcation line, or atmospheric mist
+		if child.name != "GroundBase" and child.name != "PerimeterBarriers" and child.name != "DemarcationLine" and child.name != "OuterAtmosphere" and not child.is_in_group("weapons_box"):
+			_setup_prop_collisions(child)
+
+func _has_static_body_child(node: Node) -> bool:
+	for c in node.get_children():
+		if c is StaticBody3D:
+			return true
+	return false

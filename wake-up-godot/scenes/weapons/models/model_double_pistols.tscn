@@ -1,0 +1,145 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/weapons/weapon_model.gd" id="1_wm"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_MatteDark"]
+albedo_color = Color(0.12, 0.14, 0.16, 1)
+metallic = 0.8
+roughness = 0.35
+
+[sub_resource type="StandardMaterial3D" id="Mat_GreenGlow"]
+shading_mode = 0
+albedo_color = Color(0.3, 1, 0.45, 1)
+
+[sub_resource type="BoxMesh" id="Mesh_Slide"]
+material = SubResource("Mat_MatteDark")
+size = Vector3(0.024, 0.034, 0.12)
+
+[sub_resource type="BoxMesh" id="Mesh_Conduit"]
+material = SubResource("Mat_GreenGlow")
+size = Vector3(0.026, 0.007, 0.08)
+
+[sub_resource type="BoxMesh" id="Mesh_Grip"]
+material = SubResource("Mat_MatteDark")
+size = Vector3(0.022, 0.05, 0.028)
+
+[sub_resource type="BoxMesh" id="Mesh_Bridge"]
+material = SubResource("Mat_MatteDark")
+size = Vector3(0.08, 0.014, 0.035)
+
+[sub_resource type="CylinderMesh" id="Mesh_Barrel"]
+material = SubResource("Mat_MatteDark")
+top_radius = 0.009
+bottom_radius = 0.009
+height = 0.035
+radial_segments = 8
+
+[sub_resource type="StandardMaterial3D" id="Mat_FlashGreen"]
+shading_mode = 0
+albedo_color = Color(0.65, 1, 0.7, 1)
+
+[sub_resource type="SphereMesh" id="Mesh_Flash"]
+material = SubResource("Mat_FlashGreen")
+radius = 0.035
+height = 0.07
+
+[sub_resource type="BoxMesh" id="Mesh_Spark"]
+material = SubResource("Mat_FlashGreen")
+size = Vector3(0.01, 0.04, 0.01)
+
+[node name="ModelDoublePistols" type="Node3D"]
+script = ExtResource("1_wm")
+
+[node name="Bridge" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.022, -0.01)
+mesh = SubResource("Mesh_Bridge")
+
+[node name="CentralGrip" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, -0.015, 0.005)
+mesh = SubResource("Mesh_Grip")
+
+[node name="RightPistol" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.04, 0, 0)
+
+[node name="Slide" type="MeshInstance3D" parent="RightPistol"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.025, -0.03)
+mesh = SubResource("Mesh_Slide")
+
+[node name="Conduit" type="MeshInstance3D" parent="RightPistol"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, -0.03)
+mesh = SubResource("Mesh_Conduit")
+
+[node name="Barrel" type="MeshInstance3D" parent="RightPistol"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0.028, -0.095)
+mesh = SubResource("Mesh_Barrel")
+
+[node name="LeftPistol" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.04, 0, 0)
+
+[node name="Slide" type="MeshInstance3D" parent="LeftPistol"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.025, -0.03)
+mesh = SubResource("Mesh_Slide")
+
+[node name="Conduit" type="MeshInstance3D" parent="LeftPistol"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, -0.03)
+mesh = SubResource("Mesh_Conduit")
+
+[node name="Barrel" type="MeshInstance3D" parent="LeftPistol"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0.028, -0.095)
+mesh = SubResource("Mesh_Barrel")
+
+[node name="Muzzle" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.04, 0.028, -0.12)
+
+[node name="Flash" type="CPUParticles3D" parent="Muzzle"]
+emitting = false
+amount = 1
+lifetime = 0.06
+one_shot = true
+explosiveness = 1.0
+local_coords = true
+mesh = SubResource("Mesh_Flash")
+gravity = Vector3(0, 0, 0)
+
+[node name="Sparks" type="CPUParticles3D" parent="Muzzle"]
+emitting = false
+amount = 4
+lifetime = 0.08
+one_shot = true
+explosiveness = 1.0
+local_coords = true
+mesh = SubResource("Mesh_Spark")
+particle_flag_align_y = true
+direction = Vector3(0, 0, -1)
+spread = 20.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 1.0
+initial_velocity_max = 2.5
+
+[node name="MuzzleL" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.04, 0.028, -0.12)
+
+[node name="Flash" type="CPUParticles3D" parent="MuzzleL"]
+emitting = false
+amount = 1
+lifetime = 0.06
+one_shot = true
+explosiveness = 1.0
+local_coords = true
+mesh = SubResource("Mesh_Flash")
+gravity = Vector3(0, 0, 0)
+
+[node name="Sparks" type="CPUParticles3D" parent="MuzzleL"]
+emitting = false
+amount = 4
+lifetime = 0.08
+one_shot = true
+explosiveness = 1.0
+local_coords = true
+mesh = SubResource("Mesh_Spark")
+particle_flag_align_y = true
+direction = Vector3(0, 0, -1)
+spread = 20.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 1.0
+initial_velocity_max = 2.5
