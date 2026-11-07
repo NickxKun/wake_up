@@ -723,7 +723,8 @@ func _update_camera_sniper_zoom() -> void:
 		if cur_cls in configs:
 			base_cam_size = float(configs[cur_cls].get("camera_size", DEFAULT_CAM_SIZE))
 
-	var target_size : float = (base_cam_size + 1.8) if current_weapon == WeaponType.SNIPER else base_cam_size
+	var is_special_sniper : bool = (current_weapon == WeaponType.SNIPER and active_slot == SLOT_SPECIAL)
+	var target_size : float = (base_cam_size + 1.8) if is_special_sniper else base_cam_size
 	_camera_tween = create_tween()
 	_camera_tween.tween_property(camera, "size", target_size, 0.35).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 

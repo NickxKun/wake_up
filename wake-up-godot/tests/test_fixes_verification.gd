@@ -249,7 +249,7 @@ func _initialize() -> void:
 
 	var card_names := ["AstronautCard", "EngineerCard", "MedicCard", "ExplorerCard"]
 	var expected_visors := ["AstronautVisor", "EngineerVisor", "MedicVisor", "ExplorerVisor"]
-	var expected_weapons := ["ModelPistol", "ModelWrench", "ModelPistol", "ModelShotgun"]
+	var expected_weapons := ["ModelPistol", "ModelWrench", "ModelShotgun", "ModelSniper"]
 
 	for i in range(card_names.size()):
 		var cname : String = card_names[i]
