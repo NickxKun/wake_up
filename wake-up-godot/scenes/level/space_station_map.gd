@@ -985,6 +985,27 @@ func _spawn_prop(parent: Node, scene_res: PackedScene, pos: Vector3, rot_deg_y: 
 	inst.rotation_degrees.y = rot_deg_y
 	inst.scale = p_scale
 	parent.add_child(inst)
+
+	# If this is a light pole fixture, add a warm/cool tactical floodlight to illuminate the surroundings
+	if scene_res == SCENE_LIGHTS:
+		var pole_light := OmniLight3D.new()
+		pole_light.name = "PoleOmniLight"
+		pole_light.position = Vector3(0.0, 3.2, 0.0)
+		pole_light.omni_range = 11.0
+		pole_light.omni_attenuation = 1.0
+		pole_light.light_energy = 2.4
+		pole_light.shadow_enabled = true
+		pole_light.shadow_blur = 0.0
+		pole_light.shadow_bias = 0.02
+		match map_theme:
+			MapTheme.CANYON_WASTELAND:
+				pole_light.light_color = Color(1.0, 0.72, 0.38) # Warm halogen
+			MapTheme.SPACE_BASE:
+				pole_light.light_color = Color(0.40, 0.82, 1.0) # Outpost cyan
+			MapTheme.TRANSPORT_DOCK:
+				pole_light.light_color = Color(1.0, 0.85, 0.45) # Industrial amber
+		inst.add_child(pole_light)
+
 	return inst
 
 ## Snaps all enemy spawners in the scene to the local ground surface.
@@ -1270,6 +1291,15 @@ func _apply_theme_environment_and_sky() -> void:
 
 	if dnc != null and dnc.has_method("apply_theme"):
 		dnc.call("apply_theme", int(map_theme))
+
+	# Configure hard pixel-art shadows and crisp shadow map range on the directional sun light
+	if sun_light != null:
+		sun_light.shadow_enabled = true
+		sun_light.shadow_blur = 0.0
+		sun_light.shadow_bias = 0.015
+		sun_light.shadow_normal_bias = 0.8
+		sun_light.directional_shadow_max_distance = 48.0
+		sun_light.directional_shadow_blend_splits = false
 
 	if world_env != null and world_env.environment != null:
 		var env : Environment = world_env.environment

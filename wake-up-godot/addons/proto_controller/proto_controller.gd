@@ -86,6 +86,8 @@ var dash_cooldown_left : float = 0.0
 var is_dashing : bool = false
 var _dash_time_left : float = 0.0
 var _dash_direction : Vector3 = Vector3.ZERO
+var _pre_dash_facing : float = 0.0
+var _was_invulnerable_before_dash : bool = false
 var _dash_particles_instance : Node3D = null
 var _stamina_arc_instance : Node = null
 
@@ -281,6 +283,12 @@ func _physics_process(delta: float) -> void:
 		velocity.z = _dash_direction.z * dash_speed
 		if _dash_time_left <= 0.0:
 			is_dashing = false
+			# Restore player facing to pre-dash orientation
+			rotation.y = _pre_dash_facing
+			# Remove i-frames
+			var hc : Node = get_node_or_null("HealthComponent")
+			if hc != null:
+				hc.is_invulnerable = _was_invulnerable_before_dash
 			if is_instance_valid(_dash_particles_instance) and _dash_particles_instance.has_method("stop_dash"):
 				_dash_particles_instance.stop_dash()
 	elif can_move:
@@ -325,11 +333,14 @@ func _physics_process(delta: float) -> void:
 		global_position = rescue_pos
 		velocity = Vector3.ZERO
 
-func _perform_dash() -> void:
+func _perform_dash(custom_dir: Vector3 = Vector3.ZERO) -> void:
 	stamina = maxf(stamina - dash_cost, 0.0)
 	dash_cooldown_left = dash_cooldown
 	is_dashing = true
 	_dash_time_left = dash_duration
+
+	# Save orientation prior to dash so we can return to it when dash completes
+	_pre_dash_facing = rotation.y
 
 	stamina_changed.emit(stamina, max_stamina)
 	dash_cooldown_changed.emit(dash_cooldown_left, dash_cooldown)
@@ -337,7 +348,7 @@ func _perform_dash() -> void:
 	if is_instance_valid(_stamina_arc_instance) and _stamina_arc_instance.has_method("update_stamina"):
 		_stamina_arc_instance.update_stamina(stamina, max_stamina)
 
-	# Determine dash direction from movement input, or fallback to current facing
+	# Determine dash direction from custom parameter, movement input, or fallback to current facing
 	var input_dir := Input.get_vector(input_left, input_right, input_forward, input_back)
 	var anim : Node = get_node_or_null("PlayerAnimation")
 	var current_facing : Vector3 = Vector3(sin(rotation.y), 0.0, cos(rotation.y)).normalized()
@@ -346,30 +357,33 @@ func _perform_dash() -> void:
 		if not mesh_facing.is_zero_approx():
 			current_facing = mesh_facing.normalized()
 
-	if input_dir.length_squared() > 0.01:
+	if not custom_dir.is_zero_approx():
+		_dash_direction = custom_dir.normalized()
+	elif input_dir.length_squared() > 0.01:
 		var raw_dir := Vector3(input_dir.x, 0.0, input_dir.y)
 		_dash_direction = raw_dir.rotated(Vector3.UP, deg_to_rad(movement_offset_angle)).normalized()
 	else:
 		_dash_direction = current_facing
 
-	# Compute relative dash vector (forward, backward, left, right)
-	var fwd : Vector3 = current_facing
-	fwd.y = 0.0
-	fwd = fwd.normalized() if not fwd.is_zero_approx() else Vector3.FORWARD
-	var right_vec : Vector3 = fwd.cross(Vector3.UP).normalized()
-	var rel_fwd : float = _dash_direction.dot(fwd)
-	var rel_right : float = _dash_direction.dot(right_vec)
+	# Rotate character body immediately to face the dash direction
+	rotation.y = atan2(_dash_direction.x, _dash_direction.z)
 
-	# Trigger procedural dash animation with relative direction
+	# Grant complete i-frames (invulnerability) for the duration of the dash
+	var hc : Node = get_node_or_null("HealthComponent")
+	if hc != null:
+		_was_invulnerable_before_dash = hc.is_invulnerable
+		hc.is_invulnerable = true
+
+	# Trigger procedural dash animation (facing dash direction, so pure forward stance)
 	if anim != null and anim.has_method("play_dash"):
-		anim.call("play_dash", _dash_direction, current_facing, rel_fwd, rel_right)
+		anim.call("play_dash", _dash_direction, _dash_direction, 1.0, 0.0)
 
-	# Trigger dash particle effect
+	# Trigger dash particle effect (always fires backward from backpack)
 	if is_instance_valid(_dash_particles_instance):
-		if _dash_particles_instance.has_method("start_dash_directional"):
-			_dash_particles_instance.call("start_dash_directional", _dash_direction, current_facing, rel_fwd, rel_right, dash_duration)
-		elif _dash_particles_instance.has_method("start_dash"):
+		if _dash_particles_instance.has_method("start_dash"):
 			_dash_particles_instance.start_dash(_dash_direction, dash_duration)
+		elif _dash_particles_instance.has_method("start_dash_directional"):
+			_dash_particles_instance.call("start_dash_directional", _dash_direction, _dash_direction, 1.0, 0.0, dash_duration)
 		elif _dash_particles_instance.has_method("trigger"):
 			_dash_particles_instance.trigger(_dash_direction)
 

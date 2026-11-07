@@ -88,11 +88,6 @@ func spawn_random_weapon() -> void:
 	time_until_spawn = spawn_interval
 	_update_visuals()
 
-	# Audio cue for dispenser delivery
-	var snd : Node = get_node_or_null("/root/UiSound")
-	if snd != null and snd.has_method("play_weapon_pickup"):
-		snd.play_weapon_pickup()
-
 	weapon_dispensed.emit(current_weapon)
 
 ## Updates the holographic weapon representation, colors, and 3D floating labels.

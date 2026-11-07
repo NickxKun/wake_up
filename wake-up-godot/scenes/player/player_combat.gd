@@ -111,6 +111,9 @@ func _process(delta: float) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if not can_shoot:
 		return
+	# Cannot fire or perform combat actions while dashing (i-frames active)
+	if player != null and "is_dashing" in player and player.is_dashing:
+		return
 
 	# Weapon slot switching inputs (Key 1 = Basic Pistol, Key 2 = Special Weapon, Key Q = Quick Toggle)
 	if event is InputEventKey and event.pressed and not event.echo:
@@ -256,6 +259,9 @@ func _sync_active_slot_state() -> void:
 
 ## Discharges the active weapon. If is_alt_fire is true, shoots along the player's facing direction.
 func _fire(is_alt_fire: bool) -> void:
+	# Weapon lock: cannot fire mid-dash
+	if player != null and "is_dashing" in player and player.is_dashing:
+		return
 	_cooldown_left = shoot_cooldown
 
 	var center : Vector3 = player.global_position + Vector3(0.0, MUZZLE_HEIGHT, 0.0)

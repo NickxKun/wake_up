@@ -88,6 +88,10 @@ void fragment() {
 	ALBEDO = texture(SCREEN_TEXTURE, SCREEN_UV).rgb;
 	lineMask = clamp(depthDifference + normalDifference * 5.0, 0.1, lineAlpha);
 
+	// Crisp pixel-art ink outlines
+	float edge = clamp(depthDifference * 1.8 + normalDifference * 3.8, 0.0, 1.0);
+	float crisp_edge = step(0.28, edge);
+	ALBEDO = mix(ALBEDO, ALBEDO * 0.15, crisp_edge * lineAlpha);
 
 	if (!useLighting){
 		ALBEDO += clamp((normalDifference - depthDifference), 0.0, 1.0) * lineHighlight;
@@ -97,15 +101,27 @@ void fragment() {
 
 void light (){
 	if (useLighting){
-		vec4 normal = texture(NORMAL_TEXTURE, screenUV);
-		normal = normal * 2.0 - 1.0;
+		vec4 normal_sample = texture(NORMAL_TEXTURE, screenUV);
+		vec3 normal = normal_sample.rgb * 2.0 - 1.0;
 
 		// Calculate light direction safely without NaN from negative dot product
-		float dotNL = clamp(dot(normal.rgb, LIGHT), 0.0, 1.0);
-		dotNL = pow(dotNL, 1.8);
+		float dotNL = clamp(dot(normal, LIGHT), 0.0, 1.0);
 
-		if(LIGHT_IS_DIRECTIONAL)
-			DIFFUSE_LIGHT += mix(vec3(1.0), dotNL * LIGHT_COLOR * lightIntensity, lineMask);
+		// Quantize diffuse lighting into discrete pixel art bands (cel shading / 4 discrete tonal levels)
+		float steppedNL = floor(dotNL * 4.0 + 0.15) / 4.0;
+		steppedNL = clamp(steppedNL, 0.22, 1.0);
+
+		// Quantize shadows into crisp, hard pixel-art cuts
+		float shadowCut = step(0.35, ATTENUATION);
+		float finalLight = steppedNL * shadowCut;
+
+		if (LIGHT_IS_DIRECTIONAL) {
+			DIFFUSE_LIGHT += mix(vec3(0.9), finalLight * LIGHT_COLOR * lightIntensity, lineMask);
+		} else {
+			// Positional point/spot lights receive stepped pixel-art attenuation
+			float omniAtten = floor(ATTENUATION * 4.0 + 0.1) / 4.0;
+			DIFFUSE_LIGHT += steppedNL * omniAtten * LIGHT_COLOR * lightIntensity;
+		}
 	}
 	else
 		DIFFUSE_LIGHT = vec3(1.0);

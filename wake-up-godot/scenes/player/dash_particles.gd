@@ -44,74 +44,18 @@ func _physics_process(delta: float) -> void:
 func start_dash(_dash_dir: Vector3 = Vector3.ZERO, duration: float = 0.22) -> void:
 	start_dash_directional(_dash_dir, Vector3.ZERO, 1.0, 0.0, duration)
 
-## Activates discrete orthogonal reaction control thrusters based on relative dash vector.
-## Real astronaut MMU/SAFER physics: combination of fixed 90-degree orthogonal nozzles (never 45-degree angle).
-## Rear nozzles are fully independent so either can be fired individually or together.
-func start_dash_directional(_dash_dir: Vector3, _facing: Vector3, rel_fwd: float, rel_right: float, duration: float = 0.22) -> void:
+## Activates the rear backpack thrusters in one fixed backward direction (propelling the player forward).
+func start_dash_directional(_dash_dir: Vector3 = Vector3.ZERO, _facing: Vector3 = Vector3.ZERO, _rel_fwd: float = 1.0, _rel_right: float = 0.0, duration: float = 0.22) -> void:
 	_dash_timer = duration
-	rotation.y = deg_to_rad(180.0) # Always maintain fixed backpack alignment
+	rotation.y = deg_to_rad(180.0) # Fixed backward backpack nozzle alignment
 
-	var fire_rear_left : bool = false
-	var fire_rear_right : bool = false
+	# Always fire both rear backpack nozzles directly backwards (consistent single-direction thruster)
+	var fire_rear_left : bool = true
+	var fire_rear_right : bool = true
 	var fire_front_left : bool = false
 	var fire_front_right : bool = false
 	var fire_side_left : bool = false
 	var fire_side_right : bool = false
-
-	var is_forward : bool = rel_fwd > 0.35
-	var is_backward : bool = rel_fwd < -0.35
-	var is_right : bool = rel_right > 0.35
-	var is_left : bool = rel_right < -0.35
-
-	if is_forward:
-		if is_right:
-			# Diagonal Forward-Right:
-			# Left side nozzle fires 90° out left side of backpack (propels rightward)
-			# Rear nozzle CPUParticles3D fires backward (propels forward)
-			# Other rear nozzle CPUParticles3D_Right is OFF (independent rear nozzles!)
-			fire_side_left = true
-			fire_rear_left = true
-			fire_rear_right = false
-		elif is_left:
-			# Diagonal Forward-Left:
-			# Right side nozzle fires 90° out right side of backpack (propels leftward)
-			# Rear nozzle CPUParticles3D_Right fires backward (propels forward)
-			# Other rear nozzle CPUParticles3D is OFF (independent rear nozzles!)
-			fire_side_right = true
-			fire_rear_left = false
-			fire_rear_right = true
-		else:
-			# Pure Forward: Both independent rear backpack nozzles fire backward
-			fire_rear_left = true
-			fire_rear_right = true
-	elif is_backward:
-		if is_right:
-			# Diagonal Backward-Right:
-			# Left side nozzle fires 90° out left side of backpack (propels rightward)
-			# Front Right chest nozzle fires forward (propels backward)
-			fire_side_left = true
-			fire_front_right = true
-		elif is_left:
-			# Diagonal Backward-Left:
-			# Right side nozzle fires 90° out right side of backpack (propels leftward)
-			# Front Left chest nozzle fires forward (propels backward)
-			fire_side_right = true
-			fire_front_left = true
-		else:
-			# Pure Backward: Both front chest nozzles fire forward
-			fire_front_left = true
-			fire_front_right = true
-	else:
-		if is_right:
-			# Pure Right: Left side nozzle fires 90° out left side
-			fire_side_left = true
-		elif is_left:
-			# Pure Left: Right side nozzle fires 90° out right side
-			fire_side_right = true
-		else:
-			# Default / neutral: Both rear backpack nozzles fire
-			fire_rear_left = true
-			fire_rear_right = true
 
 	# Set emission state on independent nozzles:
 	if cpu_particles != null:

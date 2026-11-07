@@ -353,6 +353,18 @@ func _ready() -> void:
 
 	_setup_button_hover(return_title_button)
 
+	# Ensure all card and button overlay children pass clicks through to their parent button (no dead zones!)
+	var all_interactive_buttons : Array[Button] = [
+		tutorial_card, survival_card, sandbox_card, story_card, coop_card,
+		astronaut_card, engineer_card, medic_card, explorer_card,
+		canyon_card, base_card, dock_card,
+		main_launch_button, main_deploy_button, map_proceed_button,
+		return_title_button, return_mode_button, map_return_button
+	]
+	for btn in all_interactive_buttons:
+		if btn != null:
+			_make_card_click_transparent(btn)
+
 	# Initialize selection state without animation
 	_update_mode_selection_ui(false)
 	_update_map_selection_ui(false)
@@ -1127,6 +1139,14 @@ func _setup_operative_card_interactions(card: Button, class_id: int) -> void:
 		tween.tween_property(card, "scale", target_scale, 0.14).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		tween.tween_property(card, "modulate:a", target_alpha, 0.14).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	)
+
+## Recursively sets mouse_filter to IGNORE on all non-button child controls
+## so clicks anywhere inside the card boundary land directly on the parent Button with zero dead zones.
+func _make_card_click_transparent(node: Node) -> void:
+	for child in node.get_children():
+		if child is Control and not (child is Button):
+			(child as Control).mouse_filter = Control.MOUSE_FILTER_IGNORE
+			_make_card_click_transparent(child)
 
 func _setup_locked_card_interactions(card: Button) -> void:
 	card.modulate.a = 0.45

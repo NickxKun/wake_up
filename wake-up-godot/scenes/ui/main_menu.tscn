@@ -45,6 +45,22 @@ gradient = SubResource("Gradient_sand_tint")
 fill_from = Vector2(0.5, 0)
 fill_to = Vector2(0.5, 1)
 
+[sub_resource type="Gradient" id="Gradient_range_tint"]
+colors = PackedColorArray(0.15, 0.75, 0.95, 0.65, 0.02, 0.08, 0.14, 0.96)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_range_tint"]
+gradient = SubResource("Gradient_range_tint")
+fill_from = Vector2(0.5, 0)
+fill_to = Vector2(0.5, 1)
+
+[sub_resource type="Gradient" id="Gradient_mayhem_tint"]
+colors = PackedColorArray(1, 0.38, 0.15, 0.72, 0.16, 0.03, 0.02, 0.96)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_mayhem_tint"]
+gradient = SubResource("Gradient_mayhem_tint")
+fill_from = Vector2(0.5, 0)
+fill_to = Vector2(0.5, 1)
+
 [sub_resource type="Gradient" id="Gradient_locked_tint"]
 colors = PackedColorArray(0.25, 0.28, 0.34, 0.82, 0.04, 0.05, 0.06, 0.98)
 
@@ -795,6 +811,7 @@ theme_override_font_sizes/font_size = 10
 horizontal_alignment = 1
 
 [node name="StoryCard" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow"]
+modulate = Color(1, 1, 1, 0.52)
 custom_minimum_size = Vector2(205, 360)
 layout_mode = 2
 focus_mode = 0
@@ -805,7 +822,6 @@ theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
 theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
 
 [node name="CardBackground" type="TextureRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard"]
-self_modulate = Color(0.48, 0.5, 0.55, 0.8)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -825,7 +841,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = SubResource("GradientTexture2D_locked_tint")
+texture = SubResource("GradientTexture2D_range_tint")
 expand_mode = 1
 
 [node name="SelectionBar" type="ColorRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard"]
@@ -884,6 +900,7 @@ text = "WEAPON TESTING"
 horizontal_alignment = 1
 
 [node name="CoopCard" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow"]
+modulate = Color(1, 1, 1, 0.52)
 custom_minimum_size = Vector2(205, 360)
 layout_mode = 2
 focus_mode = 0
@@ -894,7 +911,6 @@ theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
 theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
 
 [node name="CardBackground" type="TextureRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard"]
-self_modulate = Color(0.48, 0.5, 0.55, 0.8)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -914,7 +930,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = SubResource("GradientTexture2D_locked_tint")
+texture = SubResource("GradientTexture2D_mayhem_tint")
 expand_mode = 1
 
 [node name="SelectionBar" type="ColorRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard"]

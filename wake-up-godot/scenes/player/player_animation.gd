@@ -195,13 +195,15 @@ func _process(delta: float) -> void:
 		_update_yaw(delta)
 
 ## Call when the character executes a high-speed thruster dash.
-## Supports directional response relative to player facing (forward, backward, left, right).
-func play_dash(direction: Vector3 = Vector3.ZERO, _facing: Vector3 = Vector3.ZERO, rel_fwd: float = 1.0, rel_right: float = 0.0) -> void:
+## Character faces the dash direction, lean is always forward, and previous orientation is restored on completion.
+func play_dash(_direction: Vector3 = Vector3.ZERO, _facing: Vector3 = Vector3.ZERO, _rel_fwd: float = 1.0, _rel_right: float = 0.0) -> void:
 	if _skeleton == null or _is_dead():
 		return
 	_dash_timer = DASH_ANIM_DURATION
-	_dash_rel_forward = clampf(rel_fwd, -1.0, 1.0)
-	_dash_rel_right = clampf(rel_right, -1.0, 1.0)
+	_dash_rel_forward = 1.0
+	_dash_rel_right = 0.0
+	_aim_hold_left = 0.0
+	_yaw_offset = 0.0
 
 	if player_mesh != null:
 		var tween : Tween = create_tween().set_parallel(true)
