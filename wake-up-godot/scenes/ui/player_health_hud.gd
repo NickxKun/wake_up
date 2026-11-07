@@ -29,6 +29,10 @@ var player_deaths : int = 0
 var is_sandbox_mode : bool = false
 ## Whether Tutorial Mode is active (disables survival OOB boundaries).
 var is_tutorial_mode : bool = false
+## Whether Rocket Mayhem Mode is active (infinite rockets, blast immunity).
+var is_rocket_mayhem_mode : bool = false
+## Whether Target Practice Range Mode is active.
+var is_range_mode : bool = false
 ## Active map theme: 0 = Canyon Wasteland, 1 = Space Base, 2 = Transport Dock
 var selected_map_theme : int = 1
 
@@ -76,7 +80,7 @@ func _process(delta: float) -> void:
 func _handle_out_of_bounds(delta: float) -> void:
 	if not _is_setup or _player_ref == null or not is_instance_valid(health_component) or is_game_over():
 		return
-	if is_tutorial_mode:
+	if is_tutorial_mode or is_range_mode:
 		if is_instance_valid(_oob_warning):
 			_oob_warning.set_warning_active(false)
 		if is_instance_valid(_minimap):
@@ -596,7 +600,10 @@ func update_weapon_ammo(weapon_name: String, current_ammo: int, max_ammo: int) -
 	if is_instance_valid(_weapon_icon):
 		_weapon_icon.set_weapon(type_idx, accent_col)
 
-	if max_ammo <= 0 or current_ammo <= 0:
+	if is_rocket_mayhem_mode:
+		_weapon_ammo_label.text = "AMMO: ∞ (MAYHEM)"
+		_weapon_ammo_label.add_theme_color_override("font_color", Color(1.0, 0.45, 0.3))
+	elif max_ammo <= 0 or current_ammo <= 0:
 		_weapon_ammo_label.text = "AMMO: ∞"
 		_weapon_ammo_label.add_theme_color_override("font_color", Color(0.95, 0.95, 0.98))
 	else:
@@ -617,6 +624,8 @@ func update_weapon_ammo(weapon_name: String, current_ammo: int, max_ammo: int) -
 func _on_menu_requested() -> void:
 	get_tree().paused = false
 	is_sandbox_mode = false
+	is_rocket_mayhem_mode = false
+	is_range_mode = false
 	_cleanup_ui()
 	var snd : Node = get_node_or_null("/root/UiSound")
 	if snd != null and snd.has_method("play_music"):

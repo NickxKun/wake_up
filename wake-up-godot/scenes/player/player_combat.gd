@@ -99,6 +99,11 @@ func _ready() -> void:
 	_setup_laser_sight.call_deferred()
 	_roll_next_crit()
 
+	var hud : Node = get_node_or_null("/root/PlayerHealthHud")
+	if hud != null and "is_rocket_mayhem_mode" in hud and hud.is_rocket_mayhem_mode:
+		infinite_ammo = true
+		equip_weapon(WeaponType.ROCKET_LAUNCHER, true)
+
 func _process(delta: float) -> void:
 	_cooldown_left = maxf(_cooldown_left - delta, 0.0)
 	_update_laser_sight()
@@ -824,6 +829,12 @@ func apply_character_class(class_id: int) -> void:
 			starter_slot1_weapon = WeaponType.SNIPER
 		_:
 			starter_slot1_weapon = WeaponType.BASIC
+
+	var hud : Node = get_node_or_null("/root/PlayerHealthHud")
+	if hud != null and "is_rocket_mayhem_mode" in hud and hud.is_rocket_mayhem_mode:
+		infinite_ammo = true
+		equip_weapon(WeaponType.ROCKET_LAUNCHER, true)
+		return
 
 	if active_slot == SLOT_BASIC:
 		current_weapon = starter_slot1_weapon

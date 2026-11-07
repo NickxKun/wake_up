@@ -53,6 +53,12 @@ const SCENE_SOLARPANEL : PackedScene = preload("res://assets/models/fbx/solarpan
 const SCENE_WINDTURBINE_TALL : PackedScene = preload("res://assets/models/fbx/windturbine_tall.fbx")
 const SCENE_WINDTURBINE_LOW : PackedScene = preload("res://assets/models/fbx/windturbine_low.fbx")
 const SCENE_TRUCK_TRAILER : PackedScene = preload("res://assets/models/fbx/spacetruck_trailer.fbx")
+const SCENE_TARGET : PackedScene = preload("res://scenes/tutorial/training_target.tscn")
+const SCENE_BOSS_MECH : PackedScene = preload("res://scenes/enemy/boss_mech.tscn")
+
+@export var boss_spawn_interval : float = 300.0 # 5 minutes
+var _boss_spawn_timer : float = 300.0
+var _boss_spawn_active : bool = false
 
 var _ground_material : StandardMaterial3D = null
 var _perimeter_material : StandardMaterial3D = null
@@ -103,6 +109,7 @@ func _ready() -> void:
 	_build_terrain()
 	_configure_sectors_for_theme()
 	_spawn_weapons_box()
+	_spawn_map_targets()
 	_build_demarcation_line()
 	_build_outer_sectors()
 	_build_outer_fog()
@@ -111,7 +118,58 @@ func _ready() -> void:
 	_setup_prop_collisions(self)
 	_snap_enemy_spawners()
 	_ensure_player_spawn_safe()
+	_start_boss_director()
 	_is_ready = true
+
+func _process(delta: float) -> void:
+	if _boss_spawn_active:
+		_boss_spawn_timer -= delta
+		if _boss_spawn_timer <= 0.0:
+			_boss_spawn_timer = boss_spawn_interval
+			spawn_boss_mech()
+
+## Initiates the periodic 5-minute boss director for Survival and Rocket Mayhem
+func _start_boss_director() -> void:
+	var hud : Node = get_node_or_null("/root/PlayerHealthHud")
+	# Run in Survival or Rocket Mayhem (skip in tutorial)
+	if hud != null and "is_tutorial_mode" in hud and hud.is_tutorial_mode:
+		_boss_spawn_active = false
+		return
+	_boss_spawn_active = true
+	_boss_spawn_timer = boss_spawn_interval
+
+## Spawns the Goliath-class Titan Combat Mech boss
+func spawn_boss_mech() -> Node3D:
+	if SCENE_BOSS_MECH == null or not is_inside_tree():
+		return null
+	var tree : SceneTree = get_tree()
+	if tree != null:
+		var existing_bosses := tree.get_nodes_in_group("boss")
+		if not existing_bosses.is_empty():
+			return null
+
+	var spawn_pos := Vector3(0.0, 0.0, 16.5)
+	spawn_pos.y = get_terrain_height(spawn_pos.x, spawn_pos.z) + 0.1
+
+	var boss : Node3D = SCENE_BOSS_MECH.instantiate() as Node3D
+	if boss != null:
+		add_child(boss)
+		boss.global_position = spawn_pos
+		if boss.has_signal("boss_defeated"):
+			boss.connect("boss_defeated", Callable(self, "_on_boss_defeated"))
+		_show_boss_incoming_warning()
+	return boss
+
+func _on_boss_defeated(_b: Node) -> void:
+	_boss_spawn_timer = boss_spawn_interval
+
+func _show_boss_incoming_warning() -> void:
+	var snd : Node = get_node_or_null("/root/UiSound")
+	if snd != null and snd.has_method("play_warning_tick"):
+		snd.play_warning_tick()
+	var ss : Node = get_node_or_null("/root/ScreenShake")
+	if ss != null and ss.has_method("shake"):
+		ss.shake(0.7)
 
 ## Returns true once all level collisions are established.
 func is_geometry_ready() -> bool:
@@ -1034,13 +1092,46 @@ func _spawn_weapons_box() -> void:
 
 	_spawn_prop(self, SCENE_WEAPONS_BOX, box_pos)
 
+## Spawns fixed reactive tactical targets across the map that trigger armor regen when hit
+func _spawn_map_targets() -> void:
+	if SCENE_TARGET == null:
+		return
+	var targets_root : Node3D = get_node_or_null("MapTrainingTargets") as Node3D
+	if targets_root == null:
+		targets_root = Node3D.new()
+		targets_root.name = "MapTrainingTargets"
+		add_child(targets_root)
+	else:
+		for c in targets_root.get_children():
+			c.queue_free()
+
+	var target_coords := [
+		{"pos": Vector3(-6.5, 0.0, 0.0), "rot": 90.0},
+		{"pos": Vector3(6.5, 0.0, 0.0), "rot": -90.0},
+		{"pos": Vector3(0.0, 0.0, 6.5), "rot": 180.0},
+		{"pos": Vector3(0.0, 0.0, -6.5), "rot": 0.0},
+		{"pos": Vector3(-12.5, 0.0, 10.5), "rot": 45.0},
+		{"pos": Vector3(12.5, 0.0, -10.5), "rot": -135.0},
+	]
+
+	for tc in target_coords:
+		var target : TrainingTarget = SCENE_TARGET.instantiate() as TrainingTarget
+		if target != null:
+			target.regen_armor_on_hit = true
+			target.auto_reset_delay = 5.0
+			target.initial_health = 40
+			var gy : float = get_terrain_height(tc["pos"].x, tc["pos"].z)
+			target.position = Vector3(tc["pos"].x, gy, tc["pos"].z)
+			target.rotation_degrees.y = tc["rot"]
+			targets_root.add_child(target)
+
 ## Recursively creates convex collisions on all MeshInstance3Ds that lack colliders.
 ## Crater/mining hole tiles receive concave trimesh collisions so the hollow crater interior is walkable.
-## Skips dynamic vehicles, weapons box, and CharacterBodies so physics remains dynamic.
+## Skips dynamic vehicles, weapons box, targets, and CharacterBodies so physics remains dynamic.
 func _setup_prop_collisions(node: Node) -> void:
 	if node == null:
 		return
-	if node.is_in_group("vehicle") or node.is_in_group("weapons_box") or node is CharacterBody3D:
+	if node.is_in_group("vehicle") or node.is_in_group("weapons_box") or node.is_in_group("target") or node is CharacterBody3D or node is TrainingTarget:
 		return
 	if node is MeshInstance3D:
 		var mi := node as MeshInstance3D
@@ -1059,8 +1150,8 @@ func _setup_prop_collisions(node: Node) -> void:
 					c.add_to_group("navigation_geometry")
 
 	for child in node.get_children():
-		# Do not add collisions to ground plane, perimeter barrier lines, demarcation line, or atmospheric mist
-		if child.name != "GroundBase" and child.name != "PerimeterBarriers" and child.name != "DemarcationLine" and child.name != "OuterAtmosphere" and not child.is_in_group("weapons_box"):
+		# Do not add collisions to ground plane, perimeter barrier lines, demarcation line, atmospheric mist, or targets
+		if child.name != "GroundBase" and child.name != "PerimeterBarriers" and child.name != "DemarcationLine" and child.name != "OuterAtmosphere" and child.name != "MapTrainingTargets" and not child.is_in_group("weapons_box") and not child.is_in_group("target"):
 			_setup_prop_collisions(child)
 
 func _has_static_body_child(node: Node) -> bool:

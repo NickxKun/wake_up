@@ -795,7 +795,6 @@ theme_override_font_sizes/font_size = 10
 horizontal_alignment = 1
 
 [node name="StoryCard" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow"]
-modulate = Color(1, 1, 1, 0.45)
 custom_minimum_size = Vector2(205, 360)
 layout_mode = 2
 focus_mode = 0
@@ -829,6 +828,19 @@ mouse_filter = 2
 texture = SubResource("GradientTexture2D_locked_tint")
 expand_mode = 1
 
+[node name="SelectionBar" type="ColorRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard"]
+visible = false
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -4.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+color = Color(0.2, 0.75, 1, 1)
+
 [node name="CenterContainer" type="CenterContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard"]
 layout_mode = 1
 anchors_preset = 15
@@ -845,34 +857,33 @@ alignment = 1
 
 [node name="LockIcon" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard/CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.75, 0.78, 0.85, 0.95)
+theme_override_colors/font_color = Color(0.25, 0.85, 1, 0.95)
 theme_override_font_sizes/font_size = 22
-text = "🔒"
+text = "🎯"
 horizontal_alignment = 1
 
 [node name="ProtocolTag" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard/CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 0.55)
+theme_override_colors/font_color = Color(0.4, 0.8, 1, 0.8)
 theme_override_font_sizes/font_size = 10
 text = "PROTOCOL // 03"
 horizontal_alignment = 1
 
 [node name="Title" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard/CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.9, 0.95, 1)
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
 theme_override_font_sizes/font_size = 23
-text = "STORY MODE"
+text = "THE RANGE"
 horizontal_alignment = 1
 
 [node name="StatusLabel" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard/CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.75, 0.78, 0.85, 0.9)
+theme_override_colors/font_color = Color(0.3, 0.85, 1, 0.9)
 theme_override_font_sizes/font_size = 10
-text = "LOCKED // TEASER"
+text = "WEAPON TESTING"
 horizontal_alignment = 1
 
 [node name="CoopCard" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow"]
-modulate = Color(1, 1, 1, 0.45)
 custom_minimum_size = Vector2(205, 360)
 layout_mode = 2
 focus_mode = 0
@@ -906,6 +917,19 @@ mouse_filter = 2
 texture = SubResource("GradientTexture2D_locked_tint")
 expand_mode = 1
 
+[node name="SelectionBar" type="ColorRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard"]
+visible = false
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -4.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+color = Color(1, 0.35, 0.15, 1)
+
 [node name="CenterContainer" type="CenterContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard"]
 layout_mode = 1
 anchors_preset = 15
@@ -922,30 +946,30 @@ alignment = 1
 
 [node name="LockIcon" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard/CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.75, 0.78, 0.85, 0.95)
+theme_override_colors/font_color = Color(1, 0.45, 0.2, 0.95)
 theme_override_font_sizes/font_size = 22
-text = "🔒"
+text = "🚀"
 horizontal_alignment = 1
 
 [node name="ProtocolTag" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard/CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 0.55)
+theme_override_colors/font_color = Color(1, 0.6, 0.4, 0.8)
 theme_override_font_sizes/font_size = 10
 text = "PROTOCOL // 04"
 horizontal_alignment = 1
 
 [node name="Title" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard/CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.9, 0.95, 1)
+theme_override_colors/font_color = Color(1, 0.92, 0.9, 1)
 theme_override_font_sizes/font_size = 23
-text = "CO-OP SQUAD"
+text = "ROCKET MAYHEM"
 horizontal_alignment = 1
 
 [node name="StatusLabel" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard/CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.75, 0.78, 0.85, 0.9)
+theme_override_colors/font_color = Color(1, 0.45, 0.2, 0.9)
 theme_override_font_sizes/font_size = 10
-text = "LOCKED // TEASER"
+text = "CHAOS & EXPLOSIONS"
 horizontal_alignment = 1
 
 [node name="MapSelectSection" type="VBoxContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer"]

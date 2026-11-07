@@ -9,8 +9,19 @@ signal target_destroyed(target: TrainingTarget)
 @export var initial_health : int = 50
 @export var target_color : Color = Color(0.18, 0.72, 1.0) # Cyber cyan
 
+@export_group("Motion & Automation")
+@export var is_moving : bool = false
+@export var move_distance : float = 6.0
+@export var move_speed : float = 2.0
+@export var move_axis : Vector3 = Vector3.RIGHT
+@export var auto_reset_delay : float = 0.0 # Delay in seconds to pop back up after being destroyed/disabled
+@export var regen_armor_on_hit : bool = false # When true, hitting this target recharges player shields and disables target for 5s
+
 var _is_destroyed : bool = false
+var _is_disabled : bool = false
 var _initial_transform : Transform3D
+var _base_position : Vector3
+var _move_time : float = 0.0
 var _wobble_tween : Tween = null
 var _fold_tween : Tween = null
 
@@ -22,16 +33,73 @@ var _fold_tween : Tween = null
 func _ready() -> void:
 	add_to_group("target")
 	_initial_transform = transform
+	_base_position = position
 	if health_component != null:
 		health_component.health = initial_health
 		health_component.health_changed.connect(_on_health_changed)
 		health_component.health_depleted.connect(_on_health_depleted)
 	_setup_materials()
 
+func _process(delta: float) -> void:
+	if is_moving and not _is_destroyed and not _is_disabled:
+		_move_time += delta * move_speed
+		position = _base_position + move_axis.normalized() * (sin(_move_time) * (move_distance * 0.5))
+
 func take_damage(amount: int) -> int:
-	if _is_destroyed or health_component == null:
+	if _is_destroyed or _is_disabled or health_component == null:
 		return 0
+
+	if regen_armor_on_hit:
+		_trigger_player_armor_regen()
+		var delay : float = auto_reset_delay if auto_reset_delay > 0.0 else 5.0
+		_disable_temporarily(delay)
+		return amount
+
 	return health_component.decrease_health(amount)
+
+## Triggers immediate player shield/armor regeneration and audio feedback
+func _trigger_player_armor_regen() -> void:
+	var tree : SceneTree = get_tree()
+	if tree == null:
+		return
+	var player : Node3D = tree.get_first_node_in_group("player") as Node3D
+	if player == null:
+		return
+	var hc : HealthComponent = player.get_node_or_null("HealthComponent") as HealthComponent
+	if hc == null and player.get_parent() != null:
+		hc = player.get_parent().get_node_or_null("HealthComponent") as HealthComponent
+	if hc != null and hc.has_shield:
+		hc.shield_regen_timer = 0.0 # Initiates immediate armor/shield regen
+		hc.increase_shield(15.0)    # Direct instant restoration burst
+		var snd : Node = get_node_or_null("/root/UiSound")
+		if snd != null and snd.has_method("play_shield_regen_start"):
+			snd.play_shield_regen_start()
+
+## Temporarily collapses the target for a given duration before resetting
+func _disable_temporarily(delay: float) -> void:
+	if _is_disabled or _is_destroyed:
+		return
+	_is_disabled = true
+	if collision_shape != null:
+		collision_shape.set_deferred("disabled", true)
+	_play_hit_reaction()
+	_spawn_destruction_particles()
+
+	if model != null:
+		if _fold_tween != null and _fold_tween.is_valid():
+			_fold_tween.kill()
+		_fold_tween = create_tween().set_parallel(true)
+		_fold_tween.tween_property(model, "rotation_degrees:x", -90.0, 0.2).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		_fold_tween.tween_property(model, "position:y", -0.2, 0.2).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+	if mesh_instance != null and mesh_instance.material_override is StandardMaterial3D:
+		var mat := mesh_instance.material_override as StandardMaterial3D
+		mat.emission_enabled = false
+		mat.albedo_color = Color(0.1, 0.12, 0.15)
+
+	var tree : SceneTree = get_tree()
+	if tree != null:
+		tree.create_timer(delay).timeout.connect(reset_target)
 
 func _setup_materials() -> void:
 	if mesh_instance != null:
@@ -105,6 +173,12 @@ func _on_health_depleted() -> void:
 		_fold_tween.tween_property(model, "rotation_degrees:x", -90.0, 0.2).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 		_fold_tween.tween_property(model, "position:y", -0.2, 0.2).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
+	# Auto-reset if delay is configured
+	if auto_reset_delay > 0.0:
+		var tree : SceneTree = get_tree()
+		if tree != null:
+			tree.create_timer(auto_reset_delay).timeout.connect(reset_target)
+
 func _spawn_destruction_particles() -> void:
 	var p := CPUParticles3D.new()
 	p.top_level = true
@@ -144,11 +218,13 @@ func reset_target() -> void:
 		_fold_tween.kill()
 
 	_is_destroyed = false
+	_is_disabled = false
 	if collision_shape != null:
 		collision_shape.disabled = false
 	if health_component != null:
 		health_component.health = initial_health
 	if model != null:
-		model.rotation_degrees = Vector3.ZERO
-		model.position = Vector3.ZERO
+		var unfold_tween := create_tween().set_parallel(true)
+		unfold_tween.tween_property(model, "rotation_degrees:x", 0.0, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		unfold_tween.tween_property(model, "position:y", 0.0, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	_setup_materials()

@@ -2,12 +2,19 @@ extends CharacterBody3D
 
 ## Chases the player in a straight line and shoots at them.
 
+enum EnemyWeaponType {
+	PISTOL = 0,
+	SHOTGUN = 1,
+	DOUBLE_PISTOLS = 2,
+}
+
 const BULLET_SCENE : PackedScene = preload("res://scenes/projectiles/bullet.tscn")
 ## Height above the feet that bullets and line-of-sight rays start from.
 const MUZZLE_HEIGHT : float = 0.15
 ## Layers that block line of sight (level geometry).
 const SIGHT_COLLISION_MASK : int = 1
 
+@export var weapon_type : EnemyWeaponType = EnemyWeaponType.PISTOL
 @export var move_speed : float = 1.5
 ## Enemy stops moving when closer than this to the player.
 @export var stop_distance : float = 2.5
@@ -52,7 +59,34 @@ func _ready() -> void:
 	var hud : Node = get_node_or_null("/root/PlayerHealthHud")
 	if hud != null and hud.has_method("add_enemy_kill"):
 		health_component.health_depleted.connect(hud.add_enemy_kill)
+	set_weapon_type(weapon_type)
 	_shoot_timer = shoot_interval
+
+## Configures the combat role, weapon model attachment, and stats of this enemy unit
+func set_weapon_type(new_type: EnemyWeaponType) -> void:
+	weapon_type = new_type
+	match weapon_type:
+		EnemyWeaponType.SHOTGUN:
+			shoot_interval = 2.0
+			shoot_range = 7.5
+			model_tint = Color(1.0, 0.58, 0.22) # Heavy ballistic orange
+			model_emission = Color(1.0, 0.35, 0.05)
+			if enemy_animation != null and enemy_animation.has_method("set_weapon_model"):
+				enemy_animation.set_weapon_model(1)
+		EnemyWeaponType.DOUBLE_PISTOLS:
+			shoot_interval = 0.95
+			shoot_range = 8.5
+			model_tint = Color(0.35, 1.0, 0.55) # Cyber twin green
+			model_emission = Color(0.15, 0.85, 0.3)
+			if enemy_animation != null and enemy_animation.has_method("set_weapon_model"):
+				enemy_animation.set_weapon_model(3)
+		_:
+			shoot_interval = 1.5
+			shoot_range = 8.0
+			model_tint = Color(1.0, 0.35, 0.35) # Standard hostile crimson
+			model_emission = Color(1.0, 0.15, 0.1)
+			if enemy_animation != null and enemy_animation.has_method("set_weapon_model"):
+				enemy_animation.set_weapon_model(0)
 	_tint_model()
 
 func _on_death() -> void:
@@ -365,9 +399,6 @@ func _get_crowd_separation() -> Vector3:
 	return separation
 
 func _shoot(direction: Vector3) -> void:
-	var snd : Node = get_node_or_null("/root/UiSound")
-	if snd != null and snd.has_method("play_enemy_shoot"):
-		snd.play_enemy_shoot()
 	var muzzle : Vector3 = global_position + Vector3(0.0, MUZZLE_HEIGHT, 0.0) + direction * 0.4
 	if enemy_animation != null:
 		# Gun muzzle position in 3D
@@ -377,12 +408,43 @@ func _shoot(direction: Vector3) -> void:
 			var to_target : Vector3 = target_center - muzzle
 			if to_target.length_squared() > 0.0001:
 				direction = to_target.normalized()
+
+	match weapon_type:
+		EnemyWeaponType.SHOTGUN:
+			var snd : Node = get_node_or_null("/root/UiSound")
+			if snd != null and snd.has_method("play_shoot"):
+				snd.play_shoot(0.22)
+			var spread_angles := [-12.0, -6.0, 0.0, 6.0, 12.0]
+			for angle_deg in spread_angles:
+				var rad : float = deg_to_rad(angle_deg)
+				var spread_dir : Vector3 = direction.rotated(Vector3.UP, rad)
+				_spawn_enemy_bullet(muzzle, spread_dir, maxi(1, bullet_damage / 2), 0.75, 12.0)
+		EnemyWeaponType.DOUBLE_PISTOLS:
+			var snd : Node = get_node_or_null("/root/UiSound")
+			if snd != null and snd.has_method("play_shoot"):
+				snd.play_shoot(0.05)
+			var right_vec : Vector3 = direction.cross(Vector3.UP).normalized()
+			if right_vec.is_zero_approx():
+				right_vec = Vector3.RIGHT
+			_spawn_enemy_bullet(muzzle + right_vec * 0.14, direction, maxi(1, int(bullet_damage * 0.75)), 1.4, 13.0)
+			_spawn_enemy_bullet(muzzle - right_vec * 0.14, direction, maxi(1, int(bullet_damage * 0.75)), 1.4, 13.0)
+		_:
+			var snd : Node = get_node_or_null("/root/UiSound")
+			if snd != null and snd.has_method("play_enemy_shoot"):
+				snd.play_enemy_shoot()
+			_spawn_enemy_bullet(muzzle, direction, bullet_damage, 2.0, 10.0)
+
+func _spawn_enemy_bullet(muzzle_pos: Vector3, dir: Vector3, dmg: int, life: float = 2.0, spd: float = 10.0) -> void:
 	var bullet : Area3D = BULLET_SCENE.instantiate()
 	bullet.shooter = self
-	bullet.direction = direction
-	bullet.damage = bullet_damage
+	bullet.direction = dir
+	bullet.damage = dmg
+	if "speed" in bullet:
+		bullet.speed = spd
+	if "lifetime" in bullet:
+		bullet.lifetime = life
 	get_parent().add_child(bullet)
-	bullet.global_position = muzzle
+	bullet.global_position = muzzle_pos
 
 ## Gives each model surface a tinted copy of its material; roughness is kept so edge outlines still show.
 func _tint_model() -> void:

@@ -22,6 +22,8 @@ signal shield_regen_started
 const MIN_HEALTH : int = 0
 const MAX_HEALTH : int = 100
 
+@export var max_health : int = 100
+
 const MIN_SHIELD : float = 0.0
 const MAX_SHIELD : float = 100.0
 
@@ -39,10 +41,10 @@ const MAX_SHIELD : float = 100.0
 ## Health recovery rate in HP per second (+3 HP/s).
 @export var health_regen_rate : float = 3.0
 
-## Current health, always clamped between MIN_HEALTH and MAX_HEALTH.
-var health : int = MAX_HEALTH:
+## Current health, always clamped between MIN_HEALTH and max_health.
+var health : int = 100:
 	set(value):
-		health = clampi(value, MIN_HEALTH, MAX_HEALTH)
+		health = clampi(value, MIN_HEALTH, max_health)
 
 ## Current shield, always clamped between MIN_SHIELD and MAX_SHIELD.
 var shield : float = MAX_SHIELD:
@@ -77,7 +79,7 @@ func _process(delta: float) -> void:
 				shield_full.emit()
 
 	# Handle Passive Health Regeneration (Medic specialization)
-	if passive_health_regen and health < MAX_HEALTH:
+	if passive_health_regen and health < max_health:
 		if health_regen_timer > 0.0:
 			health_regen_timer = maxf(health_regen_timer - delta, 0.0)
 		else:
@@ -87,7 +89,7 @@ func _process(delta: float) -> void:
 				_health_regen_accum -= float(hp_to_add)
 				increase_health(hp_to_add)
 
-## Increments health by amount (default 1). Returns amount actually added, clamped to MAX_HEALTH.
+## Increments health by amount (default 1). Returns amount actually added, clamped to max_health.
 func increase_health(amount : int = 1) -> int:
 	if amount < 0:
 		push_error("HealthComponent: increase_health amount must not be negative.")
@@ -99,7 +101,7 @@ func increase_health(amount : int = 1) -> int:
 	if is_dead():
 		return 0
 	var old_health : int = health
-	health = mini(health + amount, MAX_HEALTH)
+	health = mini(health + amount, max_health)
 	health_changed.emit(health, old_health)
 	if is_full():
 		health_full.emit()
@@ -195,7 +197,7 @@ func is_dead() -> bool:
 	return health <= MIN_HEALTH
 
 func is_full() -> bool:
-	return health >= MAX_HEALTH
+	return health >= max_health
 
 func is_shield_full() -> bool:
 	return shield >= MAX_SHIELD

@@ -23,6 +23,28 @@ func _spawn() -> void:
 	if enemy != null:
 		if "bullet_damage" in enemy:
 			enemy.set("bullet_damage", first_enemy_damage + _spawn_count)
+
+		var hud : Node = get_node_or_null("/root/PlayerHealthHud")
+		var is_mayhem : bool = (hud != null and "is_rocket_mayhem_mode" in hud and hud.is_rocket_mayhem_mode)
+		if enemy.has_method("set_weapon_type"):
+			var roll : float = randf()
+			if is_mayhem:
+				# High chaos weapon frequency in Rocket Mayhem
+				if roll < 0.35:
+					enemy.call("set_weapon_type", 1) # SHOTGUN
+				elif roll < 0.70:
+					enemy.call("set_weapon_type", 2) # DOUBLE_PISTOLS
+				else:
+					enemy.call("set_weapon_type", 0) # PISTOL
+			else:
+				# Rare spawns in standard gameplay
+				if roll < 0.10:
+					enemy.call("set_weapon_type", 1) # SHOTGUN
+				elif roll < 0.20:
+					enemy.call("set_weapon_type", 2) # DOUBLE_PISTOLS
+				else:
+					enemy.call("set_weapon_type", 0) # PISTOL
+
 		_spawn_count += 1
 		parent.add_child(enemy)
 		enemy.global_transform = global_transform

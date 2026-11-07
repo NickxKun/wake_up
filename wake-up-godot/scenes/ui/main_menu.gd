@@ -5,9 +5,10 @@ extends Control
 
 const GAME_SCENE_PATH : String = "res://scenes/main.tscn"
 const TUTORIAL_SCENE_PATH : String = "res://scenes/tutorial/tutorial_map.tscn"
+const RANGE_SCENE_PATH : String = "res://scenes/gamemodes/range_mode.tscn"
 
 enum MenuState { TITLE_SCREEN = 0, MODE_SELECT = 1, CHARACTER_SELECT = 2, MAP_SELECT = 3 }
-enum GameMode { TUTORIAL, SURVIVAL, SANDBOX, STORY, COOP }
+enum GameMode { TUTORIAL, SURVIVAL, SANDBOX, RANGE, ROCKET_MAYHEM }
 
 var current_state : MenuState = MenuState.TITLE_SCREEN
 var selected_mode : GameMode = GameMode.SURVIVAL
@@ -40,7 +41,12 @@ var _prompt_tween : Tween
 @onready var sandbox_status : Label = $ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SandboxCard/CenterContainer/VBoxContainer/StatusLabel
 
 @onready var story_card : Button = $ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard
+@onready var story_bar : ColorRect = $ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard/SelectionBar
+@onready var story_status : Label = $ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard/CenterContainer/VBoxContainer/StatusLabel
+
 @onready var coop_card : Button = $ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard
+@onready var coop_bar : ColorRect = $ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard/SelectionBar
+@onready var coop_status : Label = $ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard/CenterContainer/VBoxContainer/StatusLabel
 
 @onready var main_launch_button : Button = $ModeSelectScreen/CenterCards/VBoxContainer/LaunchSection/MainLaunchButton
 @onready var return_title_button : Button = $ModeSelectScreen/BottomBar/HBoxContainer/ReturnTitleButton
@@ -204,22 +210,14 @@ func _ready() -> void:
 		_select_mode(GameMode.SANDBOX)
 	)
 
-	# Connect Locked Teaser Cards
+	# Connect Playable Mode Cards
 	story_card.pressed.connect(func():
-		_play_sound("toggle", false)
-		_open_teaser_modal(
-			"OPERATION AURORA // PROTOCOL 03",
-			"CLASSIFIED MILITARY BRIEFING",
-			"Classified planetary reconnaissance mission into deep uncharted sectors.\nFull narrative story campaign undergoing orbital clearance.\n\nSTATUS: ENCRYPTED // UNDER ACTIVE DEVELOPMENT"
-		)
+		_play_sound("click")
+		_select_mode(GameMode.RANGE)
 	)
 	coop_card.pressed.connect(func():
-		_play_sound("toggle", false)
-		_open_teaser_modal(
-			"TACTICAL SQUAD // PROTOCOL 04",
-			"CO-OPERATIVE DEPLOYMENT",
-			"Multiplayer neural network array connecting allied astronaut fireteams.\nCo-op tactical squad incursions currently under synchronization testing.\n\nSTATUS: OFFLINE // UNDER ACTIVE DEVELOPMENT"
-		)
+		_play_sound("click")
+		_select_mode(GameMode.ROCKET_MAYHEM)
 	)
 
 	if teaser_close_btn != null:
@@ -345,8 +343,8 @@ func _ready() -> void:
 	_setup_card_interactions(tutorial_card, GameMode.TUTORIAL)
 	_setup_card_interactions(survival_card, GameMode.SURVIVAL)
 	_setup_card_interactions(sandbox_card, GameMode.SANDBOX)
-	_setup_locked_card_interactions(story_card)
-	_setup_locked_card_interactions(coop_card)
+	_setup_card_interactions(story_card, GameMode.RANGE)
+	_setup_card_interactions(coop_card, GameMode.ROCKET_MAYHEM)
 	_setup_button_hover(main_launch_button)
 
 	_setup_icon_hover(settings_button)
@@ -535,6 +533,12 @@ func _transition_to_character_select() -> void:
 				var s_map : String = map_names[selected_sandbox_map] if selected_sandbox_map < map_names.size() else "SPACE BASE"
 				mission_briefing_label.text = "DEPLOYMENT: SANDBOX TESTBED // SECTOR %02d (%s)" % [selected_sandbox_map + 1, s_map]
 				mission_briefing_label.modulate = Color(0.96, 0.68, 0.18, 1.0)
+			GameMode.RANGE:
+				mission_briefing_label.text = "DEPLOYMENT: THE RANGE // PROTOCOL 03"
+				mission_briefing_label.modulate = Color(0.2, 0.75, 1.0, 1.0)
+			GameMode.ROCKET_MAYHEM:
+				mission_briefing_label.text = "DEPLOYMENT: ROCKET MAYHEM // PROTOCOL 04"
+				mission_briefing_label.modulate = Color(1.0, 0.35, 0.15, 1.0)
 
 	_update_character_selection_ui(false)
 
@@ -689,32 +693,46 @@ func _update_mode_selection_ui(animated: bool) -> void:
 	var is_tutorial : bool = (selected_mode == GameMode.TUTORIAL)
 	var is_survival : bool = (selected_mode == GameMode.SURVIVAL)
 	var is_sandbox : bool = (selected_mode == GameMode.SANDBOX)
+	var is_range : bool = (selected_mode == GameMode.RANGE)
+	var is_mayhem : bool = (selected_mode == GameMode.ROCKET_MAYHEM)
 
 	tutorial_bar.visible = is_tutorial
 	survival_bar.visible = is_survival
 	sandbox_bar.visible = is_sandbox
+	if story_bar != null: story_bar.visible = is_range
+	if coop_bar != null: coop_bar.visible = is_mayhem
 
 	tutorial_status.text = "◈ SELECTED ◈" if is_tutorial else ""
 	survival_status.text = "◈ SELECTED ◈" if is_survival else ""
 	sandbox_status.text = "◈ SELECTED ◈" if is_sandbox else ""
+	if story_status != null: story_status.text = "◈ SELECTED ◈" if is_range else "WEAPON TESTING"
+	if coop_status != null: coop_status.text = "◈ SELECTED ◈" if is_mayhem else "CHAOS & EXPLOSIONS"
+
+	if map_select_section != null:
+		map_select_section.visible = false
 
 	if is_tutorial:
-		if map_select_section != null: map_select_section.visible = false
 		main_launch_button.text = "▶  SELECT OPERATIVE  •  TUTORIAL"
 	elif is_survival:
-		if map_select_section != null: map_select_section.visible = false
 		main_launch_button.text = "▶  SELECT OPERATIVE  •  SURVIVAL"
 	elif is_sandbox:
-		if map_select_section != null: map_select_section.visible = false
 		main_launch_button.text = "▶  SELECT MAP  •  SANDBOX"
+	elif is_range:
+		main_launch_button.text = "▶  SELECT OPERATIVE  •  THE RANGE"
+	elif is_mayhem:
+		main_launch_button.text = "▶  SELECT OPERATIVE  •  ROCKET MAYHEM"
 
 	var tut_alpha : float = 1.0 if is_tutorial else 0.52
 	var surv_alpha : float = 1.0 if is_survival else 0.52
 	var sand_alpha : float = 1.0 if is_sandbox else 0.52
+	var range_alpha : float = 1.0 if is_range else 0.52
+	var mayhem_alpha : float = 1.0 if is_mayhem else 0.52
 
 	var tut_scale : Vector2 = Vector2(1.025, 1.025) if is_tutorial else Vector2.ONE
 	var surv_scale : Vector2 = Vector2(1.025, 1.025) if is_survival else Vector2.ONE
 	var sand_scale : Vector2 = Vector2(1.025, 1.025) if is_sandbox else Vector2.ONE
+	var range_scale : Vector2 = Vector2(1.025, 1.025) if is_range else Vector2.ONE
+	var mayhem_scale : Vector2 = Vector2(1.025, 1.025) if is_mayhem else Vector2.ONE
 
 	if animated:
 		var tween : Tween = create_tween().set_parallel(true)
@@ -724,6 +742,12 @@ func _update_mode_selection_ui(animated: bool) -> void:
 		tween.tween_property(survival_card, "scale", surv_scale, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		tween.tween_property(sandbox_card, "modulate:a", sand_alpha, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		tween.tween_property(sandbox_card, "scale", sand_scale, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		if story_card != null:
+			tween.tween_property(story_card, "modulate:a", range_alpha, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+			tween.tween_property(story_card, "scale", range_scale, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		if coop_card != null:
+			tween.tween_property(coop_card, "modulate:a", mayhem_alpha, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+			tween.tween_property(coop_card, "scale", mayhem_scale, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	else:
 		tutorial_card.modulate.a = tut_alpha
 		tutorial_card.scale = tut_scale
@@ -731,6 +755,12 @@ func _update_mode_selection_ui(animated: bool) -> void:
 		survival_card.scale = surv_scale
 		sandbox_card.modulate.a = sand_alpha
 		sandbox_card.scale = sand_scale
+		if story_card != null:
+			story_card.modulate.a = range_alpha
+			story_card.scale = range_scale
+		if coop_card != null:
+			coop_card.modulate.a = mayhem_alpha
+			coop_card.scale = mayhem_scale
 
 func _select_sandbox_map(map_index: int) -> void:
 	if selected_sandbox_map == map_index and current_state == MenuState.MAP_SELECT:
@@ -870,16 +900,70 @@ func _on_deploy_pressed() -> void:
 	_play_sound("click")
 	if selected_mode == GameMode.TUTORIAL:
 		_launch_tutorial(main_deploy_button)
+	elif selected_mode == GameMode.RANGE:
+		_launch_range(main_deploy_button)
+	elif selected_mode == GameMode.ROCKET_MAYHEM:
+		var hud : Node = get_node_or_null("/root/PlayerHealthHud")
+		if hud != null:
+			hud.is_sandbox_mode = false
+			hud.is_rocket_mayhem_mode = true
+			hud.is_range_mode = false
+			hud.selected_map_theme = randi() % 3
+		_launch_rocket_mayhem(main_deploy_button)
 	else:
 		var is_sandbox : bool = (selected_mode == GameMode.SANDBOX)
 		var hud : Node = get_node_or_null("/root/PlayerHealthHud")
 		if hud != null:
 			hud.is_sandbox_mode = is_sandbox
+			hud.is_rocket_mayhem_mode = false
+			hud.is_range_mode = false
 			if is_sandbox:
 				hud.selected_map_theme = selected_sandbox_map
 			else:
 				hud.selected_map_theme = randi() % 3
 		_launch_game_mode(is_sandbox, main_deploy_button)
+
+func _launch_range(trigger_button: Button) -> void:
+	if _is_transitioning:
+		return
+	_is_transitioning = true
+	_disable_menu_buttons()
+
+	var hud : Node = get_node_or_null("/root/PlayerHealthHud")
+	if hud != null:
+		hud.is_sandbox_mode = false
+		hud.is_rocket_mayhem_mode = false
+		hud.is_range_mode = true
+
+	var click_tween : Tween = create_tween()
+	if trigger_button != null:
+		click_tween.tween_property(trigger_button, "scale", Vector2(0.96, 0.96), 0.08)
+	click_tween.tween_property(self, "modulate:a", 0.0, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	click_tween.tween_callback(func():
+		var loader : Node = get_node_or_null("/root/LoadingScreen")
+		if loader != null and loader.has_method("load_scene"):
+			loader.call("load_scene", RANGE_SCENE_PATH, "DEPLOYING THE RANGE", "PROTOCOL // 03", Color(0.2, 0.75, 1.0, 1.0))
+		else:
+			get_tree().change_scene_to_file(RANGE_SCENE_PATH)
+	)
+
+func _launch_rocket_mayhem(trigger_button: Button) -> void:
+	if _is_transitioning:
+		return
+	_is_transitioning = true
+	_disable_menu_buttons()
+
+	var click_tween : Tween = create_tween()
+	if trigger_button != null:
+		click_tween.tween_property(trigger_button, "scale", Vector2(0.96, 0.96), 0.08)
+	click_tween.tween_property(self, "modulate:a", 0.0, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	click_tween.tween_callback(func():
+		var loader : Node = get_node_or_null("/root/LoadingScreen")
+		if loader != null and loader.has_method("load_scene"):
+			loader.call("load_scene", GAME_SCENE_PATH, "ROCKET MAYHEM INITIATED", "PROTOCOL // 04", Color(1.0, 0.35, 0.15, 1.0))
+		else:
+			get_tree().change_scene_to_file(GAME_SCENE_PATH)
+	)
 
 func _launch_tutorial(trigger_button: Button) -> void:
 	if _is_transitioning:

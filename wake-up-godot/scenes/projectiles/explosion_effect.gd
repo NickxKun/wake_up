@@ -222,14 +222,20 @@ static func apply_explosion_damage(
 
 		# The player takes lesser damage from explosions, but is affected nonetheless
 		var is_player : bool = target.is_in_group("player") or target.name.to_lower().contains("proto_controller") or target.name.to_lower().contains("protocontroller")
+		var hud : Node = tree.root.get_node_or_null("PlayerHealthHud") if tree != null and tree.root != null else null
+		var is_rocket_mayhem : bool = (hud != null and "is_rocket_mayhem_mode" in hud and hud.is_rocket_mayhem_mode)
+
 		var target_mult : float = player_damage_mult if is_player else 1.0
 		var calculated_damage : int = maxi(1, roundi(float(base_damage) * falloff * target_mult))
+		if is_player and is_rocket_mayhem:
+			# In Rocket Mayhem mode, players do not take damage from rocket explosions!
+			calculated_damage = 0
 
 		var hc : HealthComponent = target.get_node_or_null("HealthComponent") as HealthComponent
 		if hc == null and target.get_parent() != null:
 			hc = target.get_parent().get_node_or_null("HealthComponent") as HealthComponent
 
-		if hc != null:
+		if hc != null and calculated_damage > 0:
 			hc.decrease_health(calculated_damage)
 			damaged_entities.append(target)
 
