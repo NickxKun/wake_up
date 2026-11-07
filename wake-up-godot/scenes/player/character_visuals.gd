@@ -7,6 +7,86 @@ extends Node
 
 const MAT_ALBEDO_PALETTE : Texture2D = preload("res://assets/textures/ImphenziaPalette02-Albedo.png")
 
+static var _operative_shader : Shader = null
+
+func _get_operative_shader() -> Shader:
+	if _operative_shader == null:
+		_operative_shader = Shader.new()
+		_operative_shader.code = """
+shader_type spatial;
+render_mode cull_back, diffuse_burley, specular_schlick_ggx;
+
+uniform sampler2D albedo_palette : source_color, filter_nearest;
+uniform vec4 suit_color : source_color = vec4(1.0, 1.0, 1.0, 1.0);
+uniform vec4 black_color : source_color = vec4(0.12, 0.13, 0.15, 1.0);
+uniform float suit_metallic : hint_range(0.0, 1.0) = 0.2;
+uniform float suit_roughness : hint_range(0.0, 1.0) = 0.45;
+uniform int head_bone_idx = 7;
+uniform int hand_l_bone_idx = 11;
+uniform int hand_r_bone_idx = 15;
+uniform int foot_l_bone_idx = 18;
+uniform int foot_r_bone_idx = 21;
+
+varying float v_is_black;
+
+void vertex() {
+	float w = 0.0;
+	for (int i = 0; i < 4; i++) {
+		int b = int(BONE_INDICES[i]);
+		float wt = BONE_WEIGHTS[i];
+		if (b == head_bone_idx || b == hand_l_bone_idx || b == hand_r_bone_idx || b == foot_l_bone_idx || b == foot_r_bone_idx) {
+			w += wt;
+		}
+	}
+	v_is_black = step(0.35, w);
+}
+
+void fragment() {
+	vec4 orig_tex = texture(albedo_palette, UV);
+	float lum = dot(orig_tex.rgb, vec3(0.299, 0.587, 0.114));
+
+	vec3 suit_final;
+	if (lum < 0.38) {
+		suit_final = orig_tex.rgb * 0.85;
+	} else {
+		suit_final = suit_color.rgb * (orig_tex.rgb / max(lum, 0.01));
+		suit_final = clamp(suit_final, vec3(0.0), vec3(1.0));
+	}
+
+	vec3 final_color = mix(suit_final, black_color.rgb, v_is_black);
+	ALBEDO = final_color;
+	ROUGHNESS = mix(suit_roughness, 0.60, v_is_black);
+	METALLIC = mix(suit_metallic, 0.10, v_is_black);
+}
+"""
+	return _operative_shader
+
+## Applies the custom operative PBR shader that guarantees a black helmet, black gloves,
+## and black boots across all classes while applying distinct class suit coloring and preserving joint details.
+func _apply_operative_suit_material(suit_col: Color, metallic: float = 0.2, roughness: float = 0.45) -> void:
+	if _char_mesh == null:
+		return
+	var mat := ShaderMaterial.new()
+	mat.shader = _get_operative_shader()
+	mat.set_shader_parameter("albedo_palette", MAT_ALBEDO_PALETTE)
+	mat.set_shader_parameter("suit_color", suit_col)
+	mat.set_shader_parameter("black_color", Color(0.12, 0.13, 0.15))
+	mat.set_shader_parameter("suit_metallic", metallic)
+	mat.set_shader_parameter("suit_roughness", roughness)
+	if _skeleton != null:
+		mat.set_shader_parameter("head_bone_idx", _skeleton.find_bone("Head"))
+		mat.set_shader_parameter("hand_l_bone_idx", _skeleton.find_bone("Hand.L"))
+		mat.set_shader_parameter("hand_r_bone_idx", _skeleton.find_bone("Hand.R"))
+		mat.set_shader_parameter("foot_l_bone_idx", _skeleton.find_bone("Foot.L"))
+		mat.set_shader_parameter("foot_r_bone_idx", _skeleton.find_bone("Foot.R"))
+	else:
+		mat.set_shader_parameter("head_bone_idx", 7)
+		mat.set_shader_parameter("hand_l_bone_idx", 11)
+		mat.set_shader_parameter("hand_r_bone_idx", 15)
+		mat.set_shader_parameter("foot_l_bone_idx", 18)
+		mat.set_shader_parameter("foot_r_bone_idx", 21)
+	_char_mesh.material_override = mat
+
 var _player : CharacterBody3D = null
 var _skeleton : Skeleton3D = null
 var _char_mesh : MeshInstance3D = null
@@ -334,12 +414,8 @@ func _clear_accessories() -> void:
 # 0. ASTRONAUT (Standard Vanguard)
 # -----------------------------------------------------------------------------
 func _apply_astronaut_visuals() -> void:
-	if _char_mesh != null:
-		var mat := StandardMaterial3D.new()
-		mat.albedo_color = Color(0.96, 0.98, 1.0) # Crisp white space suit
-		mat.metallic = 0.2
-		mat.roughness = 0.4
-		_char_mesh.material_override = mat
+	# Crisp white space suit with signature black helmet, black gloves, and black boots
+	_apply_operative_suit_material(Color(0.96, 0.98, 1.0), 0.2, 0.4)
 
 	# 1. Sleek EVA life-support backpack (ergonomically contoured to back - no front clipping!)
 	if _spine_attachment != null:
@@ -576,13 +652,8 @@ func _create_cute_grenade() -> Node3D:
 # 1. THE ENGINEER (Combat Architect)
 # -----------------------------------------------------------------------------
 func _apply_engineer_visuals() -> void:
-	if _char_mesh != null:
-		# High-visibility industrial hazard orange suit with charcoal Kevlar armor
-		var mat := StandardMaterial3D.new()
-		mat.albedo_color = Color(1.0, 0.50, 0.06) # Hazard Orange
-		mat.metallic = 0.38
-		mat.roughness = 0.35
-		_char_mesh.material_override = mat
+	# High-visibility industrial hazard orange suit with signature black helmet, black gloves, and black boots
+	_apply_operative_suit_material(Color(1.0, 0.50, 0.06), 0.35, 0.4)
 
 	# 1. Heavy Turret Fabrication Pack (Ergonomically contoured to back - no arm clipping)
 	if _spine_attachment != null:
@@ -851,13 +922,8 @@ func _apply_engineer_visuals() -> void:
 # 2. THE MEDIC (Field Surgeon)
 # -----------------------------------------------------------------------------
 func _apply_medic_visuals() -> void:
-	if _char_mesh != null:
-		# Sterile clinical white medical armor with cyan surgical trim
-		var mat := StandardMaterial3D.new()
-		mat.albedo_color = Color(0.92, 0.96, 0.98)
-		mat.metallic = 0.25
-		mat.roughness = 0.35
-		_char_mesh.material_override = mat
+	# Sterile clinical white medical armor with signature black helmet, black gloves, and black boots
+	_apply_operative_suit_material(Color(0.92, 0.96, 0.98), 0.25, 0.35)
 
 	if _spine_attachment != null:
 		# Nanite Life-Support Defibrillator Rig (ergonomically mounted on back)
@@ -968,13 +1034,8 @@ func _apply_medic_visuals() -> void:
 # 3. THE EXPLORER (Frontier Scout)
 # -----------------------------------------------------------------------------
 func _apply_explorer_visuals() -> void:
-	if _char_mesh != null:
-		# Weathered olive khaki / slate bronze expedition armor
-		var mat := StandardMaterial3D.new()
-		mat.albedo_color = Color(0.55, 0.52, 0.42) # Olive Khaki
-		mat.metallic = 0.35
-		mat.roughness = 0.55
-		_char_mesh.material_override = mat
+	# Weathered olive khaki expedition armor with signature black helmet, black gloves, and black boots
+	_apply_operative_suit_material(Color(0.55, 0.52, 0.42), 0.35, 0.55)
 
 	if _spine_attachment != null:
 		# Long-Range Comms Array & Telemetry Rig (mounted on back)

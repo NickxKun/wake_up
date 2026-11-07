@@ -48,9 +48,16 @@ height = 0.05
 
 [sub_resource type="CylinderMesh" id="Mesh_RocketWarhead"]
 material = SubResource("Mat_HazardOrange")
-top_radius = 0.015
+top_radius = 0.018
 bottom_radius = 0.048
 height = 0.12
+radial_segments = 12
+
+[sub_resource type="CylinderMesh" id="Mesh_WarheadNoseTip"]
+material = SubResource("Mat_DarkMatte")
+top_radius = 0.002
+bottom_radius = 0.018
+height = 0.04
 radial_segments = 12
 
 [sub_resource type="BoxMesh" id="Mesh_Grip"]
@@ -110,8 +117,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0.24)
 mesh = SubResource("Mesh_ExhaustCore")
 
 [node name="RocketWarhead" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0.04, -0.32)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.04, -0.32)
 mesh = SubResource("Mesh_RocketWarhead")
+
+[node name="WarheadNoseTip" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.04, -0.39)
+mesh = SubResource("Mesh_WarheadNoseTip")
 
 [node name="Grip" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 0, -0.025, 0.02)

@@ -57,21 +57,21 @@ shape = SubResource("SphereShape3D_r4bah")
 [node name="RocketMesh" type="Node3D" parent="." unique_id=1381239299]
 
 [node name="Fuselage" type="MeshInstance3D" parent="RocketMesh" unique_id=1862126891]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0)
 material_override = SubResource("StandardMaterial3D_l0y3s")
 mesh = SubResource("CylinderMesh_8rgcg")
 
 [node name="WarheadTip" type="MeshInstance3D" parent="RocketMesh" unique_id=751112104]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0.18)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.18)
 material_override = SubResource("StandardMaterial3D_dtva2")
 mesh = SubResource("CylinderMesh_xkdbd")
 
 [node name="SmokeTrail" type="CPUParticles3D" parent="." unique_id=1131964782]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.16)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.15)
 amount = 20
 lifetime = 0.22
 mesh = SubResource("SphereMesh_dn23c")
-direction = Vector3(0, 0, -1)
+direction = Vector3(0, 0, 1)
 spread = 12.0
 gravity = Vector3(0, 0.5, 0)
 initial_velocity_min = 1.0
