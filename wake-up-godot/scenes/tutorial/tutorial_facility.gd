@@ -77,61 +77,10 @@ func _init_materials() -> void:
 # -----------------------------------------------------------------------------
 
 func _build_ground_chevrons() -> void:
+	# Floor markers removed to keep proving grounds clean, minimal, and simple
 	var guides_node := Node3D.new()
 	guides_node.name = "FloorDirectionGuides"
 	add_child(guides_node)
-
-	# Leg 1: Sector 1 Locomotion to Vault Barrier (Eastbound: -23 to -17, y = 0.02)
-	for x in [-23.0, -21.0, -19.0, -17.0]:
-		_create_chevron(guides_node, Vector3(x, 0.02, 0.0), 0.0, _mat_cyan_glow)
-
-	# Leg 2: Vault Barrier to Thruster Platform Zone (-13.5 to -9.8, y = 0.02)
-	for x in [-13.5, -11.5, -9.8]:
-		_create_chevron(guides_node, Vector3(x, 0.02, 0.0), 0.0, _mat_cyan_glow)
-
-	# Leg 3: Stepped Thruster Platform Traversal
-	# West Approach Step (X = -8.0, Y = 0.52)
-	_create_chevron(guides_node, Vector3(-8.0, 0.52, 0.0), 0.0, _mat_cyan_glow)
-	# Platform Main Deck Elevated Guides (Y = 1.02)
-	_create_chevron(guides_node, Vector3(-6.0, 1.02, 0.0), 0.0, _mat_cyan_glow)
-	_create_chevron(guides_node, Vector3(-2.0, 1.02, 0.0), 0.0, _mat_cyan_glow)
-	# East Descent Step (X = 0.0, Y = 0.52)
-	_create_chevron(guides_node, Vector3(0.0, 0.52, -0.4), deg_to_rad(-15.0), _mat_cyan_glow)
-
-	# Leg 4: Firing Range Entrance & Weapons Box (Y = 0.02)
-	_create_chevron(guides_node, Vector3(1.5, 0.02, -1.2), deg_to_rad(-22.0), _mat_cyan_glow)
-	_create_chevron(guides_node, Vector3(3.0, 0.02, -2.0), deg_to_rad(-12.0), _mat_cyan_glow)
-
-	# Leg 4: Firing Range Lane Guidance (Towards Targets)
-	for x in [6.5, 9.0, 11.5, 14.0]:
-		_create_dash_line(guides_node, Vector3(x, 0.02, -2.5), Vector3(1.2, 0.01, 0.12), _mat_cyan_glow)
-		_create_dash_line(guides_node, Vector3(x, 0.02, 0.0), Vector3(1.2, 0.01, 0.12), _mat_cyan_glow)
-		_create_dash_line(guides_node, Vector3(x, 0.02, 2.5), Vector3(1.2, 0.01, 0.12), _mat_cyan_glow)
-
-	# Leg 5: Armory to Rover Bay (Southbound: Z = 0 to 12.5 at X = 4)
-	for z in [0.0, 2.2, 4.4, 6.6, 8.8, 11.0]:
-		_create_chevron(guides_node, Vector3(4.0, 0.02, z), deg_to_rad(90.0), _mat_amber_glow)
-
-	# Leg 6: Rover Slalom Track (Amber Vehicle Nav Guides)
-	# Start Depot (4, 13) -> Slalom 1 (14, 14)
-	for x in [6.5, 9.0, 11.5]:
-		_create_chevron(guides_node, Vector3(x, 0.02, 13.5), 0.0, _mat_amber_glow, 1.4)
-
-	# Slalom 1 (14, 14) to Slalom 2 (22, 10) (Curving Northeast)
-	_create_chevron(guides_node, Vector3(16.0, 0.02, 13.0), deg_to_rad(-25.0), _mat_amber_glow, 1.4)
-	_create_chevron(guides_node, Vector3(18.0, 0.02, 12.0), deg_to_rad(-30.0), _mat_amber_glow, 1.4)
-	_create_chevron(guides_node, Vector3(20.0, 0.02, 11.0), deg_to_rad(-25.0), _mat_amber_glow, 1.4)
-
-	# Slalom 2 (22, 10) to Rover Park (25, 10)
-	_create_chevron(guides_node, Vector3(23.5, 0.02, 10.0), 0.0, _mat_amber_glow, 1.4)
-
-	# Leg 7: Rover Park to Combat Arena Entrance (Northbound: from 25, 10 to 26, 0)
-	for z in [8.5, 6.5, 4.5, 2.5, 1.0]:
-		_create_chevron(guides_node, Vector3(25.5, 0.02, z), deg_to_rad(-90.0), _mat_cyan_glow)
-
-	# Leg 8: Combat Arena to Extraction Helipad (Eastbound: 27 to 37 at Z = 0)
-	for x in [28.0, 30.5, 33.0, 35.5]:
-		_create_chevron(guides_node, Vector3(x, 0.02, 0.0), 0.0, _mat_green_glow)
 
 func _create_chevron(parent: Node3D, pos: Vector3, rot_y: float, mat: Material, scale_mult: float = 1.0) -> void:
 	var chevron := Node3D.new()
@@ -277,43 +226,50 @@ func _build_facility_partitions() -> void:
 	partition_node.collision_mask = 0
 	add_child(partition_node)
 
-	# Dividing wall between Firing Range and Rover Track (Z = 5.0, X from -2.0 to 22.0)
-	var wall_len : float = 24.0
+	# Dividing wall between Firing Range and Rover Track at Z = 5.0
+	# Leaves a 6.0m clear archway/entrance between X = 1.0 and X = 7.0 for Portal 4 at X = 4.0
 	var wall_h : float = 2.4
 	var wall_th : float = 0.45
 
+	# West Section: X from -2.0 to 1.0 (length 3.0, center X = -0.5)
+	_create_wall_segment(partition_node, Vector3(-0.5, wall_h * 0.5, 5.0), Vector3(3.0, wall_h, wall_th))
+
+	# East Section: X from 7.0 to 22.0 (length 15.0, center X = 14.5)
+	_create_wall_segment(partition_node, Vector3(14.5, wall_h * 0.5, 5.0), Vector3(15.0, wall_h, wall_th))
+
+func _create_wall_segment(parent: Node3D, pos: Vector3, size: Vector3) -> void:
 	var col := CollisionShape3D.new()
 	var c_box := BoxShape3D.new()
-	c_box.size = Vector3(wall_len, wall_h, wall_th)
+	c_box.size = size
 	col.shape = c_box
-	col.position = Vector3(10.0, wall_h * 0.5, 5.0)
-	partition_node.add_child(col)
+	col.position = pos
+	parent.add_child(col)
 
 	var mesh_inst := MeshInstance3D.new()
 	var b_mesh := BoxMesh.new()
-	b_mesh.size = Vector3(wall_len, wall_h, wall_th)
+	b_mesh.size = size
 	mesh_inst.mesh = b_mesh
 	mesh_inst.material_override = _mat_dark_alloy
-	mesh_inst.position = col.position
-	partition_node.add_child(mesh_inst)
+	mesh_inst.position = pos
+	parent.add_child(mesh_inst)
 
 	# Yellow Hazard Strip along base of partition wall
 	var stripe := MeshInstance3D.new()
 	var s_mesh := BoxMesh.new()
-	s_mesh.size = Vector3(wall_len, 0.18, wall_th + 0.04)
+	s_mesh.size = Vector3(size.x, 0.18, size.z + 0.04)
 	stripe.mesh = s_mesh
 	stripe.material_override = _mat_hazard_stripe
-	stripe.position = Vector3(10.0, 0.09, 5.0)
-	partition_node.add_child(stripe)
+	stripe.position = Vector3(pos.x, 0.09, pos.z)
+	parent.add_child(stripe)
 
 	# Glowing Cyan Top Rail
 	var rail := MeshInstance3D.new()
 	var r_mesh := BoxMesh.new()
-	r_mesh.size = Vector3(wall_len, 0.08, 0.15)
+	r_mesh.size = Vector3(size.x, 0.08, 0.15)
 	rail.mesh = r_mesh
 	rail.material_override = _mat_cyan_glow
-	rail.position = Vector3(10.0, wall_h + 0.04, 5.0)
-	partition_node.add_child(rail)
+	rail.position = Vector3(pos.x, size.y + 0.04, pos.z)
+	parent.add_child(rail)
 
 # -----------------------------------------------------------------------------
 # 4. Elevated Flight Platform Trims & Hazard Markings

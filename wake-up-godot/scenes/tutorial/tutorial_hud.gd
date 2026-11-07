@@ -88,14 +88,16 @@ func set_objective(phase_text: String, title_text: String, instruction_text: Str
 func update_task(index: int, completed: bool, custom_text: String = "") -> void:
 	if index >= 0 and index < _task_labels.size():
 		var lbl : Label = _task_labels[index]
+		var was_completed : bool = lbl.text.begins_with("▣ ")
 		var base_text : String = custom_text if custom_text != "" else lbl.text.substr(2)
 		lbl.text = ("▣ " if completed else "□ ") + base_text
 		if completed:
 			lbl.modulate = Color(0.2, 0.9, 0.4, 1.0)
-			_play_sound("tab")
-			var punch := create_tween()
-			punch.tween_property(lbl, "scale", Vector2(1.08, 1.08), 0.08)
-			punch.tween_property(lbl, "scale", Vector2.ONE, 0.08)
+			if not was_completed:
+				_play_sound("tab")
+				var punch := create_tween()
+				punch.tween_property(lbl, "scale", Vector2(1.08, 1.08), 0.08)
+				punch.tween_property(lbl, "scale", Vector2.ONE, 0.08)
 		else:
 			lbl.modulate = Color(0.9, 0.9, 0.95, 0.85)
 

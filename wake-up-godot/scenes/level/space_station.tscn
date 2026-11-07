@@ -245,9 +245,6 @@ transform = Transform3D(0.70711, 0, -0.70711, 0, 1, 0, 0.70711, 0, 0.70711, 3.5,
 
 [node name="Sector_Courtyard" type="Node3D" parent="."]
 
-[node name="Center_Beacon_Light" parent="Sector_Courtyard" instance=ExtResource("24_lights")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0.06, 0)
-
 [node name="Cover_Crate_A" parent="Sector_Courtyard" instance=ExtResource("6_cargo_A")]
 transform = Transform3D(0.97815, 0, 0.20791, 0, 1, 0, -0.20791, 0, 0.97815, -1.4, 0.06, 0.6)
 

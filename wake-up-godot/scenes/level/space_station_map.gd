@@ -37,8 +37,11 @@ const SCENE_SPACETRUCK : PackedScene = preload("res://assets/models/fbx/spacetru
 const SCENE_ROVER : PackedScene = preload("res://scenes/vehicles/rover.tscn")
 const SCENE_WEAPONS_BOX : PackedScene = preload("res://scenes/weapons/weapons_box.tscn")
 const SCENE_CARGO_PACKED : PackedScene = preload("res://assets/models/fbx/cargo_B_packed.fbx")
+const SCENE_CARGO_STACKED : PackedScene = preload("res://assets/models/fbx/cargo_A_stacked.fbx")
 const SCENE_CONTAINERS_A : PackedScene = preload("res://assets/models/fbx/containers_A.fbx")
 const SCENE_LIGHTS : PackedScene = preload("res://assets/models/fbx/lights.fbx")
+const SCENE_SOLARPANEL : PackedScene = preload("res://assets/models/fbx/solarpanel.fbx")
+const SCENE_TRUCK_TRAILER : PackedScene = preload("res://assets/models/fbx/spacetruck_trailer.fbx")
 
 # Terrain Grid Constants (21x21 tiles, 2m modular grid covering -20m to +20m)
 const TERRAIN_GRID_W : int = 21
@@ -178,6 +181,7 @@ func _configure_sectors_for_theme() -> void:
 		MapTheme.TRANSPORT_DOCK:
 			# Freight terminal & logistics: Landing Pads, Shuttles, Haulers, Quarry, and Checkpoint
 			_remove_nodes([hab, power])
+			_spawn_transportdock_pois()
 
 func _remove_nodes(nodes: Array) -> void:
 	for n in nodes:
@@ -265,6 +269,22 @@ func _spawn_wasteland_tactical_rocks() -> void:
 		{"pos": Vector3(13.0, 0.0, 0.5), "scene": SCENE_ROCKS_A, "rot": 110.0, "scale": Vector3(1.9, 2.0, 1.9)},
 		{"pos": Vector3(10.5, 0.0, 3.5), "scene": SCENE_ROCKS_B, "rot": -30.0, "scale": Vector3(1.4, 1.6, 1.4)},
 		{"pos": Vector3(7.5, 0.0, 0.0), "scene": SCENE_ROCK_A, "rot": 65.0, "scale": Vector3(1.1, 1.1, 1.1)},
+
+		# 9. Additional Arroyo Meanders, Scree Slopes & Flanking Boulders
+		{"pos": Vector3(-1.0, 0.0, 7.5), "scene": SCENE_ROCK_A, "rot": 45.0, "scale": Vector3(1.15, 1.2, 1.15)},
+		{"pos": Vector3(1.5, 0.0, 7.0), "scene": SCENE_ROCK_B, "rot": -60.0, "scale": Vector3(1.05, 1.1, 1.05)},
+		{"pos": Vector3(-4.5, 0.0, 8.5), "scene": SCENE_ROCKS_A, "rot": 15.0, "scale": Vector3(1.4, 1.5, 1.4)},
+		{"pos": Vector3(4.5, 0.0, 8.5), "scene": SCENE_ROCKS_B, "rot": -105.0, "scale": Vector3(1.3, 1.4, 1.3)},
+		{"pos": Vector3(15.5, 0.0, 3.5), "scene": SCENE_ROCKS_A, "rot": 85.0, "scale": Vector3(1.8, 1.9, 1.8)},
+		{"pos": Vector3(16.0, 0.0, -3.5), "scene": SCENE_ROCKS_B, "rot": -25.0, "scale": Vector3(1.7, 1.8, 1.7)},
+		{"pos": Vector3(-15.5, 0.0, 3.5), "scene": SCENE_ROCKS_B, "rot": -115.0, "scale": Vector3(1.8, 2.0, 1.8)},
+		{"pos": Vector3(-16.0, 0.0, -3.5), "scene": SCENE_ROCKS_A, "rot": 35.0, "scale": Vector3(1.7, 1.9, 1.7)},
+		{"pos": Vector3(-1.2, 0.0, 2.0), "scene": SCENE_ROCK_B, "rot": 50.0, "scale": Vector3(0.9, 0.9, 0.9)},
+		{"pos": Vector3(1.2, 0.0, -2.0), "scene": SCENE_ROCK_A, "rot": -130.0, "scale": Vector3(0.95, 0.95, 0.95)},
+		{"pos": Vector3(-3.5, 0.0, 1.5), "scene": SCENE_ROCK_A, "rot": 20.0, "scale": Vector3(1.0, 1.0, 1.0)},
+		{"pos": Vector3(3.5, 0.0, -1.5), "scene": SCENE_ROCK_B, "rot": -80.0, "scale": Vector3(1.0, 1.0, 1.0)},
+		{"pos": Vector3(0.0, 0.0, 15.5), "scene": SCENE_ROCKS_B, "rot": 180.0, "scale": Vector3(2.2, 2.4, 2.2)},
+		{"pos": Vector3(0.0, 0.0, -15.5), "scene": SCENE_ROCKS_A, "rot": 0.0, "scale": Vector3(2.0, 2.2, 2.0)},
 	]
 	for r in extra_rock_coords:
 		var sc : Vector3 = r["scale"] if r.has("scale") else Vector3.ONE
@@ -274,6 +294,7 @@ func _spawn_wasteland_tactical_rocks() -> void:
 ## 1. Geological Crater Excavation Dig Site on the elevated South-East ridge with drill rig, rover, and floodlights.
 ## 2. Southwest Auxiliary Staging Yard with delivery rover, cargo containers, and service floodlight.
 ## 3. High-ground tactical lookout points along the perimeter bluffs.
+## 4. Habitation & Laboratory Perimeter and Central Corridor Logistics.
 func _spawn_spacebase_pois() -> void:
 	var dig_root : Node3D = get_node_or_null("Sector_ResearchDig") as Node3D
 	if dig_root == null:
@@ -301,11 +322,65 @@ func _spawn_spacebase_pois() -> void:
 		{"scene": SCENE_ROCKS_B, "pos": Vector3(-14.0, 0.0, -14.0), "rot": 45.0, "scale": Vector3(1.6, 1.8, 1.6)},
 		{"scene": SCENE_ROCKS_A, "pos": Vector3(14.0, 0.0, -14.0), "rot": -45.0, "scale": Vector3(1.5, 1.7, 1.5)},
 		{"scene": SCENE_ROCK_A, "pos": Vector3(13.5, 0.0, 0.0), "rot": 90.0, "scale": Vector3(1.2, 1.2, 1.2)},
+
+		# 4. Habitation & Laboratory Perimeter Dressing
+		{"scene": SCENE_CONTAINERS_A, "pos": Vector3(-9.2, 0.06, -7.5), "rot": 0.0, "scale": Vector3.ONE},
+		{"scene": SCENE_CARGO_STACKED, "pos": Vector3(-11.0, 0.06, -4.5), "rot": 90.0, "scale": Vector3.ONE},
+		{"scene": SCENE_LIGHTS, "pos": Vector3(-6.5, 0.06, -11.0), "rot": 135.0, "scale": Vector3.ONE},
+		{"scene": SCENE_SOLARPANEL, "pos": Vector3(-7.5, 0.06, -12.5), "rot": 20.0, "scale": Vector3.ONE},
+		{"scene": SCENE_SOLARPANEL, "pos": Vector3(-9.0, 0.06, -12.5), "rot": 20.0, "scale": Vector3.ONE},
+
+		# 5. Central Crossroads & South Corridor Logistics Support
+		{"scene": SCENE_CARGO_STACKED, "pos": Vector3(2.2, 0.06, 1.5), "rot": -30.0, "scale": Vector3.ONE},
+		{"scene": SCENE_CONTAINERS_A, "pos": Vector3(-2.2, 0.06, 2.2), "rot": 45.0, "scale": Vector3.ONE},
+		{"scene": SCENE_LIGHTS, "pos": Vector3(1.8, 0.06, 3.5), "rot": -90.0, "scale": Vector3.ONE},
+		{"scene": SCENE_CARGO_PACKED, "pos": Vector3(-1.5, 0.06, 8.5), "rot": 15.0, "scale": Vector3.ONE},
+		{"scene": SCENE_CONTAINERS_A, "pos": Vector3(1.5, 0.06, 12.0), "rot": -45.0, "scale": Vector3.ONE},
 	]
 
 	for p in poi_props:
 		var sc : Vector3 = p["scale"] if p.has("scale") else Vector3.ONE
 		_spawn_prop(dig_root, p["scene"], p["pos"], p["rot"], sc)
+
+## Spawns dynamic Points of Interest across Map 3 (Transport Dock):
+## Heavy logistics freight staging, launchpad fueling canisters, hauler trailer parking,
+## and mining quarry equipment.
+func _spawn_transportdock_pois() -> void:
+	var dock_root : Node3D = get_node_or_null("Sector_DockLogistics") as Node3D
+	if dock_root == null:
+		dock_root = Node3D.new()
+		dock_root.name = "Sector_DockLogistics"
+		add_child(dock_root)
+
+	var dock_props := [
+		# 1. Shuttle Apron Staging & Refueling Depot
+		{"scene": SCENE_CONTAINERS_A, "pos": Vector3(-11.5, 0.06, 6.0), "rot": 0.0, "scale": Vector3.ONE},
+		{"scene": SCENE_CARGO_PACKED, "pos": Vector3(-11.5, 0.06, 4.5), "rot": 90.0, "scale": Vector3.ONE},
+		{"scene": SCENE_CARGO_STACKED, "pos": Vector3(-3.2, 0.06, 7.5), "rot": -45.0, "scale": Vector3.ONE},
+		{"scene": SCENE_LIGHTS, "pos": Vector3(-3.5, 0.06, 11.0), "rot": 45.0, "scale": Vector3.ONE},
+
+		# 2. Heavy Transport Truck Staging Area
+		{"scene": SCENE_SPACETRUCK, "pos": Vector3(-6.5, 0.20, -6.5), "rot": 90.0, "scale": Vector3.ONE},
+		{"scene": SCENE_TRUCK_TRAILER, "pos": Vector3(-4.0, 0.21, -6.5), "rot": 90.0, "scale": Vector3.ONE},
+		{"scene": SCENE_CARGO_STACKED, "pos": Vector3(-8.5, 0.06, -7.5), "rot": 0.0, "scale": Vector3.ONE},
+		{"scene": SCENE_CONTAINERS_A, "pos": Vector3(-2.2, 0.06, -5.5), "rot": -30.0, "scale": Vector3.ONE},
+		{"scene": SCENE_LIGHTS, "pos": Vector3(-5.0, 0.06, -8.5), "rot": 0.0, "scale": Vector3.ONE},
+
+		# 3. Mining Quarry Extended Perimeter Support
+		{"scene": SCENE_CARGO_PACKED, "pos": Vector3(11.5, 0.06, 5.0), "rot": 25.0, "scale": Vector3.ONE},
+		{"scene": SCENE_CONTAINERS_A, "pos": Vector3(11.5, 0.06, 7.5), "rot": -60.0, "scale": Vector3.ONE},
+		{"scene": SCENE_LIGHTS, "pos": Vector3(9.5, 0.06, 9.5), "rot": 135.0, "scale": Vector3.ONE},
+		{"scene": SCENE_CARGO_STACKED, "pos": Vector3(5.5, 0.06, 6.0), "rot": 15.0, "scale": Vector3.ONE},
+
+		# 4. Central Freight Corridor Support
+		{"scene": SCENE_CARGO_PACKED, "pos": Vector3(2.5, 0.06, 0.8), "rot": -15.0, "scale": Vector3.ONE},
+		{"scene": SCENE_CONTAINERS_A, "pos": Vector3(-2.5, 0.06, -0.8), "rot": 75.0, "scale": Vector3.ONE},
+		{"scene": SCENE_LIGHTS, "pos": Vector3(2.2, 0.06, -2.5), "rot": -45.0, "scale": Vector3.ONE},
+	]
+
+	for p in dock_props:
+		var sc : Vector3 = p["scale"] if p.has("scale") else Vector3.ONE
+		_spawn_prop(dock_root, p["scene"], p["pos"], p["rot"], sc)
 
 ## Evaluates the height at grid vertex (x, z) for the active theme.
 ## Ensures outer boundaries drop smoothly to Y = 0.0 for seamless outer desert continuity,
@@ -917,6 +992,14 @@ func _spawn_weapons_box() -> void:
 			box_pos = Vector3(0.0, 0.0, 0.0)
 		MapTheme.TRANSPORT_DOCK:
 			box_pos = Vector3(0.0, 0.0, 0.0)
+
+	# Failsafe: Ensure any overlapping prop or light at the spawner coordinates is cleared
+	var courtyard : Node = get_node_or_null("Sector_Courtyard")
+	if courtyard != null:
+		var center_light : Node = courtyard.get_node_or_null("Center_Beacon_Light")
+		if center_light != null:
+			center_light.queue_free()
+
 	_spawn_prop(self, SCENE_WEAPONS_BOX, box_pos)
 
 ## Recursively creates convex collisions on all MeshInstance3Ds that lack colliders.

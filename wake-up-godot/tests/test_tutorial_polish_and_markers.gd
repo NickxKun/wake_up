@@ -76,7 +76,7 @@ func _run_tests() -> void:
 	var floor_guides : Node = facility.find_child("FloorDirectionGuides", true, false)
 	check(floor_guides != null, "FloorDirectionGuides node exists in facility")
 	var chevrons : Array[Node] = floor_guides.find_children("*GuideChevron*", "", true, false) if floor_guides != null else []
-	check(chevrons.size() >= 15, "At least 15 ground directional chevrons placed along training route (found: %d)" % chevrons.size())
+	check(chevrons.size() == 0, "Confusing ground chevrons removed to keep floor simple (found: %d)" % chevrons.size())
 
 	var portals : Node = facility.find_child("SectorPortals", true, false)
 	check(portals != null, "SectorPortals gantry arches node exists in facility")
@@ -85,6 +85,15 @@ func _run_tests() -> void:
 
 	var partition : StaticBody3D = facility.find_child("SectorPartitionWall", true, false) as StaticBody3D
 	check(partition != null, "SectorPartitionWall exists separating Firing Range from Vehicle Bay")
+	var col_shapes : Array[Node] = partition.find_children("", "CollisionShape3D", false, false) if partition != null else []
+	check(col_shapes.size() >= 2, "SectorPartitionWall is segmented with doorway for Portal 4 (found %d segments)" % col_shapes.size())
+	var blocks_portal_4 : bool = false
+	for cs in col_shapes:
+		if cs is CollisionShape3D and cs.shape is BoxShape3D:
+			var box : BoxShape3D = cs.shape as BoxShape3D
+			if absf(cs.position.x - 4.0) < (box.size.x * 0.5):
+				blocks_portal_4 = true
+	check(not blocks_portal_4, "Doorway to Sector 4 Rover Bay at X = 4.0 is unblocked and clear")
 
 	var props : Node = facility.find_child("FacilityProps", true, false)
 	check(props != null, "FacilityProps node exists with cargo crates and server racks")
@@ -105,12 +114,12 @@ func _run_tests() -> void:
 	var beam : MeshInstance3D = wp.find_child("LightBeam", true, false) as MeshInstance3D
 	check(beam != null, "LightBeam mesh instance exists in waypoint")
 	var cyl_mesh : CylinderMesh = beam.mesh as CylinderMesh
-	check(cyl_mesh != null and cyl_mesh.height >= 10.0, "LightBeam is a towering high-visibility pillar (height: %.1fm)" % (cyl_mesh.height if cyl_mesh != null else 0.0))
+	check(cyl_mesh != null and cyl_mesh.height <= 8.0, "LightBeam is sleek and compact (height: %.1fm <= 8.0m)" % (cyl_mesh.height if cyl_mesh != null else 0.0))
 
 	var diamond : MeshInstance3D = wp.find_child("DiamondMesh", true, false) as MeshInstance3D
 	check(diamond != null, "DiamondMesh exists in waypoint beacon")
 	var box_m : BoxMesh = diamond.mesh as BoxMesh
-	check(box_m != null and box_m.size.x >= 0.6, "Beacon diamond is substantially sized for distance visibility (size: %.2fm)" % (box_m.size.x if box_m != null else 0.0))
+	check(box_m != null and box_m.size.x <= 0.5, "Beacon diamond is compact and proportional (size: %.2fm <= 0.5m)" % (box_m.size.x if box_m != null else 0.0))
 
 	# ----------------------------------------------------
 	# [Test 4] HUD Screen-Edge & Floating 3D Direction Markers

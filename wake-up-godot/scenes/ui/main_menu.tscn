@@ -1,4 +1,4 @@
-[gd_scene load_steps=45 format=3]
+[gd_scene load_steps=48 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/main_menu.gd" id="1_menu"]
 [ext_resource type="Shader" path="res://scenes/ui/vignette.gdshader" id="2_vig"]
@@ -10,6 +10,9 @@
 [ext_resource type="Texture2D" path="res://assets/textures/gamemodes/banner_sandbox.png" id="8_sand"]
 [ext_resource type="Texture2D" path="res://assets/textures/gamemodes/banner_story.png" id="9_story"]
 [ext_resource type="Texture2D" path="res://assets/textures/gamemodes/banner_coop.png" id="10_coop"]
+[ext_resource type="Texture2D" path="res://assets/textures/gamemodes/banner_map_canyon.png" id="11_canyon_banner"]
+[ext_resource type="Texture2D" path="res://assets/textures/gamemodes/banner_map_spacebase.png" id="12_base_banner"]
+[ext_resource type="Texture2D" path="res://assets/textures/gamemodes/banner_map_transportdock.png" id="13_dock_banner"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_vig"]
 shader = ExtResource("2_vig")
@@ -288,28 +291,28 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
 [sub_resource type="Gradient" id="Gradient_canyon_tint"]
-colors = PackedColorArray(0.96, 0.62, 0.22, 0.4, 0.08, 0.06, 0.04, 0.98)
+colors = PackedColorArray(0.96, 0.62, 0.22, 0.0, 0.08, 0.06, 0.04, 0.95)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_canyon_tint"]
 gradient = SubResource("Gradient_canyon_tint")
-fill_from = Vector2(0.5, 0)
-fill_to = Vector2(0.5, 1)
+fill_from = Vector2(0.5, 0.22)
+fill_to = Vector2(0.5, 0.85)
 
 [sub_resource type="Gradient" id="Gradient_base_tint"]
-colors = PackedColorArray(0.24, 0.72, 0.98, 0.4, 0.04, 0.07, 0.12, 0.98)
+colors = PackedColorArray(0.24, 0.72, 0.98, 0.0, 0.04, 0.07, 0.12, 0.95)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_base_tint"]
 gradient = SubResource("Gradient_base_tint")
-fill_from = Vector2(0.5, 0)
-fill_to = Vector2(0.5, 1)
+fill_from = Vector2(0.5, 0.22)
+fill_to = Vector2(0.5, 0.85)
 
 [sub_resource type="Gradient" id="Gradient_dock_tint"]
-colors = PackedColorArray(0.25, 0.85, 0.55, 0.4, 0.04, 0.08, 0.07, 0.98)
+colors = PackedColorArray(0.25, 0.85, 0.55, 0.0, 0.04, 0.08, 0.07, 0.95)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_dock_tint"]
 gradient = SubResource("Gradient_dock_tint")
-fill_from = Vector2(0.5, 0)
-fill_to = Vector2(0.5, 1)
+fill_from = Vector2(0.5, 0.22)
+fill_to = Vector2(0.5, 0.85)
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -547,7 +550,7 @@ theme_override_constants/separation = 14
 alignment = 1
 
 [node name="TutorialCard" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow"]
-custom_minimum_size = Vector2(205, 330)
+custom_minimum_size = Vector2(205, 360)
 layout_mode = 2
 focus_mode = 0
 flat = true
@@ -629,7 +632,7 @@ text = "PROVING GROUNDS"
 horizontal_alignment = 1
 
 [node name="SurvivalCard" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow"]
-custom_minimum_size = Vector2(205, 330)
+custom_minimum_size = Vector2(205, 360)
 layout_mode = 2
 focus_mode = 0
 flat = true
@@ -711,7 +714,7 @@ horizontal_alignment = 1
 
 [node name="SandboxCard" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow"]
 modulate = Color(1, 1, 1, 0.52)
-custom_minimum_size = Vector2(205, 330)
+custom_minimum_size = Vector2(205, 360)
 layout_mode = 2
 focus_mode = 0
 flat = true
@@ -793,7 +796,7 @@ horizontal_alignment = 1
 
 [node name="StoryCard" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow"]
 modulate = Color(1, 1, 1, 0.45)
-custom_minimum_size = Vector2(205, 330)
+custom_minimum_size = Vector2(205, 360)
 layout_mode = 2
 focus_mode = 0
 flat = true
@@ -870,7 +873,7 @@ horizontal_alignment = 1
 
 [node name="CoopCard" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow"]
 modulate = Color(1, 1, 1, 0.45)
-custom_minimum_size = Vector2(205, 330)
+custom_minimum_size = Vector2(205, 360)
 layout_mode = 2
 focus_mode = 0
 flat = true
@@ -2362,34 +2365,25 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_map_canyon")
 
 [node name="Banner" type="TextureRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard"]
 layout_mode = 1
-anchors_preset = 10
+anchors_preset = 15
 anchor_right = 1.0
-offset_bottom = 120.0
+anchor_bottom = 1.0
 grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("8_sand")
+texture = ExtResource("11_canyon_banner")
 expand_mode = 1
 stretch_mode = 6
 
 [node name="BannerTint" type="TextureRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard"]
 layout_mode = 1
-anchors_preset = 10
+anchors_preset = 15
 anchor_right = 1.0
-offset_bottom = 120.0
+anchor_bottom = 1.0
 grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 texture = SubResource("GradientTexture2D_canyon_tint")
-expand_mode = 1
-
-[node name="BannerGradient" type="TextureRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard"]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_top = 80.0
-offset_bottom = 120.0
-grow_horizontal = 2
-mouse_filter = 2
-texture = SubResource("GradientTexture2D_banner_fade")
 expand_mode = 1
 
 [node name="SelectionBar" type="ColorRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard"]
@@ -2410,12 +2404,11 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = 122.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 theme_override_constants/margin_left = 18
-theme_override_constants/margin_top = 12
+theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 18
 theme_override_constants/margin_bottom = 16
 
@@ -2442,6 +2435,10 @@ layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.4)
 theme_override_font_sizes/font_size = 10
 text = "PROVING GROUND"
+
+[node name="TopSpacer" type="Control" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
 
 [node name="TitleBox" type="VBoxContainer" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -2519,34 +2516,25 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_map_base")
 
 [node name="Banner" type="TextureRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard"]
 layout_mode = 1
-anchors_preset = 10
+anchors_preset = 15
 anchor_right = 1.0
-offset_bottom = 120.0
+anchor_bottom = 1.0
 grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("7_surv")
+texture = ExtResource("12_base_banner")
 expand_mode = 1
 stretch_mode = 6
 
 [node name="BannerTint" type="TextureRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard"]
 layout_mode = 1
-anchors_preset = 10
+anchors_preset = 15
 anchor_right = 1.0
-offset_bottom = 120.0
+anchor_bottom = 1.0
 grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 texture = SubResource("GradientTexture2D_base_tint")
-expand_mode = 1
-
-[node name="BannerGradient" type="TextureRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard"]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_top = 80.0
-offset_bottom = 120.0
-grow_horizontal = 2
-mouse_filter = 2
-texture = SubResource("GradientTexture2D_banner_fade")
 expand_mode = 1
 
 [node name="SelectionBar" type="ColorRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard"]
@@ -2567,12 +2555,11 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = 122.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 theme_override_constants/margin_left = 18
-theme_override_constants/margin_top = 12
+theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 18
 theme_override_constants/margin_bottom = 16
 
@@ -2599,6 +2586,10 @@ layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.4)
 theme_override_font_sizes/font_size = 10
 text = "HABITATION COMPLEX"
+
+[node name="TopSpacer" type="Control" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
 
 [node name="TitleBox" type="VBoxContainer" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -2676,34 +2667,25 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_map_dock")
 
 [node name="Banner" type="TextureRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard"]
 layout_mode = 1
-anchors_preset = 10
+anchors_preset = 15
 anchor_right = 1.0
-offset_bottom = 120.0
+anchor_bottom = 1.0
 grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("9_story")
+texture = ExtResource("13_dock_banner")
 expand_mode = 1
 stretch_mode = 6
 
 [node name="BannerTint" type="TextureRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard"]
 layout_mode = 1
-anchors_preset = 10
+anchors_preset = 15
 anchor_right = 1.0
-offset_bottom = 120.0
+anchor_bottom = 1.0
 grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 texture = SubResource("GradientTexture2D_dock_tint")
-expand_mode = 1
-
-[node name="BannerGradient" type="TextureRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard"]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_top = 80.0
-offset_bottom = 120.0
-grow_horizontal = 2
-mouse_filter = 2
-texture = SubResource("GradientTexture2D_banner_fade")
 expand_mode = 1
 
 [node name="SelectionBar" type="ColorRect" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard"]
@@ -2724,12 +2706,11 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = 122.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 theme_override_constants/margin_left = 18
-theme_override_constants/margin_top = 12
+theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 18
 theme_override_constants/margin_bottom = 16
 
@@ -2756,6 +2737,10 @@ layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.4)
 theme_override_font_sizes/font_size = 10
 text = "CARGO EXTRACTION"
+
+[node name="TopSpacer" type="Control" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
 
 [node name="TitleBox" type="VBoxContainer" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard/MarginContainer/VBoxContainer"]
 layout_mode = 2

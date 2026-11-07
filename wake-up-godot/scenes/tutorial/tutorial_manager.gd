@@ -41,11 +41,13 @@ var _hud : TutorialHud
 # Phase tracking flags
 var _moved_distance : float = 0.0
 var _last_pos : Vector3 = Vector3.ZERO
+var _has_walked : bool = false
 var _has_sprinted : bool = false
 var _has_jumped : bool = false
 var _has_dashed : bool = false
 var _has_hovered : bool = false
 var _has_switched_weapon : bool = false
+var _has_deployed_turret : bool = false
 var _has_boarded_rover : bool = false
 var _passed_slalom_1 : bool = false
 var _passed_slalom_2 : bool = false
@@ -159,13 +161,17 @@ func _process(delta: float) -> void:
 
 func _start_phase_1() -> void:
 	current_phase = Phase.PHASE_1_LOCOMOTION
+	var char_data : Node = get_node_or_null("/root/CharacterData")
+	if char_data != null and char_data.has_method("select_class"):
+		char_data.call("select_class", CharacterDataSingleton.CharacterClass.ASTRONAUT)
+
 	if wp_locomotion != null:
 		wp_locomotion.activate()
 	if _hud != null:
 		_hud.track_waypoint(_player, wp_locomotion)
 		_hud.set_objective(
 			"CADET TRAINING // PHASE 1 OF 5",
-			"LOCOMOTION & JUMPING",
+			"ASTRONAUT // LOCOMOTION & AGILITY",
 			"Move with [W, A, S, D], hold [Shift] to Sprint, and press [Space] to vault over the training barrier.",
 			[
 				{"text": "Walk using [W, A, S, D]", "completed": false},
@@ -185,8 +191,10 @@ func _process_phase_1() -> void:
 	_moved_distance += dist
 	_last_pos = p_pos
 
-	if _moved_distance > 5.0 and _hud != null:
-		_hud.update_task(0, true)
+	if not _has_walked and _moved_distance > 5.0:
+		_has_walked = true
+		if _hud != null:
+			_hud.update_task(0, true)
 
 	# Check sprint
 	if Input.is_action_pressed("sprint") or Input.is_key_pressed(KEY_SHIFT):
@@ -261,21 +269,26 @@ func _on_thrusters_wp_reached() -> void:
 	call_deferred("_start_phase_3")
 
 # -----------------------------------------------------------------------------
-# Phase 3: Weapons, Alt-Fire & Marksmanship
+# Phase 3: Weapons, Alt-Fire & Operative Specializations
 # -----------------------------------------------------------------------------
 
 func _start_phase_3() -> void:
 	current_phase = Phase.PHASE_3_WEAPONS
+	# Transition operative specialization to Engineer to showcase Combat Architecture
+	var char_data : Node = get_node_or_null("/root/CharacterData")
+	if char_data != null and char_data.has_method("select_class"):
+		char_data.call("select_class", CharacterDataSingleton.CharacterClass.ENGINEER)
+
 	if wp_weapons != null:
 		wp_weapons.activate()
 	if _hud != null:
 		_hud.track_waypoint(_player, wp_weapons)
 		_hud.set_objective(
 			"CADET TRAINING // PHASE 3 OF 5",
-			"WEAPONS & MARKSMANSHIP",
-			"Switch weapons with [1, 2, Q]. Fire your weapon with [Left Click] and Alt-Fire with [Right Click] to neutralize the 3 target dummies.",
+			"COMBAT ARCHITECT // TURRETS & WEAPONS",
+			"Specialized as ENGINEER. Press [F] to deploy an autonomous Sentry Turret, strike with Hydro-Wrench or firearm, and neutralize the 3 target dummies.",
 			[
-				{"text": "Switch Weapon [1, 2, Q]", "completed": false},
+				{"text": "Deploy Sentry Turret [F] or Switch Weapon [1, 2, Q]", "completed": false},
 				{"text": "Neutralize Target Dummies (0/3)", "completed": false},
 				{"text": "Advance to Firing Range Depot", "completed": false}
 			]
@@ -284,6 +297,14 @@ func _start_phase_3() -> void:
 func _process_phase_3() -> void:
 	if Input.is_key_pressed(KEY_1) or Input.is_key_pressed(KEY_2) or Input.is_key_pressed(KEY_Q):
 		_on_weapon_switched()
+	if Input.is_key_pressed(KEY_F):
+		_on_turret_deployed_task()
+
+func _on_turret_deployed_task() -> void:
+	if current_phase == Phase.PHASE_3_WEAPONS and not _has_deployed_turret:
+		_has_deployed_turret = true
+		if _hud != null:
+			_hud.update_task(0, true)
 
 func _on_weapon_switched() -> void:
 	if current_phase == Phase.PHASE_3_WEAPONS and not _has_switched_weapon:
@@ -297,6 +318,15 @@ func _on_target_destroyed(_tgt: TrainingTarget) -> void:
 	_targets_destroyed_count += 1
 	if _hud != null:
 		_hud.update_task(1, _targets_destroyed_count >= 3, "Neutralize Target Dummies (%d/3)" % min(_targets_destroyed_count, 3))
+
+	# Role showcase: After destroying 2 targets, switch operative to Medic to test Bio-Shotgun and Healing Surge
+	if _targets_destroyed_count == 2:
+		var char_data : Node = get_node_or_null("/root/CharacterData")
+		if char_data != null and char_data.has_method("select_class"):
+			char_data.call("select_class", CharacterDataSingleton.CharacterClass.MEDIC)
+		if _hud != null and _hud.instruction_label != null:
+			_hud.instruction_label.text = "Operative switched to MEDIC: Fire Compact Bio-Shotgun [LMB] and trigger Nanite Healing Surge [F]!"
+
 	if _targets_destroyed_count >= 3:
 		if wp_weapons != null:
 			wp_weapons.activate()
@@ -312,21 +342,26 @@ func _on_weapons_wp_reached() -> void:
 	call_deferred("_start_phase_4")
 
 # -----------------------------------------------------------------------------
-# Phase 4: Vehicle Operations (Rover)
+# Phase 4: Vehicle Operations & Explorer Reconnaissance
 # -----------------------------------------------------------------------------
 
 func _start_phase_4() -> void:
 	current_phase = Phase.PHASE_4_VEHICLE
+	# Transition operative specialization to Explorer / Scout
+	var char_data : Node = get_node_or_null("/root/CharacterData")
+	if char_data != null and char_data.has_method("select_class"):
+		char_data.call("select_class", CharacterDataSingleton.CharacterClass.EXPLORER)
+
 	if wp_rover_bay != null:
 		wp_rover_bay.activate()
 	if _hud != null:
 		_hud.track_waypoint(_player, wp_rover_bay)
 		_hud.set_objective(
 			"CADET TRAINING // PHASE 4 OF 5",
-			"VEHICLE OPERATIONS",
-			"Board the Space Rover with [E]. Drive through the slalom course [WASD, Shift Boost, Space Handbrake] and park at the terminal.",
+			"EXPLORER // RECONNAISSANCE & VEHICLE GATLING",
+			"Specialized as EXPLORER (+30% visibility & shoulder searchlights). Board vehicle [E] to deploy the rear Gatling Cannon, and drive the slalom course.",
 			[
-				{"text": "Board the Space Rover [E]", "completed": false},
+				{"text": "Board Vehicle [E] (Deploy Gatling Cannon)", "completed": false},
 				{"text": "Navigate Slalom Waypoint 1", "completed": false},
 				{"text": "Navigate Slalom Waypoint 2", "completed": false},
 				{"text": "Park at Terminal & Dismount [E]", "completed": false}

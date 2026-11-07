@@ -90,8 +90,11 @@ const SNIPER_CAM_SIZE : float = 5.8
 func _ready() -> void:
 	player.add_to_group("player")
 	var char_data : Node = get_node_or_null("/root/CharacterData")
-	if char_data != null and "current_class" in char_data:
-		apply_character_class(int(char_data.get("current_class")))
+	if char_data != null:
+		if "current_class" in char_data:
+			apply_character_class(int(char_data.get("current_class")))
+		if char_data.has_signal("class_changed") and not char_data.is_connected("class_changed", Callable(self, "_on_class_changed_runtime")):
+			char_data.connect("class_changed", Callable(self, "_on_class_changed_runtime"))
 	_connect_health.call_deferred()
 	_setup_laser_sight.call_deferred()
 	_roll_next_crit()
@@ -829,6 +832,9 @@ func apply_character_class(class_id: int) -> void:
 			player_animation.set_weapon_model(current_weapon)
 		_notify_hud()
 		_update_camera_sniper_zoom()
+
+func _on_class_changed_runtime(new_class: int, _info: Dictionary) -> void:
+	apply_character_class(new_class)
 
 ## Triggers the active class specialization ability on [F] key.
 func execute_class_ability() -> void:

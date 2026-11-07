@@ -3,24 +3,24 @@
 [ext_resource type="Script" path="res://scenes/tutorial/tutorial_waypoint.gd" id="1_wyp"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_wyp"]
-height = 3.5
-radius = 2.0
+height = 2.4
+radius = 1.4
 
 [sub_resource type="TorusMesh" id="TorusMesh_ring"]
-inner_radius = 1.6
-outer_radius = 1.85
+inner_radius = 0.75
+outer_radius = 0.90
 rings = 32
 ring_segments = 8
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_beam"]
-top_radius = 1.6
-bottom_radius = 1.8
-height = 14.0
+top_radius = 0.65
+bottom_radius = 0.80
+height = 6.0
 cap_top = false
 cap_bottom = false
 
 [sub_resource type="BoxMesh" id="BoxMesh_diamond"]
-size = Vector3(0.75, 0.75, 0.75)
+size = Vector3(0.38, 0.38, 0.38)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_diamond"]
 shading_mode = 0
@@ -32,7 +32,7 @@ collision_mask = 7
 script = ExtResource("1_wyp")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
 shape = SubResource("CylinderShape3D_wyp")
 
 [node name="GroundRing" type="MeshInstance3D" parent="."]
@@ -40,7 +40,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
 mesh = SubResource("TorusMesh_ring")
 
 [node name="LightBeam" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.0, 0)
 mesh = SubResource("CylinderMesh_beam")
 
 [node name="BeaconIcon" type="Node3D" parent="."]
