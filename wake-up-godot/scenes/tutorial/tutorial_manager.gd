@@ -92,7 +92,7 @@ func _ready() -> void:
 		_player_combat = _player.get_node_or_null("PlayerCombat")
 		if _player_combat != null:
 			if _player_combat.has_signal("weapon_switched"):
-				_player_combat.connect("weapon_switched", func(_idx): _on_weapon_switched())
+				_player_combat.connect("weapon_switched", func(_slot = 0, _wtype = 0, _ammo = 0, _max_ammo = 0): _on_weapon_switched())
 
 	if _rover != null:
 		if _rover.has_signal("boarded"):

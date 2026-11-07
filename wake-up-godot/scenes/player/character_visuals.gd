@@ -1097,6 +1097,7 @@ func _apply_explorer_visuals() -> void:
 			house_mesh.material_override = house_mat
 			house_mesh.position = Vector3(0.0, 0.0, 0.0)
 			house_mesh.rotation_degrees = Vector3(90, 0, 0)
+			house_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			fixture.add_child(house_mesh)
 
 			# Emissive lens face at front of cylinder
@@ -1110,18 +1111,22 @@ func _apply_explorer_visuals() -> void:
 			lens_mesh.material_override = lens_mat
 			lens_mesh.position = Vector3(0.0, 0.0, -0.15)
 			lens_mesh.rotation_degrees = Vector3(90, 0, 0)
+			lens_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			fixture.add_child(lens_mesh)
 
 			# Functional SpotLight3D shining forward into the darkness
+			# Configured with clean falloff, no self-shadow acne or streaks
 			var spot := SpotLight3D.new()
 			spot.name = "FlashlightSpot"
-			spot.position = Vector3(0.0, 0.0, -0.17)
+			spot.position = Vector3(0.0, 0.0, -0.22)
 			spot.rotation_degrees = Vector3(0, 0, 0) # Shines forward through the front lens along fixture -Z
 			spot.light_color = Color(1.0, 0.95, 0.85)
 			spot.light_energy = 2.8
-			spot.spot_range = 22.0
+			spot.spot_range = 24.0
 			spot.spot_angle = 38.0
-			spot.shadow_enabled = true
+			spot.spot_attenuation = 0.7
+			spot.spot_angle_attenuation = 1.35
+			spot.shadow_enabled = false
 			fixture.add_child(spot)
 
 		pack.add_child(lights_node)

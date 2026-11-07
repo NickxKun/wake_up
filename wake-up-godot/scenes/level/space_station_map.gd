@@ -15,7 +15,12 @@ enum MapTheme {
 	TRANSPORT_DOCK = 2,
 }
 
-@export var map_theme : MapTheme = MapTheme.SPACE_BASE
+@export var map_theme : MapTheme = MapTheme.SPACE_BASE:
+	set(val):
+		map_theme = val
+		if _is_ready:
+			_update_theme_visuals()
+
 @export var ground_size : Vector2 = Vector2(80.0, 80.0)
 @export var safe_zone_half_size : float = 15.5
 
@@ -34,14 +39,26 @@ const SCENE_TERRAIN_LOW : PackedScene = preload("res://assets/models/fbx/terrain
 # POI Equipment Preloads for dynamic map themes
 const SCENE_DRILL : PackedScene = preload("res://assets/models/fbx/drill_structure.fbx")
 const SCENE_SPACETRUCK : PackedScene = preload("res://assets/models/fbx/spacetruck.fbx")
+const SCENE_SPACETRUCK_LARGE : PackedScene = preload("res://assets/models/fbx/spacetruck_large.fbx")
 const SCENE_ROVER : PackedScene = preload("res://scenes/vehicles/rover.tscn")
 const SCENE_WEAPONS_BOX : PackedScene = preload("res://scenes/weapons/weapons_box.tscn")
 const SCENE_CARGO_PACKED : PackedScene = preload("res://assets/models/fbx/cargo_B_packed.fbx")
 const SCENE_CARGO_STACKED : PackedScene = preload("res://assets/models/fbx/cargo_A_stacked.fbx")
+const SCENE_CARGO_B_STACKED : PackedScene = preload("res://assets/models/fbx/cargo_B_stacked.fbx")
+const SCENE_CARGODEPOT_A : PackedScene = preload("res://assets/models/fbx/cargodepot_A.fbx")
 const SCENE_CONTAINERS_A : PackedScene = preload("res://assets/models/fbx/containers_A.fbx")
+const SCENE_CONTAINERS_B : PackedScene = preload("res://assets/models/fbx/containers_B.fbx")
 const SCENE_LIGHTS : PackedScene = preload("res://assets/models/fbx/lights.fbx")
 const SCENE_SOLARPANEL : PackedScene = preload("res://assets/models/fbx/solarpanel.fbx")
+const SCENE_WINDTURBINE_TALL : PackedScene = preload("res://assets/models/fbx/windturbine_tall.fbx")
+const SCENE_WINDTURBINE_LOW : PackedScene = preload("res://assets/models/fbx/windturbine_low.fbx")
 const SCENE_TRUCK_TRAILER : PackedScene = preload("res://assets/models/fbx/spacetruck_trailer.fbx")
+
+var _ground_material : StandardMaterial3D = null
+var _perimeter_material : StandardMaterial3D = null
+var _stripe_material : StandardMaterial3D = null
+var _laser_material : StandardMaterial3D = null
+var _mist_material : StandardMaterial3D = null
 
 # Terrain Grid Constants (21x21 tiles, 2m modular grid covering -20m to +20m)
 const TERRAIN_GRID_W : int = 21
@@ -90,6 +107,7 @@ func _ready() -> void:
 	_build_outer_sectors()
 	_build_outer_fog()
 	_build_perimeter_boundaries()
+	_apply_theme_environment_and_sky()
 	_setup_prop_collisions(self)
 	_snap_enemy_spawners()
 	_ensure_player_spawn_safe()
@@ -134,9 +152,8 @@ func _build_ground() -> void:
 	col_shape.position = Vector3(0.0, -0.5, 0.0)
 	ground_body.add_child(col_shape)
 
-	# Visual extended desert floor for the surrounding wasteland
-	# Matches the exact terracotta sand color of the SpaceBits terrain palette (#9e482a)
-	# Sized 260m x 260m so the desert floor extends far into the horizon with zero gaps
+	# Visual extended ground floor tailored to the active theme palette
+	# Sized 260m x 260m so the floor extends far into the horizon with zero gaps
 	var mesh_inst := MeshInstance3D.new()
 	mesh_inst.name = "GroundVisual"
 	mesh_inst.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -145,8 +162,8 @@ func _build_ground() -> void:
 	mesh_inst.mesh = plane
 
 	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(0.6196, 0.2863, 0.1725, 1.0)
-	mat.roughness = 1.0
+	_ground_material = mat
+	_update_ground_material_albedo()
 	mesh_inst.material_override = mat
 	mesh_inst.position = Vector3(0.0, -0.01, 0.0)
 	ground_body.add_child(mesh_inst)
@@ -285,6 +302,12 @@ func _spawn_wasteland_tactical_rocks() -> void:
 		{"pos": Vector3(3.5, 0.0, -1.5), "scene": SCENE_ROCK_B, "rot": -80.0, "scale": Vector3(1.0, 1.0, 1.0)},
 		{"pos": Vector3(0.0, 0.0, 15.5), "scene": SCENE_ROCKS_B, "rot": 180.0, "scale": Vector3(2.2, 2.4, 2.2)},
 		{"pos": Vector3(0.0, 0.0, -15.5), "scene": SCENE_ROCKS_A, "rot": 0.0, "scale": Vector3(2.0, 2.2, 2.0)},
+
+		# 10. Towering Sandstone Monoliths & Canyon Hoodoos (matches Canyon Vista Banner)
+		{"pos": Vector3(-17.5, 0.0, -17.5), "scene": SCENE_ROCKS_A, "rot": 15.0, "scale": Vector3(2.4, 3.6, 2.4)},
+		{"pos": Vector3(17.5, 0.0, -17.5), "scene": SCENE_ROCKS_B, "rot": -75.0, "scale": Vector3(2.5, 3.8, 2.5)},
+		{"pos": Vector3(-17.5, 0.0, 17.5), "scene": SCENE_ROCKS_B, "rot": 110.0, "scale": Vector3(2.4, 3.5, 2.4)},
+		{"pos": Vector3(17.5, 0.0, 17.5), "scene": SCENE_ROCKS_A, "rot": -40.0, "scale": Vector3(2.6, 3.9, 2.6)},
 	]
 	for r in extra_rock_coords:
 		var sc : Vector3 = r["scale"] if r.has("scale") else Vector3.ONE
@@ -336,6 +359,11 @@ func _spawn_spacebase_pois() -> void:
 		{"scene": SCENE_LIGHTS, "pos": Vector3(1.8, 0.06, 3.5), "rot": -90.0, "scale": Vector3.ONE},
 		{"scene": SCENE_CARGO_PACKED, "pos": Vector3(-1.5, 0.06, 8.5), "rot": 15.0, "scale": Vector3.ONE},
 		{"scene": SCENE_CONTAINERS_A, "pos": Vector3(1.5, 0.06, 12.0), "rot": -45.0, "scale": Vector3.ONE},
+
+		# 6. High-Ground Power Grid Turbines & Solar Tracking (matches Space Base Vista Banner)
+		{"scene": SCENE_WINDTURBINE_TALL, "pos": Vector3(14.0, 0.0, -8.0), "rot": 15.0, "scale": Vector3.ONE},
+		{"scene": SCENE_WINDTURBINE_LOW, "pos": Vector3(14.5, 0.0, -11.0), "rot": -45.0, "scale": Vector3.ONE},
+		{"scene": SCENE_SOLARPANEL, "pos": Vector3(12.0, 0.0, -12.5), "rot": 30.0, "scale": Vector3.ONE},
 	]
 
 	for p in poi_props:
@@ -376,6 +404,13 @@ func _spawn_transportdock_pois() -> void:
 		{"scene": SCENE_CARGO_PACKED, "pos": Vector3(2.5, 0.06, 0.8), "rot": -15.0, "scale": Vector3.ONE},
 		{"scene": SCENE_CONTAINERS_A, "pos": Vector3(-2.5, 0.06, -0.8), "rot": 75.0, "scale": Vector3.ONE},
 		{"scene": SCENE_LIGHTS, "pos": Vector3(2.2, 0.06, -2.5), "rot": -45.0, "scale": Vector3.ONE},
+
+		# 5. Aerospace Apron Staging & Freight Stacks (matches Transport Dock Vista Banner)
+		{"scene": SCENE_CARGODEPOT_A, "pos": Vector3(-13.5, 0.06, -0.5), "rot": 90.0, "scale": Vector3.ONE},
+		{"scene": SCENE_CONTAINERS_B, "pos": Vector3(-13.5, 0.06, 2.0), "rot": 0.0, "scale": Vector3.ONE},
+		{"scene": SCENE_CARGO_B_STACKED, "pos": Vector3(-7.5, 0.06, 12.0), "rot": 45.0, "scale": Vector3.ONE},
+		{"scene": SCENE_LIGHTS, "pos": Vector3(-13.0, 0.06, 10.0), "rot": -45.0, "scale": Vector3.ONE},
+		{"scene": SCENE_LIGHTS, "pos": Vector3(-9.0, 0.06, -8.5), "rot": 90.0, "scale": Vector3.ONE},
 	]
 
 	for p in dock_props:
@@ -549,22 +584,20 @@ func _build_demarcation_line() -> void:
 
 	var hz : float = safe_zone_half_size # 15.5m
 
-	# Luminous Amber Warning Stripe Material
+	# Luminous Theme-aware Warning Stripe Material
 	var stripe_mat := StandardMaterial3D.new()
-	stripe_mat.albedo_color = Color(1.0, 0.62, 0.14, 1.0)
 	stripe_mat.emission_enabled = true
-	stripe_mat.emission = Color(1.0, 0.52, 0.08)
-	stripe_mat.emission_energy_multiplier = 3.2
 	stripe_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	_stripe_material = stripe_mat
 
 	# Tripwire Laser Beam Material
 	var laser_mat := StandardMaterial3D.new()
 	laser_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	laser_mat.albedo_color = Color(1.0, 0.55, 0.12, 0.8)
 	laser_mat.emission_enabled = true
-	laser_mat.emission = Color(1.0, 0.48, 0.06)
-	laser_mat.emission_energy_multiplier = 2.8
 	laser_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	_laser_material = laser_mat
+
+	_update_demarcation_materials()
 
 	# Compute continuous perimeter sample loop (clockwise: North -> East -> South -> West)
 	var steps_per_side : int = 62
@@ -855,11 +888,11 @@ func _build_outer_fog() -> void:
 
 	var mist_mat := StandardMaterial3D.new()
 	mist_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	# Very subtle atmospheric desert dust haze along the far perimeter boundary
-	mist_mat.albedo_color = Color(0.65, 0.35, 0.20, 0.04)
 	mist_mat.roughness = 1.0
 	mist_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	mist_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	_mist_material = mist_mat
+	_update_mist_material()
 
 	# Subtle horizon bands positioned along the far perimeter edge (36m out, high in the sky)
 	var haze_zones := [
@@ -942,10 +975,9 @@ func _build_perimeter_boundaries() -> void:
 
 	var b_mat := StandardMaterial3D.new()
 	b_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	b_mat.albedo_color = Color(0.2, 0.7, 0.95, 0.25)
 	b_mat.emission_enabled = true
-	b_mat.emission = Color(0.15, 0.55, 0.85)
-	b_mat.emission_energy_multiplier = 0.8
+	_perimeter_material = b_mat
+	_update_perimeter_material()
 
 	for b in boundaries:
 		var col := CollisionShape3D.new()
@@ -1036,3 +1068,162 @@ func _has_static_body_child(node: Node) -> bool:
 		if c is StaticBody3D:
 			return true
 	return false
+
+## Dynamically updates all theme-specific materials, lighting, sky, and fog.
+func _update_theme_visuals() -> void:
+	_update_ground_material_albedo()
+	_update_demarcation_materials()
+	_update_perimeter_material()
+	_update_mist_material()
+	_apply_theme_environment_and_sky()
+	_reconfigure_theme_pois()
+
+func _reconfigure_theme_pois() -> void:
+	var nat_rocks : Node = get_node_or_null("Sector_NaturalRocks")
+	var dig : Node = get_node_or_null("Sector_ResearchDig")
+	var dock : Node = get_node_or_null("Sector_DockLogistics")
+	_remove_nodes([nat_rocks, dig, dock])
+
+	match map_theme:
+		MapTheme.CANYON_WASTELAND:
+			_spawn_wasteland_tactical_rocks()
+		MapTheme.SPACE_BASE:
+			_spawn_spacebase_pois()
+		MapTheme.TRANSPORT_DOCK:
+			_spawn_transportdock_pois()
+
+func _update_ground_material_albedo() -> void:
+	if _ground_material == null:
+		return
+	match map_theme:
+		MapTheme.CANYON_WASTELAND:
+			_ground_material.albedo_color = Color(0.6196, 0.2863, 0.1725, 1.0)
+			_ground_material.roughness = 1.0
+		MapTheme.SPACE_BASE:
+			_ground_material.albedo_color = Color(0.30, 0.32, 0.36, 1.0)
+			_ground_material.roughness = 0.95
+		MapTheme.TRANSPORT_DOCK:
+			_ground_material.albedo_color = Color(0.22, 0.24, 0.27, 1.0)
+			_ground_material.roughness = 0.88
+
+func _update_demarcation_materials() -> void:
+	if _stripe_material != null:
+		match map_theme:
+			MapTheme.CANYON_WASTELAND:
+				_stripe_material.albedo_color = Color(1.0, 0.62, 0.14, 1.0)
+				_stripe_material.emission = Color(1.0, 0.52, 0.08)
+				_stripe_material.emission_energy_multiplier = 3.2
+			MapTheme.SPACE_BASE:
+				_stripe_material.albedo_color = Color(0.20, 0.85, 1.0, 1.0)
+				_stripe_material.emission = Color(0.15, 0.80, 1.0)
+				_stripe_material.emission_energy_multiplier = 3.2
+			MapTheme.TRANSPORT_DOCK:
+				_stripe_material.albedo_color = Color(1.0, 0.78, 0.12, 1.0)
+				_stripe_material.emission = Color(0.98, 0.72, 0.08)
+				_stripe_material.emission_energy_multiplier = 3.2
+
+	if _laser_material != null:
+		match map_theme:
+			MapTheme.CANYON_WASTELAND:
+				_laser_material.albedo_color = Color(1.0, 0.55, 0.12, 0.8)
+				_laser_material.emission = Color(1.0, 0.48, 0.06)
+				_laser_material.emission_energy_multiplier = 2.8
+			MapTheme.SPACE_BASE:
+				_laser_material.albedo_color = Color(0.18, 0.85, 1.0, 0.8)
+				_laser_material.emission = Color(0.12, 0.78, 0.98)
+				_laser_material.emission_energy_multiplier = 2.8
+			MapTheme.TRANSPORT_DOCK:
+				_laser_material.albedo_color = Color(1.0, 0.76, 0.10, 0.8)
+				_laser_material.emission = Color(0.95, 0.68, 0.06)
+				_laser_material.emission_energy_multiplier = 2.8
+
+func _update_perimeter_material() -> void:
+	if _perimeter_material == null:
+		return
+	match map_theme:
+		MapTheme.CANYON_WASTELAND:
+			_perimeter_material.albedo_color = Color(1.0, 0.55, 0.15, 0.28)
+			_perimeter_material.emission = Color(1.0, 0.45, 0.10)
+			_perimeter_material.emission_energy_multiplier = 1.0
+		MapTheme.SPACE_BASE:
+			_perimeter_material.albedo_color = Color(0.15, 0.85, 1.0, 0.28)
+			_perimeter_material.emission = Color(0.10, 0.75, 0.98)
+			_perimeter_material.emission_energy_multiplier = 1.0
+		MapTheme.TRANSPORT_DOCK:
+			_perimeter_material.albedo_color = Color(1.0, 0.75, 0.10, 0.28)
+			_perimeter_material.emission = Color(0.95, 0.65, 0.05)
+			_perimeter_material.emission_energy_multiplier = 1.0
+
+func _update_mist_material() -> void:
+	if _mist_material == null:
+		return
+	match map_theme:
+		MapTheme.CANYON_WASTELAND:
+			_mist_material.albedo_color = Color(0.78, 0.44, 0.26, 0.07)
+		MapTheme.SPACE_BASE:
+			_mist_material.albedo_color = Color(0.18, 0.24, 0.38, 0.04)
+		MapTheme.TRANSPORT_DOCK:
+			_mist_material.albedo_color = Color(0.24, 0.32, 0.44, 0.06)
+
+func _apply_theme_environment_and_sky() -> void:
+	var tree : SceneTree = get_tree()
+	var root : Node = tree.current_scene if tree != null else get_parent()
+	if root == null:
+		root = get_parent()
+	if root == null:
+		return
+
+	var world_env : WorldEnvironment = root.find_child("WorldEnvironment", true, false) as WorldEnvironment
+	var sun_light : DirectionalLight3D = root.find_child("DirectionalLight3D", true, false) as DirectionalLight3D
+	var dnc : Node = root.find_child("DayNightCycle", true, false)
+
+	if dnc != null and dnc.has_method("apply_theme"):
+		dnc.call("apply_theme", int(map_theme))
+
+	if world_env != null and world_env.environment != null:
+		var env : Environment = world_env.environment
+		var sky : Sky = env.sky
+		var sky_mat : ProceduralSkyMaterial = sky.sky_material as ProceduralSkyMaterial if sky != null else null
+
+		match map_theme:
+			MapTheme.CANYON_WASTELAND:
+				if sky_mat != null:
+					sky_mat.sky_top_color = Color(0.28, 0.38, 0.55, 1.0)
+					sky_mat.sky_horizon_color = Color(0.85, 0.48, 0.28, 1.0)
+					sky_mat.ground_bottom_color = Color(0.55, 0.24, 0.14, 1.0)
+					sky_mat.ground_horizon_color = Color(0.62, 0.29, 0.17, 1.0)
+				env.fog_light_color = Color(0.78, 0.44, 0.26, 1.0)
+				env.fog_density = 0.0035
+				env.fog_aerial_perspective = 0.55
+				env.fog_sky_affect = 0.6
+				if sun_light != null:
+					sun_light.light_color = Color(1.0, 0.88, 0.72, 1.0)
+					sun_light.light_energy = 1.30
+
+			MapTheme.SPACE_BASE:
+				if sky_mat != null:
+					sky_mat.sky_top_color = Color(0.04, 0.06, 0.12, 1.0)
+					sky_mat.sky_horizon_color = Color(0.12, 0.18, 0.28, 1.0)
+					sky_mat.ground_bottom_color = Color(0.08, 0.10, 0.14, 1.0)
+					sky_mat.ground_horizon_color = Color(0.20, 0.22, 0.26, 1.0)
+				env.fog_light_color = Color(0.16, 0.22, 0.32, 1.0)
+				env.fog_density = 0.0018
+				env.fog_aerial_perspective = 0.30
+				env.fog_sky_affect = 0.4
+				if sun_light != null:
+					sun_light.light_color = Color(0.96, 0.98, 1.0, 1.0)
+					sun_light.light_energy = 1.45
+
+			MapTheme.TRANSPORT_DOCK:
+				if sky_mat != null:
+					sky_mat.sky_top_color = Color(0.08, 0.12, 0.20, 1.0)
+					sky_mat.sky_horizon_color = Color(0.25, 0.35, 0.48, 1.0)
+					sky_mat.ground_bottom_color = Color(0.10, 0.12, 0.15, 1.0)
+					sky_mat.ground_horizon_color = Color(0.18, 0.22, 0.26, 1.0)
+				env.fog_light_color = Color(0.22, 0.30, 0.40, 1.0)
+				env.fog_density = 0.0028
+				env.fog_aerial_perspective = 0.45
+				env.fog_sky_affect = 0.5
+				if sun_light != null:
+					sun_light.light_color = Color(0.88, 0.92, 1.0, 1.0)
+					sun_light.light_energy = 1.25

@@ -12,27 +12,96 @@ var sun_light : DirectionalLight3D = null
 var world_env : WorldEnvironment = null
 var sky_material : ProceduralSkyMaterial = null
 
-# Sun colors across the day
-const COLOR_DAY : Color = Color(1.0, 0.96, 0.90, 1.0)
-const COLOR_SUNRISE : Color = Color(1.0, 0.65, 0.35, 1.0)
-const COLOR_SUNSET : Color = Color(0.98, 0.48, 0.22, 1.0)
-const COLOR_NIGHT : Color = Color(0.28, 0.42, 0.75, 1.0) # Cool moonlight
+# Theme-aware Sun colors across the day
+var color_day : Color = Color(1.0, 0.96, 0.90, 1.0)
+var color_sunrise : Color = Color(1.0, 0.65, 0.35, 1.0)
+var color_sunset : Color = Color(0.98, 0.48, 0.22, 1.0)
+var color_night : Color = Color(0.28, 0.42, 0.75, 1.0) # Cool moonlight
 
-# Sky colors across the day
-const SKY_DAY_TOP : Color = Color(0.32, 0.48, 0.75, 1.0)
-const SKY_DAY_HORIZON : Color = Color(0.72, 0.55, 0.42, 1.0)
+var sun_energy_day : float = 1.35
+var sun_energy_twilight : float = 0.90
+var sun_energy_night : float = 0.38
 
-const SKY_SUNSET_TOP : Color = Color(0.25, 0.18, 0.42, 1.0)
-const SKY_SUNSET_HORIZON : Color = Color(0.85, 0.35, 0.22, 1.0)
+# Theme-aware Sky colors across the day
+var sky_day_top : Color = Color(0.32, 0.48, 0.75, 1.0)
+var sky_day_horizon : Color = Color(0.72, 0.55, 0.42, 1.0)
 
-const SKY_NIGHT_TOP : Color = Color(0.03, 0.04, 0.10, 1.0)
-const SKY_NIGHT_HORIZON : Color = Color(0.08, 0.12, 0.22, 1.0)
+var sky_sunset_top : Color = Color(0.25, 0.18, 0.42, 1.0)
+var sky_sunset_horizon : Color = Color(0.85, 0.35, 0.22, 1.0)
+
+var sky_night_top : Color = Color(0.03, 0.04, 0.10, 1.0)
+var sky_night_horizon : Color = Color(0.08, 0.12, 0.22, 1.0)
+
+var current_theme : int = 1
 
 func _ready() -> void:
 	add_to_group("day_night_cycle")
 	_find_nodes()
+	_detect_and_apply_theme()
 	_configure_lighting()
 	_update_lighting(0.0)
+
+func _detect_and_apply_theme() -> void:
+	var hud : Node = get_node_or_null("/root/PlayerHealthHud")
+	if hud != null and "selected_map_theme" in hud:
+		apply_theme(int(hud.selected_map_theme))
+		return
+	var root := get_tree().current_scene if get_tree() != null else get_parent()
+	if root != null:
+		var sm : Node = root.find_child("SpaceStationMap", true, false)
+		if sm == null and root is SpaceStationMap:
+			sm = root
+		if sm != null and "map_theme" in sm:
+			apply_theme(int(sm.map_theme))
+
+## Applies lighting and atmospheric color palettes tailored to each map theme's visual identity.
+func apply_theme(theme_id: int) -> void:
+	current_theme = theme_id
+	match theme_id:
+		0: # CANYON_WASTELAND (Fiery sandstone canyon sunset & warm Martian skies)
+			color_day = Color(1.0, 0.88, 0.72, 1.0)
+			color_sunrise = Color(1.0, 0.62, 0.30, 1.0)
+			color_sunset = Color(0.98, 0.46, 0.22, 1.0)
+			color_night = Color(0.32, 0.28, 0.48, 1.0)
+			sun_energy_day = 1.30
+			sun_energy_twilight = 0.95
+			sun_energy_night = 0.35
+			sky_day_top = Color(0.28, 0.38, 0.55, 1.0)
+			sky_day_horizon = Color(0.85, 0.48, 0.28, 1.0)
+			sky_sunset_top = Color(0.24, 0.16, 0.38, 1.0)
+			sky_sunset_horizon = Color(0.88, 0.38, 0.22, 1.0)
+			sky_night_top = Color(0.04, 0.05, 0.12, 1.0)
+			sky_night_horizon = Color(0.12, 0.15, 0.26, 1.0)
+
+		1: # SPACE_BASE (Deep cosmic starry night sky & intense solar white daylight)
+			color_day = Color(0.96, 0.98, 1.0, 1.0)
+			color_sunrise = Color(0.88, 0.92, 1.0, 1.0)
+			color_sunset = Color(0.72, 0.78, 0.95, 1.0)
+			color_night = Color(0.20, 0.30, 0.55, 1.0)
+			sun_energy_day = 1.45
+			sun_energy_twilight = 0.88
+			sun_energy_night = 0.30
+			sky_day_top = Color(0.04, 0.06, 0.12, 1.0)
+			sky_day_horizon = Color(0.12, 0.18, 0.28, 1.0)
+			sky_sunset_top = Color(0.06, 0.08, 0.18, 1.0)
+			sky_sunset_horizon = Color(0.16, 0.22, 0.35, 1.0)
+			sky_night_top = Color(0.02, 0.03, 0.08, 1.0)
+			sky_night_horizon = Color(0.05, 0.08, 0.16, 1.0)
+
+		2: # TRANSPORT DOCK (Aerospace twilight, steel blue dusk & industrial tarmac)
+			color_day = Color(0.88, 0.92, 1.0, 1.0)
+			color_sunrise = Color(0.95, 0.78, 0.58, 1.0)
+			color_sunset = Color(0.82, 0.58, 0.48, 1.0)
+			color_night = Color(0.22, 0.32, 0.52, 1.0)
+			sun_energy_day = 1.25
+			sun_energy_twilight = 0.92
+			sun_energy_night = 0.35
+			sky_day_top = Color(0.08, 0.12, 0.20, 1.0)
+			sky_day_horizon = Color(0.25, 0.35, 0.48, 1.0)
+			sky_sunset_top = Color(0.12, 0.15, 0.25, 1.0)
+			sky_sunset_horizon = Color(0.35, 0.38, 0.48, 1.0)
+			sky_night_top = Color(0.03, 0.05, 0.10, 1.0)
+			sky_night_horizon = Color(0.08, 0.12, 0.20, 1.0)
 
 func _find_nodes() -> void:
 	var root := get_tree().current_scene if get_tree() != null else get_parent()
@@ -89,24 +158,24 @@ func _update_lighting(_delta: float) -> void:
 
 	if elevation > 0.3:
 		# Midday
-		light_col = COLOR_DAY
-		light_energy = 1.35
+		light_col = color_day
+		light_energy = sun_energy_day
 	elif elevation > 0.0:
 		# Sunrise / Sunset transition
 		var dawn_ratio : float = elevation / 0.3
-		var horizon_col : Color = COLOR_SUNRISE if time_of_day < 0.5 else COLOR_SUNSET
-		light_col = horizon_col.lerp(COLOR_DAY, dawn_ratio)
-		light_energy = lerpf(0.9, 1.35, dawn_ratio)
+		var horizon_col : Color = color_sunrise if time_of_day < 0.5 else color_sunset
+		light_col = horizon_col.lerp(color_day, dawn_ratio)
+		light_energy = lerpf(sun_energy_twilight, sun_energy_day, dawn_ratio)
 	elif elevation > -0.2:
 		# Twilight dusk into night
 		var dusk_ratio : float = (elevation + 0.2) / 0.2
-		var twilight_col : Color = COLOR_SUNSET if time_of_day > 0.5 else COLOR_SUNRISE
-		light_col = COLOR_NIGHT.lerp(twilight_col, dusk_ratio)
-		light_energy = lerpf(0.38, 0.9, dusk_ratio)
+		var twilight_col : Color = color_sunset if time_of_day > 0.5 else color_sunrise
+		light_col = color_night.lerp(twilight_col, dusk_ratio)
+		light_energy = lerpf(sun_energy_night, sun_energy_twilight, dusk_ratio)
 	else:
 		# Night (moonlight)
-		light_col = COLOR_NIGHT
-		light_energy = 0.38
+		light_col = color_night
+		light_energy = sun_energy_night
 
 	sun_light.light_color = light_col
 	sun_light.light_energy = light_energy
@@ -116,19 +185,19 @@ func _update_lighting(_delta: float) -> void:
 		var sky_top : Color
 		var sky_horiz : Color
 		if elevation > 0.2:
-			sky_top = SKY_DAY_TOP
-			sky_horiz = SKY_DAY_HORIZON
+			sky_top = sky_day_top
+			sky_horiz = sky_day_horizon
 		elif elevation > 0.0:
 			var t : float = elevation / 0.2
-			sky_top = SKY_SUNSET_TOP.lerp(SKY_DAY_TOP, t)
-			sky_horiz = SKY_SUNSET_HORIZON.lerp(SKY_DAY_HORIZON, t)
+			sky_top = sky_sunset_top.lerp(sky_day_top, t)
+			sky_horiz = sky_sunset_horizon.lerp(sky_day_horizon, t)
 		elif elevation > -0.25:
 			var t : float = (elevation + 0.25) / 0.25
-			sky_top = SKY_NIGHT_TOP.lerp(SKY_SUNSET_TOP, t)
-			sky_horiz = SKY_NIGHT_HORIZON.lerp(SKY_SUNSET_HORIZON, t)
+			sky_top = sky_night_top.lerp(sky_sunset_top, t)
+			sky_horiz = sky_night_horizon.lerp(sky_sunset_horizon, t)
 		else:
-			sky_top = SKY_NIGHT_TOP
-			sky_horiz = SKY_NIGHT_HORIZON
+			sky_top = sky_night_top
+			sky_horiz = sky_night_horizon
 
 		sky_material.sky_top_color = sky_top
 		sky_material.sky_horizon_color = sky_horiz
