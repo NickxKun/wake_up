@@ -65,6 +65,8 @@ func _ready() -> void:
 ## Configures the combat role, weapon model attachment, and stats of this enemy unit
 func set_weapon_type(new_type: EnemyWeaponType) -> void:
 	weapon_type = new_type
+	if enemy_animation == null:
+		enemy_animation = get_node_or_null("EnemyAnimation")
 	match weapon_type:
 		EnemyWeaponType.SHOTGUN:
 			shoot_interval = 2.0
@@ -448,6 +450,10 @@ func _spawn_enemy_bullet(muzzle_pos: Vector3, dir: Vector3, dmg: int, life: floa
 
 ## Gives each model surface a tinted copy of its material; roughness is kept so edge outlines still show.
 func _tint_model() -> void:
+	if model == null:
+		model = get_node_or_null("Model")
+	if model == null:
+		return
 	for node in model.find_children("*", "MeshInstance3D", true, false):
 		var mesh_instance : MeshInstance3D = node
 		for surface in mesh_instance.get_surface_override_material_count():

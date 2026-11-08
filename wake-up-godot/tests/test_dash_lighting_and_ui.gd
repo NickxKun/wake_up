@@ -222,7 +222,7 @@ func _run_tests() -> void:
 
 	# Check that all non-button children of cards have mouse_filter == MOUSE_FILTER_IGNORE (no dead zones!)
 	var cards_to_verify := [
-		menu.tutorial_card, menu.survival_card, menu.sandbox_card, menu.story_card, menu.coop_card,
+		menu.tutorial_card, menu.survival_card, menu.sandbox_card, menu.range_card, menu.mayhem_card, menu.story_card, menu.coop_card,
 		menu.astronaut_card, menu.engineer_card, menu.medic_card, menu.explorer_card,
 		menu.canyon_card, menu.base_card, menu.dock_card
 	]
@@ -243,8 +243,10 @@ func _run_tests() -> void:
 	check(all_children_transparent and checked_children_count > 30, "All " + str(checked_children_count) + " card overlay children have mouse_filter = IGNORE (0 dead zones)")
 
 	# Verify The Range and Rocket Mayhem are unlocked and selectable
-	check(menu.story_card.disabled == false, "The Range card is unlocked and clickable")
-	check(menu.coop_card.disabled == false, "Rocket Mayhem card is unlocked and clickable")
+	check(menu.range_card.disabled == false, "The Range card is unlocked and clickable")
+	check(menu.mayhem_card.disabled == false, "Rocket Mayhem card is unlocked and clickable")
+	check(menu.story_card.disabled == false, "Story card is clickable to open teaser")
+	check(menu.coop_card.disabled == false, "Co-op card is clickable to open teaser")
 
 	# Test mode selection
 	menu._select_mode(menu.GameMode.RANGE)

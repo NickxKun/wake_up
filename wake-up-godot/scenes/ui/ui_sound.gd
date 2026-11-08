@@ -161,6 +161,9 @@ func _build_player(p_name: String, stream_res: AudioStream, volume_db: float, bu
 
 ## Fades smoothly to the requested music track ("menu", "game", or "" to stop).
 func play_music(track_name: String, fade_duration: float = 0.8) -> void:
+	if _music_player_a == null or _music_player_b == null:
+		_create_music_players()
+
 	if _current_track_name == track_name and _active_music_player != null and _active_music_player.playing:
 		return
 
@@ -194,6 +197,8 @@ func play_music(track_name: String, fade_duration: float = 0.8) -> void:
 	# Swap to alternate player for crossfade
 	var outgoing_player : AudioStreamPlayer = _active_music_player
 	var incoming_player : AudioStreamPlayer = _music_player_b if outgoing_player == _music_player_a else _music_player_a
+	if incoming_player == null:
+		return
 	_active_music_player = incoming_player
 
 	incoming_player.stream = incoming_stream

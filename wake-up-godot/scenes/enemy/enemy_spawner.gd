@@ -24,6 +24,10 @@ func _spawn() -> void:
 		if "bullet_damage" in enemy:
 			enemy.set("bullet_damage", first_enemy_damage + _spawn_count)
 
+		_spawn_count += 1
+		parent.add_child(enemy)
+		enemy.global_transform = global_transform
+
 		var hud : Node = get_node_or_null("/root/PlayerHealthHud")
 		var is_mayhem : bool = (hud != null and "is_rocket_mayhem_mode" in hud and hud.is_rocket_mayhem_mode)
 		if enemy.has_method("set_weapon_type"):
@@ -45,9 +49,6 @@ func _spawn() -> void:
 				else:
 					enemy.call("set_weapon_type", 0) # PISTOL
 
-		_spawn_count += 1
-		parent.add_child(enemy)
-		enemy.global_transform = global_transform
 		var hc : HealthComponent = enemy.get_node_or_null("HealthComponent") as HealthComponent
 		if hc != null:
 			hc.health_depleted.connect(_on_enemy_died)

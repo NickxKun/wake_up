@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://c6y78qm2k4j8x"]
+[gd_scene format=3 uid="uid://c6y78qm2k4j8x"]
 
 [ext_resource type="Script" path="res://scenes/enemy/boss_mech.gd" id="1_boss"]
 [ext_resource type="Script" path="res://scenes/components/health_component.gd" id="2_hc"]

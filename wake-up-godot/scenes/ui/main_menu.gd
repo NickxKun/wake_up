@@ -40,6 +40,14 @@ var _prompt_tween : Tween
 @onready var sandbox_bar : ColorRect = $ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SandboxCard/SelectionBar
 @onready var sandbox_status : Label = $ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SandboxCard/CenterContainer/VBoxContainer/StatusLabel
 
+@onready var range_card : Button = $ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/RangeCard
+@onready var range_bar : ColorRect = $ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/RangeCard/SelectionBar
+@onready var range_status : Label = $ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/RangeCard/CenterContainer/VBoxContainer/StatusLabel
+
+@onready var mayhem_card : Button = $ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/MayhemCard
+@onready var mayhem_bar : ColorRect = $ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/MayhemCard/SelectionBar
+@onready var mayhem_status : Label = $ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/MayhemCard/CenterContainer/VBoxContainer/StatusLabel
+
 @onready var story_card : Button = $ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard
 @onready var story_bar : ColorRect = $ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard/SelectionBar
 @onready var story_status : Label = $ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard/CenterContainer/VBoxContainer/StatusLabel
@@ -151,12 +159,14 @@ func _ready() -> void:
 		teaser_modal.visible = false
 
 	# Setup pivots
-	var card_pivot := Vector2(102.5, 185.0)
+	var card_pivot := Vector2(75.0, 175.0)
 	tutorial_card.pivot_offset = card_pivot
 	survival_card.pivot_offset = card_pivot
 	sandbox_card.pivot_offset = card_pivot
-	story_card.pivot_offset = card_pivot
-	coop_card.pivot_offset = card_pivot
+	if range_card != null: range_card.pivot_offset = card_pivot
+	if mayhem_card != null: mayhem_card.pivot_offset = card_pivot
+	if story_card != null: story_card.pivot_offset = card_pivot
+	if coop_card != null: coop_card.pivot_offset = card_pivot
 	main_launch_button.pivot_offset = Vector2(140.0, 24.0)
 
 	var map_card_pivot := Vector2(142.5, 205.0)
@@ -176,8 +186,10 @@ func _ready() -> void:
 	tutorial_card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	survival_card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	sandbox_card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	story_card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	coop_card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	if range_card != null: range_card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	if mayhem_card != null: mayhem_card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	if story_card != null: story_card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	if coop_card != null: coop_card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	main_launch_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 
 	if canyon_card != null: canyon_card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -209,16 +221,36 @@ func _ready() -> void:
 		_play_sound("click")
 		_select_mode(GameMode.SANDBOX)
 	)
+	if range_card != null:
+		range_card.pressed.connect(func():
+			_play_sound("click")
+			_select_mode(GameMode.RANGE)
+		)
+	if mayhem_card != null:
+		mayhem_card.pressed.connect(func():
+			_play_sound("click")
+			_select_mode(GameMode.ROCKET_MAYHEM)
+		)
 
-	# Connect Playable Mode Cards
-	story_card.pressed.connect(func():
-		_play_sound("click")
-		_select_mode(GameMode.RANGE)
-	)
-	coop_card.pressed.connect(func():
-		_play_sound("click")
-		_select_mode(GameMode.ROCKET_MAYHEM)
-	)
+	# Connect Locked Teaser Cards
+	if story_card != null:
+		story_card.pressed.connect(func():
+			_play_sound("toggle", false)
+			_open_teaser_modal(
+				"OPERATION AURORA // PROTOCOL 05",
+				"CLASSIFIED MILITARY BRIEFING",
+				"Classified planetary reconnaissance mission into deep uncharted sectors.\nFull narrative story campaign undergoing orbital clearance.\n\nSTATUS: ENCRYPTED // UNDER ACTIVE DEVELOPMENT"
+			)
+		)
+	if coop_card != null:
+		coop_card.pressed.connect(func():
+			_play_sound("toggle", false)
+			_open_teaser_modal(
+				"TACTICAL SQUAD // PROTOCOL 06",
+				"CO-OPERATIVE DEPLOYMENT",
+				"Multiplayer neural network array connecting allied astronaut fireteams.\nCo-op tactical squad incursions currently under synchronization testing.\n\nSTATUS: OFFLINE // UNDER ACTIVE DEVELOPMENT"
+			)
+		)
 
 	if teaser_close_btn != null:
 		teaser_close_btn.pressed.connect(func():
@@ -343,8 +375,10 @@ func _ready() -> void:
 	_setup_card_interactions(tutorial_card, GameMode.TUTORIAL)
 	_setup_card_interactions(survival_card, GameMode.SURVIVAL)
 	_setup_card_interactions(sandbox_card, GameMode.SANDBOX)
-	_setup_card_interactions(story_card, GameMode.RANGE)
-	_setup_card_interactions(coop_card, GameMode.ROCKET_MAYHEM)
+	if range_card != null: _setup_card_interactions(range_card, GameMode.RANGE)
+	if mayhem_card != null: _setup_card_interactions(mayhem_card, GameMode.ROCKET_MAYHEM)
+	if story_card != null: _setup_locked_card_interactions(story_card)
+	if coop_card != null: _setup_locked_card_interactions(coop_card)
 	_setup_button_hover(main_launch_button)
 
 	_setup_icon_hover(settings_button)
@@ -355,7 +389,7 @@ func _ready() -> void:
 
 	# Ensure all card and button overlay children pass clicks through to their parent button (no dead zones!)
 	var all_interactive_buttons : Array[Button] = [
-		tutorial_card, survival_card, sandbox_card, story_card, coop_card,
+		tutorial_card, survival_card, sandbox_card, range_card, mayhem_card, story_card, coop_card,
 		astronaut_card, engineer_card, medic_card, explorer_card,
 		canyon_card, base_card, dock_card,
 		main_launch_button, main_deploy_button, map_proceed_button,
@@ -402,6 +436,35 @@ func _unhandled_input(event: InputEvent) -> void:
 			if not _is_transitioning:
 				_on_launch_pressed()
 				get_viewport().set_input_as_handled()
+		elif event.is_action_pressed("ui_left"):
+			var modes := [GameMode.TUTORIAL, GameMode.SURVIVAL, GameMode.SANDBOX, GameMode.RANGE, GameMode.ROCKET_MAYHEM]
+			var idx : int = modes.find(selected_mode)
+			if idx != -1:
+				_select_mode(modes[(idx - 1 + modes.size()) % modes.size()])
+				get_viewport().set_input_as_handled()
+		elif event.is_action_pressed("ui_right"):
+			var modes := [GameMode.TUTORIAL, GameMode.SURVIVAL, GameMode.SANDBOX, GameMode.RANGE, GameMode.ROCKET_MAYHEM]
+			var idx : int = modes.find(selected_mode)
+			if idx != -1:
+				_select_mode(modes[(idx + 1) % modes.size()])
+				get_viewport().set_input_as_handled()
+		elif event is InputEventKey and event.pressed and not event.echo:
+			match event.keycode:
+				KEY_1, KEY_KP_1:
+					_select_mode(GameMode.TUTORIAL)
+					get_viewport().set_input_as_handled()
+				KEY_2, KEY_KP_2:
+					_select_mode(GameMode.SURVIVAL)
+					get_viewport().set_input_as_handled()
+				KEY_3, KEY_KP_3:
+					_select_mode(GameMode.SANDBOX)
+					get_viewport().set_input_as_handled()
+				KEY_4, KEY_KP_4:
+					_select_mode(GameMode.RANGE)
+					get_viewport().set_input_as_handled()
+				KEY_5, KEY_KP_5:
+					_select_mode(GameMode.ROCKET_MAYHEM)
+					get_viewport().set_input_as_handled()
 	elif current_state == MenuState.MAP_SELECT:
 		if event.is_action_pressed("ui_cancel"):
 			_transition_from_map_select_to_mode_select()
@@ -711,14 +774,18 @@ func _update_mode_selection_ui(animated: bool) -> void:
 	tutorial_bar.visible = is_tutorial
 	survival_bar.visible = is_survival
 	sandbox_bar.visible = is_sandbox
-	if story_bar != null: story_bar.visible = is_range
-	if coop_bar != null: coop_bar.visible = is_mayhem
+	if range_bar != null: range_bar.visible = is_range
+	if mayhem_bar != null: mayhem_bar.visible = is_mayhem
+	if story_bar != null: story_bar.visible = false
+	if coop_bar != null: coop_bar.visible = false
 
-	tutorial_status.text = "◈ SELECTED ◈" if is_tutorial else ""
-	survival_status.text = "◈ SELECTED ◈" if is_survival else ""
-	sandbox_status.text = "◈ SELECTED ◈" if is_sandbox else ""
-	if story_status != null: story_status.text = "◈ SELECTED ◈" if is_range else "WEAPON TESTING"
-	if coop_status != null: coop_status.text = "◈ SELECTED ◈" if is_mayhem else "CHAOS & EXPLOSIONS"
+	tutorial_status.text = "◈ SELECTED ◈" if is_tutorial else "PROVING GROUNDS"
+	survival_status.text = "◈ SELECTED ◈" if is_survival else "ENDLESS SWARM"
+	sandbox_status.text = "◈ SELECTED ◈" if is_sandbox else "FREE ROAM"
+	if range_status != null: range_status.text = "◈ SELECTED ◈" if is_range else "WEAPON TESTING"
+	if mayhem_status != null: mayhem_status.text = "◈ SELECTED ◈" if is_mayhem else "CHAOS COMBAT"
+	if story_status != null: story_status.text = "LOCKED // TEASER"
+	if coop_status != null: coop_status.text = "LOCKED // TEASER"
 
 	if map_select_section != null:
 		map_select_section.visible = false
@@ -754,12 +821,18 @@ func _update_mode_selection_ui(animated: bool) -> void:
 		tween.tween_property(survival_card, "scale", surv_scale, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		tween.tween_property(sandbox_card, "modulate:a", sand_alpha, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		tween.tween_property(sandbox_card, "scale", sand_scale, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		if range_card != null:
+			tween.tween_property(range_card, "modulate:a", range_alpha, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+			tween.tween_property(range_card, "scale", range_scale, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		if mayhem_card != null:
+			tween.tween_property(mayhem_card, "modulate:a", mayhem_alpha, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+			tween.tween_property(mayhem_card, "scale", mayhem_scale, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		if story_card != null:
-			tween.tween_property(story_card, "modulate:a", range_alpha, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-			tween.tween_property(story_card, "scale", range_scale, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+			tween.tween_property(story_card, "modulate:a", 0.45, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+			tween.tween_property(story_card, "scale", Vector2.ONE, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		if coop_card != null:
-			tween.tween_property(coop_card, "modulate:a", mayhem_alpha, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-			tween.tween_property(coop_card, "scale", mayhem_scale, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+			tween.tween_property(coop_card, "modulate:a", 0.45, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+			tween.tween_property(coop_card, "scale", Vector2.ONE, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	else:
 		tutorial_card.modulate.a = tut_alpha
 		tutorial_card.scale = tut_scale
@@ -767,12 +840,18 @@ func _update_mode_selection_ui(animated: bool) -> void:
 		survival_card.scale = surv_scale
 		sandbox_card.modulate.a = sand_alpha
 		sandbox_card.scale = sand_scale
+		if range_card != null:
+			range_card.modulate.a = range_alpha
+			range_card.scale = range_scale
+		if mayhem_card != null:
+			mayhem_card.modulate.a = mayhem_alpha
+			mayhem_card.scale = mayhem_scale
 		if story_card != null:
-			story_card.modulate.a = range_alpha
-			story_card.scale = range_scale
+			story_card.modulate.a = 0.45
+			story_card.scale = Vector2.ONE
 		if coop_card != null:
-			coop_card.modulate.a = mayhem_alpha
-			coop_card.scale = mayhem_scale
+			coop_card.modulate.a = 0.45
+			coop_card.scale = Vector2.ONE
 
 func _select_sandbox_map(map_index: int) -> void:
 	if selected_sandbox_map == map_index and current_state == MenuState.MAP_SELECT:
@@ -1029,8 +1108,10 @@ func _disable_menu_buttons() -> void:
 	tutorial_card.disabled = true
 	survival_card.disabled = true
 	sandbox_card.disabled = true
-	story_card.disabled = true
-	coop_card.disabled = true
+	if range_card != null: range_card.disabled = true
+	if mayhem_card != null: mayhem_card.disabled = true
+	if story_card != null: story_card.disabled = true
+	if coop_card != null: coop_card.disabled = true
 	main_launch_button.disabled = true
 	settings_button.disabled = true
 	controls_button.disabled = true
@@ -1099,7 +1180,7 @@ func _on_quit_pressed() -> void:
 func _setup_card_interactions(card: Button, mode: GameMode) -> void:
 	card.mouse_entered.connect(func():
 		_play_sound("hover")
-		card.pivot_offset = Vector2(102.5, 185.0)
+		card.pivot_offset = Vector2(75.0, 175.0)
 		var is_selected : bool = (selected_mode == mode)
 		var target_scale : Vector2 = Vector2(1.045, 1.045) if is_selected else Vector2(1.015, 1.015)
 		var target_alpha : float = 1.0 if is_selected else 0.82
@@ -1108,7 +1189,7 @@ func _setup_card_interactions(card: Button, mode: GameMode) -> void:
 		tween.tween_property(card, "modulate:a", target_alpha, 0.14).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	)
 	card.mouse_exited.connect(func():
-		card.pivot_offset = Vector2(102.5, 185.0)
+		card.pivot_offset = Vector2(75.0, 175.0)
 		var is_selected : bool = (selected_mode == mode)
 		var target_scale : Vector2 = Vector2(1.025, 1.025) if is_selected else Vector2.ONE
 		var target_alpha : float = 1.0 if is_selected else 0.52
@@ -1152,13 +1233,13 @@ func _setup_locked_card_interactions(card: Button) -> void:
 	card.modulate.a = 0.45
 	card.mouse_entered.connect(func():
 		_play_sound("hover")
-		card.pivot_offset = Vector2(102.5, 185.0)
+		card.pivot_offset = Vector2(75.0, 175.0)
 		var tween : Tween = create_tween().set_parallel(true)
 		tween.tween_property(card, "scale", Vector2(1.02, 1.02), 0.14).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		tween.tween_property(card, "modulate:a", 0.75, 0.14).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	)
 	card.mouse_exited.connect(func():
-		card.pivot_offset = Vector2(102.5, 185.0)
+		card.pivot_offset = Vector2(75.0, 175.0)
 		var tween : Tween = create_tween().set_parallel(true)
 		tween.tween_property(card, "scale", Vector2.ONE, 0.14).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		tween.tween_property(card, "modulate:a", 0.45, 0.14).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)

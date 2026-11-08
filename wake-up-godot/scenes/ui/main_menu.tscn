@@ -1,4 +1,4 @@
-[gd_scene load_steps=48 format=3]
+[gd_scene load_steps=50 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/main_menu.gd" id="1_menu"]
 [ext_resource type="Shader" path="res://scenes/ui/vignette.gdshader" id="2_vig"]
@@ -13,6 +13,8 @@
 [ext_resource type="Texture2D" path="res://assets/textures/gamemodes/banner_map_canyon.png" id="11_canyon_banner"]
 [ext_resource type="Texture2D" path="res://assets/textures/gamemodes/banner_map_spacebase.png" id="12_base_banner"]
 [ext_resource type="Texture2D" path="res://assets/textures/gamemodes/banner_map_transportdock.png" id="13_dock_banner"]
+[ext_resource type="Texture2D" path="res://assets/textures/gamemodes/banner_range.png" id="14_range"]
+[ext_resource type="Texture2D" path="res://assets/textures/gamemodes/banner_mayhem.png" id="15_mayhem"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_vig"]
 shader = ExtResource("2_vig")
@@ -562,11 +564,11 @@ alignment = 1
 
 [node name="CardsRow" type="HBoxContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 10
 alignment = 1
 
 [node name="TutorialCard" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow"]
-custom_minimum_size = Vector2(205, 360)
+custom_minimum_size = Vector2(150, 350)
 layout_mode = 2
 focus_mode = 0
 flat = true
@@ -629,26 +631,26 @@ alignment = 1
 [node name="ProtocolTag" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/TutorialCard/CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.7)
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 9
 text = "PROTOCOL // 00"
 horizontal_alignment = 1
 
 [node name="Title" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/TutorialCard/CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 23
+theme_override_font_sizes/font_size = 17
 text = "TUTORIAL"
 horizontal_alignment = 1
 
 [node name="StatusLabel" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/TutorialCard/CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2, 0.8, 1, 1)
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 9
 text = "PROVING GROUNDS"
 horizontal_alignment = 1
 
 [node name="SurvivalCard" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow"]
-custom_minimum_size = Vector2(205, 360)
+custom_minimum_size = Vector2(150, 350)
 layout_mode = 2
 focus_mode = 0
 flat = true
@@ -710,27 +712,27 @@ alignment = 1
 [node name="ProtocolTag" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SurvivalCard/CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.7)
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 9
 text = "PROTOCOL // 01"
 horizontal_alignment = 1
 
 [node name="Title" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SurvivalCard/CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 23
+theme_override_font_sizes/font_size = 17
 text = "SURVIVAL"
 horizontal_alignment = 1
 
 [node name="StatusLabel" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SurvivalCard/CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.25, 0.35, 1)
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 9
 text = "◈ SELECTED ◈"
 horizontal_alignment = 1
 
 [node name="SandboxCard" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow"]
 modulate = Color(1, 1, 1, 0.52)
-custom_minimum_size = Vector2(205, 360)
+custom_minimum_size = Vector2(150, 350)
 layout_mode = 2
 focus_mode = 0
 flat = true
@@ -793,26 +795,193 @@ alignment = 1
 [node name="ProtocolTag" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SandboxCard/CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.7)
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 9
 text = "PROTOCOL // 02"
 horizontal_alignment = 1
 
 [node name="Title" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SandboxCard/CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 23
+theme_override_font_sizes/font_size = 17
 text = "SANDBOX"
 horizontal_alignment = 1
 
 [node name="StatusLabel" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/SandboxCard/CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.96, 0.68, 0.18, 1)
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 9
+text = "FREE ROAM"
+horizontal_alignment = 1
+
+[node name="RangeCard" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow"]
+modulate = Color(1, 1, 1, 0.52)
+custom_minimum_size = Vector2(150, 350)
+layout_mode = 2
+focus_mode = 0
+flat = true
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+
+[node name="CardBackground" type="TextureRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/RangeCard"]
+self_modulate = Color(0.55, 0.88, 1, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("14_range")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="VignetteOverlay" type="TextureRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/RangeCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_range_tint")
+expand_mode = 1
+
+[node name="SelectionBar" type="ColorRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/RangeCard"]
+visible = false
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -4.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+color = Color(0.2, 0.75, 1, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/RangeCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/RangeCard/CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="ProtocolTag" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/RangeCard/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.8, 1, 0.8)
+theme_override_font_sizes/font_size = 9
+text = "PROTOCOL // 03"
+horizontal_alignment = 1
+
+[node name="Title" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/RangeCard/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 17
+text = "THE RANGE"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/RangeCard/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.85, 1, 0.9)
+theme_override_font_sizes/font_size = 9
+text = "WEAPON TESTING"
+horizontal_alignment = 1
+
+[node name="MayhemCard" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow"]
+modulate = Color(1, 1, 1, 0.52)
+custom_minimum_size = Vector2(150, 350)
+layout_mode = 2
+focus_mode = 0
+flat = true
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+
+[node name="CardBackground" type="TextureRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/MayhemCard"]
+self_modulate = Color(1, 0.65, 0.45, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("15_mayhem")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="VignetteOverlay" type="TextureRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/MayhemCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_mayhem_tint")
+expand_mode = 1
+
+[node name="SelectionBar" type="ColorRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/MayhemCard"]
+visible = false
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -4.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+color = Color(1, 0.35, 0.15, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/MayhemCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/MayhemCard/CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="ProtocolTag" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/MayhemCard/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.6, 0.4, 0.8)
+theme_override_font_sizes/font_size = 9
+text = "PROTOCOL // 04"
+horizontal_alignment = 1
+
+[node name="Title" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/MayhemCard/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.92, 0.9, 1)
+theme_override_font_sizes/font_size = 16
+text = "ROCKET MAYHEM"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/MayhemCard/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.45, 0.2, 0.9)
+theme_override_font_sizes/font_size = 9
+text = "CHAOS COMBAT"
 horizontal_alignment = 1
 
 [node name="StoryCard" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow"]
-modulate = Color(1, 1, 1, 0.52)
-custom_minimum_size = Vector2(205, 360)
+modulate = Color(1, 1, 1, 0.45)
+custom_minimum_size = Vector2(150, 350)
 layout_mode = 2
 focus_mode = 0
 flat = true
@@ -822,6 +991,7 @@ theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
 theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
 
 [node name="CardBackground" type="TextureRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard"]
+self_modulate = Color(0.48, 0.5, 0.55, 0.8)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -841,7 +1011,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = SubResource("GradientTexture2D_range_tint")
+texture = SubResource("GradientTexture2D_locked_tint")
 expand_mode = 1
 
 [node name="SelectionBar" type="ColorRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard"]
@@ -855,7 +1025,7 @@ offset_top = -4.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
-color = Color(0.2, 0.75, 1, 1)
+color = Color(0.5, 0.55, 0.65, 1)
 
 [node name="CenterContainer" type="CenterContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard"]
 layout_mode = 1
@@ -871,37 +1041,30 @@ layout_mode = 2
 theme_override_constants/separation = 6
 alignment = 1
 
-[node name="LockIcon" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard/CenterContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.25, 0.85, 1, 0.95)
-theme_override_font_sizes/font_size = 22
-text = "🎯"
-horizontal_alignment = 1
-
 [node name="ProtocolTag" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard/CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.8, 1, 0.8)
-theme_override_font_sizes/font_size = 10
-text = "PROTOCOL // 03"
+theme_override_colors/font_color = Color(1, 1, 1, 0.55)
+theme_override_font_sizes/font_size = 9
+text = "PROTOCOL // 05"
 horizontal_alignment = 1
 
 [node name="Title" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard/CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
-theme_override_font_sizes/font_size = 23
-text = "THE RANGE"
+theme_override_colors/font_color = Color(0.9, 0.9, 0.95, 1)
+theme_override_font_sizes/font_size = 17
+text = "STORY MODE"
 horizontal_alignment = 1
 
 [node name="StatusLabel" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/StoryCard/CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.3, 0.85, 1, 0.9)
-theme_override_font_sizes/font_size = 10
-text = "WEAPON TESTING"
+theme_override_colors/font_color = Color(0.75, 0.78, 0.85, 0.9)
+theme_override_font_sizes/font_size = 9
+text = "LOCKED // TEASER"
 horizontal_alignment = 1
 
 [node name="CoopCard" type="Button" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow"]
-modulate = Color(1, 1, 1, 0.52)
-custom_minimum_size = Vector2(205, 360)
+modulate = Color(1, 1, 1, 0.45)
+custom_minimum_size = Vector2(150, 350)
 layout_mode = 2
 focus_mode = 0
 flat = true
@@ -911,6 +1074,7 @@ theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
 theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
 
 [node name="CardBackground" type="TextureRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard"]
+self_modulate = Color(0.48, 0.5, 0.55, 0.8)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -930,7 +1094,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = SubResource("GradientTexture2D_mayhem_tint")
+texture = SubResource("GradientTexture2D_locked_tint")
 expand_mode = 1
 
 [node name="SelectionBar" type="ColorRect" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard"]
@@ -944,7 +1108,7 @@ offset_top = -4.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
-color = Color(1, 0.35, 0.15, 1)
+color = Color(0.5, 0.55, 0.65, 1)
 
 [node name="CenterContainer" type="CenterContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard"]
 layout_mode = 1
@@ -960,32 +1124,25 @@ layout_mode = 2
 theme_override_constants/separation = 6
 alignment = 1
 
-[node name="LockIcon" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard/CenterContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.45, 0.2, 0.95)
-theme_override_font_sizes/font_size = 22
-text = "🚀"
-horizontal_alignment = 1
-
 [node name="ProtocolTag" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard/CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.6, 0.4, 0.8)
-theme_override_font_sizes/font_size = 10
-text = "PROTOCOL // 04"
+theme_override_colors/font_color = Color(1, 1, 1, 0.55)
+theme_override_font_sizes/font_size = 9
+text = "PROTOCOL // 06"
 horizontal_alignment = 1
 
 [node name="Title" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard/CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.92, 0.9, 1)
-theme_override_font_sizes/font_size = 23
-text = "ROCKET MAYHEM"
+theme_override_colors/font_color = Color(0.9, 0.9, 0.95, 1)
+theme_override_font_sizes/font_size = 17
+text = "CO-OP STRIKE"
 horizontal_alignment = 1
 
 [node name="StatusLabel" type="Label" parent="ModeSelectScreen/CenterCards/VBoxContainer/CardsRow/CoopCard/CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.45, 0.2, 0.9)
-theme_override_font_sizes/font_size = 10
-text = "CHAOS & EXPLOSIONS"
+theme_override_colors/font_color = Color(0.75, 0.78, 0.85, 0.9)
+theme_override_font_sizes/font_size = 9
+text = "LOCKED // TEASER"
 horizontal_alignment = 1
 
 [node name="MapSelectSection" type="VBoxContainer" parent="ModeSelectScreen/CenterCards/VBoxContainer"]
