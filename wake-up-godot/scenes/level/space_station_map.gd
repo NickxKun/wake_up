@@ -1370,8 +1370,8 @@ func _apply_theme_environment_and_sky() -> void:
 	if sun_light != null:
 		sun_light.shadow_enabled = true
 		sun_light.shadow_blur = 0.0
-		sun_light.shadow_bias = 0.015
-		sun_light.shadow_normal_bias = 0.8
+		sun_light.shadow_bias = 0.03
+		sun_light.shadow_normal_bias = 1.2
 		sun_light.directional_shadow_max_distance = 48.0
 		sun_light.directional_shadow_blend_splits = false
 

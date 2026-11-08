@@ -140,8 +140,8 @@ environment = SubResource("Environment_tut")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.707107, -0.612372, 0.353553, 0, 0.5, 0.866025, -0.707107, 0.612372, -0.353553, 0, 15, 0)
 shadow_enabled = true
-shadow_bias = 0.015
-shadow_normal_bias = 0.8
+shadow_bias = 0.03
+shadow_normal_bias = 1.2
 shadow_blur = 0.0
 directional_shadow_mode = 2
 directional_shadow_max_distance = 60.0
@@ -161,7 +161,7 @@ stretch_shrink = 2
 handle_input_locally = false
 size = Vector2i(576, 324)
 render_target_update_mode = 4
-use_debanding = true
+use_debanding = false
 
 [node name="ProtoController" parent="SubViewportContainer/SubViewport" instance=ExtResource("2_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24, 0.1, 0)

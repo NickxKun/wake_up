@@ -1,7 +1,7 @@
 shader_type spatial;
 render_mode specular_disabled, ambient_light_disabled;
 
-uniform sampler2D DEPTH_TEXTURE : hint_depth_texture, filter_linear_mipmap;
+uniform sampler2D DEPTH_TEXTURE : hint_depth_texture, filter_nearest;
 uniform sampler2D SCREEN_TEXTURE : hint_screen_texture, filter_nearest;
 uniform sampler2D NORMAL_TEXTURE : hint_normal_roughness_texture, filter_nearest;
 
@@ -69,7 +69,7 @@ void fragment() {
 		invDepthDifference += depth - dOff;
 	}
 	invDepthDifference = clamp(invDepthDifference, 0.0, 1.0);
-	invDepthDifference = clamp(smoothstep(0.9, 0.9, invDepthDifference) * 10.0 , 0.0, 1.0);
+	invDepthDifference = clamp(smoothstep(0.85, 0.95, invDepthDifference) * 10.0 , 0.0, 1.0);
 	depthDifference = smoothstep(0.25, 0.3, depthDifference);
 
 	// Edge detection with Normals
@@ -81,7 +81,7 @@ void fragment() {
 		vec3 nOff = GetNormal(UVOffsets[i],NORMAL_TEXTURE, outlineMask);
 		normalDifference += NormalEdgeIndicator(normalEdgeBias, normal, nOff, depthDifference);
 	}
-	normalDifference = smoothstep(0.2, 0.2, normalDifference);
+	normalDifference = smoothstep(0.18, 0.25, normalDifference);
 	normalDifference = clamp(normalDifference - invDepthDifference, 0.0, 1.0);
 
 
@@ -109,14 +109,14 @@ void light (){
 
 		// Quantize diffuse lighting into discrete pixel art bands (cel shading / 4 discrete tonal levels)
 		float steppedNL = floor(dotNL * 4.0 + 0.15) / 4.0;
-		steppedNL = clamp(steppedNL, 0.22, 1.0);
+		steppedNL = clamp(steppedNL, 0.25, 1.0);
 
 		// Quantize shadows into crisp, hard pixel-art cuts
 		float shadowCut = step(0.35, ATTENUATION);
-		float finalLight = steppedNL * shadowCut;
+		float finalLight = mix(0.28, steppedNL, shadowCut);
 
 		if (LIGHT_IS_DIRECTIONAL) {
-			DIFFUSE_LIGHT += mix(vec3(0.9), finalLight * LIGHT_COLOR * lightIntensity, lineMask);
+			DIFFUSE_LIGHT += finalLight * LIGHT_COLOR * lightIntensity;
 		} else {
 			// Positional point/spot lights receive stepped pixel-art attenuation
 			float omniAtten = floor(ATTENUATION * 4.0 + 0.1) / 4.0;
