@@ -2666,19 +2666,19 @@ theme_override_constants/separation = 4
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 0.8)
 theme_override_font_sizes/font_size = 10
-text = "• Rugged natural terrain & canyon ridges"
+text = "• Natural Sandstone Arch & canyon gorge"
 
 [node name="Feature2" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard/MarginContainer/VBoxContainer/FeaturesBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 0.8)
 theme_override_font_sizes/font_size = 10
-text = "• Vehicle testing track & elevation ramps"
+text = "• Towering hoodoo spires & mesa bluffs"
 
 [node name="Feature3" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard/MarginContainer/VBoxContainer/FeaturesBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 0.8)
 theme_override_font_sizes/font_size = 10
-text = "• Open firing range & target dummies"
+text = "• Sunken arroyo amphitheater & targets"
 
 [node name="Spacer" type="Control" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/CanyonCard/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -2817,19 +2817,19 @@ theme_override_constants/separation = 4
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 0.8)
 theme_override_font_sizes/font_size = 10
-text = "• Modular science & habitation domes"
+text = "• Deep Space Comms Dish & radar arrays"
 
 [node name="Feature2" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard/MarginContainer/VBoxContainer/FeaturesBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 0.8)
 theme_override_font_sizes/font_size = 10
-text = "• Solar power arrays & maintenance corridors"
+text = "• Modular science domes & pipeline conduits"
 
 [node name="Feature3" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard/MarginContainer/VBoxContainer/FeaturesBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 0.8)
 theme_override_font_sizes/font_size = 10
-text = "• Fortified security & testing perimeter"
+text = "• Crater excavation rig & solar ridge"
 
 [node name="Spacer" type="Control" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/BaseCard/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -2968,19 +2968,19 @@ theme_override_constants/separation = 4
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 0.8)
 theme_override_font_sizes/font_size = 10
-text = "• Heavy industrial cranes & transport rigs"
+text = "• Heavy orbital gantry crane & freight stacks"
 
 [node name="Feature2" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard/MarginContainer/VBoxContainer/FeaturesBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 0.8)
 theme_override_font_sizes/font_size = 10
-text = "• Orbital shuttle launch runways"
+text = "• Cryogenic fuel depot & shuttle launchpads"
 
 [node name="Feature3" type="Label" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard/MarginContainer/VBoxContainer/FeaturesBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 0.8)
 theme_override_font_sizes/font_size = 10
-text = "• Deep resource quarry & loading gantries"
+text = "• Tiered mining quarry & transport haulers"
 
 [node name="Spacer" type="Control" parent="MapSelectScreen/CenterCards/VBoxContainer/CardsRow/DockCard/MarginContainer/VBoxContainer"]
 layout_mode = 2

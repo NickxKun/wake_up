@@ -56,6 +56,14 @@ const SCENE_TRUCK_TRAILER : PackedScene = preload("res://assets/models/fbx/space
 const SCENE_TARGET : PackedScene = preload("res://scenes/tutorial/training_target.tscn")
 const SCENE_BOSS_MECH : PackedScene = preload("res://scenes/enemy/boss_mech.tscn")
 
+# Custom Landmark Preloads
+const SCRIPT_NATURAL_ARCH : Script = preload("res://scenes/level/landmarks/natural_arch.gd")
+const SCRIPT_HOODOO_PILLAR : Script = preload("res://scenes/level/landmarks/hoodoo_pillar.gd")
+const SCRIPT_SATELLITE_DISH : Script = preload("res://scenes/level/landmarks/satellite_dish.gd")
+const SCRIPT_PIPELINE : Script = preload("res://scenes/level/landmarks/pipeline_system.gd")
+const SCRIPT_GANTRY_CRANE : Script = preload("res://scenes/level/landmarks/gantry_crane.gd")
+const SCRIPT_FUEL_DEPOT : Script = preload("res://scenes/level/landmarks/fuel_depot.gd")
+
 @export var boss_spawn_interval : float = 300.0 # 5 minutes
 var _boss_spawn_timer : float = 300.0
 var _boss_spawn_active : bool = false
@@ -103,7 +111,10 @@ func _ready() -> void:
 	# Pull active theme from global HUD singleton if available
 	var hud : Node = get_node_or_null("/root/PlayerHealthHud")
 	if hud != null and "selected_map_theme" in hud:
-		map_theme = hud.selected_map_theme as MapTheme
+		if map_theme != MapTheme.SPACE_BASE:
+			hud.selected_map_theme = int(map_theme)
+		else:
+			map_theme = hud.selected_map_theme as MapTheme
 
 	_build_ground()
 	_build_terrain()
@@ -272,6 +283,31 @@ func _spawn_wasteland_tactical_rocks() -> void:
 		rocks_root.name = "Sector_NaturalRocks"
 		add_child(rocks_root)
 
+	# 1. Soaring Natural Sandstone Rock Arch Bridge (spanning central gorge at z = -2.0)
+	var arch : Node3D = SCRIPT_NATURAL_ARCH.new() as Node3D
+	arch.name = "NaturalSandstoneArch"
+	arch.position = Vector3(0.0, 0.0, -2.0)
+	rocks_root.add_child(arch)
+
+	# 2. Towering Canyon Hoodoos (Mesa rim sentry spires matching canyon vista banner)
+	var hoodoo_spires := [
+		{"pos": Vector3(-13.5, 0.0, -13.5), "height": 6.2, "rot": 15.0},
+		{"pos": Vector3(13.5, 0.0, -13.5), "height": 6.5, "rot": -45.0},
+		{"pos": Vector3(-13.5, 0.0, 13.5), "height": 5.8, "rot": 60.0},
+		{"pos": Vector3(13.5, 0.0, 13.5), "height": 6.8, "rot": -110.0},
+		{"pos": Vector3(-15.0, 0.0, 0.0), "height": 5.4, "rot": 30.0},
+		{"pos": Vector3(15.0, 0.0, 0.0), "height": 5.6, "rot": -75.0},
+		{"pos": Vector3(-9.5, 0.0, -7.5), "height": 5.0, "rot": 40.0},
+		{"pos": Vector3(9.5, 0.0, -7.5), "height": 5.2, "rot": -50.0},
+	]
+	for h in hoodoo_spires:
+		var hoodoo : Node3D = SCRIPT_HOODOO_PILLAR.new() as Node3D
+		hoodoo.set("pillar_height", h["height"])
+		var gy : float = get_terrain_height(h["pos"].x, h["pos"].z)
+		hoodoo.position = Vector3(h["pos"].x, gy, h["pos"].z)
+		hoodoo.rotation_degrees.y = h["rot"]
+		rocks_root.add_child(hoodoo)
+
 	var extra_rock_coords := [
 		# 1. Central Arroyo Arena (Mid-range tactical cover for firefights)
 		{"pos": Vector3(0.0, 0.0, 0.0), "scene": SCENE_ROCKS_A, "rot": 45.0, "scale": Vector3(1.2, 1.1, 1.2)},
@@ -383,6 +419,27 @@ func _spawn_spacebase_pois() -> void:
 		dig_root.name = "Sector_ResearchDig"
 		add_child(dig_root)
 
+	# 1. Giant Deep-Space Planetary Communications Array Dish (Perched on Northern Bluff)
+	var dish : Node3D = SCRIPT_SATELLITE_DISH.new() as Node3D
+	dish.name = "OutpostSatelliteDish"
+	var dish_gy : float = get_terrain_height(0.0, -14.0)
+	dish.position = Vector3(0.0, dish_gy, -14.0)
+	dig_root.add_child(dish)
+
+	# 2. Heavy Industrial Pipeline Conduits (connecting Habitation to Power Grid & Dig Site)
+	var pipe_main : Node3D = SCRIPT_PIPELINE.new() as Node3D
+	pipe_main.name = "Pipeline_HabToPower"
+	pipe_main.set("length", 6.0)
+	pipe_main.position = Vector3(4.2, 0.0, -2.5)
+	dig_root.add_child(pipe_main)
+
+	var pipe_quarry : Node3D = SCRIPT_PIPELINE.new() as Node3D
+	pipe_quarry.name = "Pipeline_PowerToQuarry"
+	pipe_quarry.set("length", 4.5)
+	pipe_quarry.position = Vector3(4.5, 0.0, 7.8)
+	pipe_quarry.rotation_degrees.y = 90.0
+	dig_root.add_child(pipe_quarry)
+
 	var poi_props := [
 		# 1. Geological Crater Excavation Dig Site (perched on the South-East Ridge at (10, 8))
 		{"scene": SCENE_DRILL, "pos": Vector3(7.5, 0.06, 6.5), "rot": 40.0, "scale": Vector3.ONE},
@@ -437,6 +494,18 @@ func _spawn_transportdock_pois() -> void:
 		dock_root = Node3D.new()
 		dock_root.name = "Sector_DockLogistics"
 		add_child(dock_root)
+
+	# 1. Massive Rail-Mounted Orbital Gantry Crane (spanning freight corridor)
+	var crane : Node3D = SCRIPT_GANTRY_CRANE.new() as Node3D
+	crane.name = "HeavyOrbitalGantryCrane"
+	crane.position = Vector3(-3.5, 0.0, -2.5)
+	dock_root.add_child(crane)
+
+	# 2. Pressurized Cryogenic Propellant Fuel Depot & Berm (adjacent to Shuttle Apron)
+	var fuel : Node3D = SCRIPT_FUEL_DEPOT.new() as Node3D
+	fuel.name = "CryoFuelDepot"
+	fuel.position = Vector3(-13.5, 0.0, 8.0)
+	dock_root.add_child(fuel)
 
 	var dock_props := [
 		# 1. Shuttle Apron Staging & Refueling Depot
@@ -494,20 +563,25 @@ func _get_elevation_raw(x: float, z: float) -> int:
 		_:
 			return _get_elev_spacebase(x, z)
 
-## Map 1: Desolate Canyon - Dramatic alien canyon amphitheater, zero equipment, natural ridges & passes
+## Map 1: Desolate Canyon - Dramatic alien canyon amphitheater, natural rock bridge & passes
 func _get_elev_wasteland(x: float, z: float) -> int:
-	# Central combat arena wash is open
-	if Vector2(x, z).length() < 6.0:
+	# Central open canyon amphitheater and sunken arroyo floor
+	if Vector2(x, z - 1.0).length() < 5.8:
 		return 0
-	# Natural canyon entrance passes at North and South
-	if absf(x) <= 3.5 and absf(z) >= 9.0:
+	# North and South canyon entrance passes
+	if absf(x) <= 3.8 and absf(z) >= 8.5:
 		return 0
-	# Sinuous East and West canyon ridges
-	if (x <= -9.0 or x >= 9.0) and (z <= -5.0 or z >= 5.0):
+	# Walkway under the sandstone arch bridge (z around -2.0, x between -4.5 and 4.5)
+	if absf(x) <= 4.5 and absf(z + 2.0) <= 2.8:
+		return 0
+
+	# West and East canyon bluffs & mesa escarpments
+	if (x <= -6.5 or x >= 6.5) and absf(z) <= 16.5:
 		return 1
-	if x <= -13.0 or x >= 13.0:
+	# Northern and Southern defensive mesa walls
+	if absf(z) >= 12.5 and (x <= -4.0 or x >= 4.0):
 		return 1
-	if z <= -13.0 or z >= 13.0:
+	if x <= -12.5 or x >= 12.5:
 		return 1
 	return 0
 
