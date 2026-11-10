@@ -40,7 +40,7 @@ size = Vector2(2, 2)
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_edge"]
 render_priority = 0
 shader = ExtResource("1_edge")
-shader_parameter/lightIntensity = 1.25
+shader_parameter/lightIntensity = 1.0
 shader_parameter/lineAlpha = 0.7
 shader_parameter/useLighting = true
 shader_parameter/lineHighlight = 0.2
@@ -139,13 +139,15 @@ environment = SubResource("Environment_tut")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.707107, -0.612372, 0.353553, 0, 0.5, 0.866025, -0.707107, 0.612372, -0.353553, 0, 15, 0)
+light_energy = 0.95
 shadow_enabled = true
-shadow_bias = 0.03
-shadow_normal_bias = 1.2
+shadow_bias = 0.06
+shadow_normal_bias = 2.0
 shadow_blur = 0.0
 directional_shadow_mode = 2
 directional_shadow_max_distance = 60.0
-directional_shadow_blend_splits = false
+directional_shadow_pancake_size = 20.0
+directional_shadow_blend_splits = true
 
 [node name="SubViewportContainer" type="SubViewportContainer" parent="."]
 texture_filter = 1

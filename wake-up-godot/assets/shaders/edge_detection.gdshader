@@ -5,7 +5,7 @@ uniform sampler2D DEPTH_TEXTURE : hint_depth_texture, filter_nearest;
 uniform sampler2D SCREEN_TEXTURE : hint_screen_texture, filter_nearest;
 uniform sampler2D NORMAL_TEXTURE : hint_normal_roughness_texture, filter_nearest;
 
-uniform float lightIntensity = 1.25;
+uniform float lightIntensity = 1.0;
 uniform float lineAlpha = 0.7;
 uniform bool useLighting = true;
 uniform float lineHighlight = 0.2;
@@ -36,16 +36,18 @@ float NormalEdgeIndicator(vec3 normalEdgeBias, vec3 normal, vec3 neighborNormal,
 	float normalDifference = dot(normal - neighborNormal, normalEdgeBias);
 	float normalIndicator = clamp(smoothstep(-.01, .01, normalDifference), 0.0, 1.0);
 	float depthIndicator = clamp(sign(depthDifference * .25 + .0025), 0.0, 1.0);
-	return (1.0 - dot(normal, neighborNormal)) * depthIndicator * normalIndicator;
+	float normalDelta = 1.0 - dot(normal, neighborNormal);
+	normalDelta = smoothstep(0.04, 0.12, normalDelta);
+	return normalDelta * depthIndicator * normalIndicator;
 }
 
 void vertex(){
   POSITION = vec4(VERTEX.xy, 1.0, 1.0);
+  screenUV = (VERTEX.xy + vec2(1.0)) * 0.5;
 }
 
 void fragment() {
 	vec2 texelSize = 1.0 / VIEWPORT_SIZE.xy;
-	screenUV = SCREEN_UV;
 
 	// UV offsets
 	vec2 UVOffsets[4];
@@ -109,18 +111,22 @@ void light (){
 
 		// Quantize diffuse lighting into discrete pixel art bands (cel shading / 4 discrete tonal levels)
 		float steppedNL = floor(dotNL * 4.0 + 0.15) / 4.0;
-		steppedNL = clamp(steppedNL, 0.25, 1.0);
+		steppedNL = clamp(steppedNL, 0.45, 1.0);
 
 		// Quantize shadows into crisp, hard pixel-art cuts
 		float shadowCut = step(0.35, ATTENUATION);
-		float finalLight = mix(0.28, steppedNL, shadowCut);
+		float finalLight = mix(0.48, steppedNL, shadowCut);
+
+		// Normalize sun light energy to prevent blowing out already-lit SCREEN_TEXTURE
+		float maxCol = max(max(LIGHT_COLOR.r, max(LIGHT_COLOR.g, LIGHT_COLOR.b)), 1.0);
+		vec3 lightTint = LIGHT_COLOR / maxCol;
 
 		if (LIGHT_IS_DIRECTIONAL) {
-			DIFFUSE_LIGHT += finalLight * LIGHT_COLOR * lightIntensity;
+			DIFFUSE_LIGHT += finalLight * lightTint * lightIntensity;
 		} else {
 			// Positional point/spot lights receive stepped pixel-art attenuation
 			float omniAtten = floor(ATTENUATION * 4.0 + 0.1) / 4.0;
-			DIFFUSE_LIGHT += steppedNL * omniAtten * LIGHT_COLOR * lightIntensity;
+			DIFFUSE_LIGHT += steppedNL * omniAtten * lightTint * lightIntensity;
 		}
 	}
 	else

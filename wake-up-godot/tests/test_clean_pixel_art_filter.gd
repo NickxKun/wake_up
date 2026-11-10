@@ -25,16 +25,17 @@ func _run_tests() -> void:
 	check("smoothstep(0.18, 0.25, normalDifference)" in shader_code, "smoothstep on normalDifference has non-zero range (no div-by-zero NaN)")
 	check(not "smoothstep(0.9, 0.9" in shader_code, "Zero-range smoothstep(0.9, 0.9) completely eliminated")
 	check(not "smoothstep(0.2, 0.2" in shader_code, "Zero-range smoothstep(0.2, 0.2) completely eliminated")
+	check("normalDelta = smoothstep(0.04, 0.12, normalDelta);" in shader_code, "Normal delta suppresses 8-bit normal quantization scan lines on flat planes")
 
-	# [Test 2] Verify Lighting Cleanliness & Elimination of Grain / Milky Wash
-	print("\n[Test 2] Testing Light Calculation & Cel-Shaded Crispness...")
+	# [Test 2] Verify Lighting Cleanliness & Elimination of Blown-out Environment Brightness
+	print("\n[Test 2] Testing Light Calculation & Normalized Cel-Shading...")
 	check(not "mix(vec3(0.9)" in shader_code, "Eliminated washed-out milky mix(vec3(0.9), ...) in DIFFUSE_LIGHT")
 	check(not "mix(vec3(1.0)" in shader_code, "No legacy washed-out mix(vec3(1.0), ...) in DIFFUSE_LIGHT")
 	check("floor(dotNL * 4.0" in shader_code, "Diffuse lighting quantized to 4 discrete tonal bands")
 	check("step(0.35, ATTENUATION)" in shader_code, "Hard shadow cut preserved with step(0.35, ATTENUATION)")
-	check("mix(0.28, steppedNL, shadowCut)" in shader_code, "Clean uniform shadow tone mixed with stepped light")
-	check("DIFFUSE_LIGHT += finalLight * LIGHT_COLOR * lightIntensity;" in shader_code, "Direct pure cel-shaded light added to DIFFUSE_LIGHT")
+	check("DIFFUSE_LIGHT += finalLight * lightTint * lightIntensity;" in shader_code, "Normalized sun light energy applied without blowing out environment")
 	check("step(0.28, edge)" in shader_code, "Crisp ink outlines preserved with step(0.28, edge)")
+	check("uniform float lightIntensity = 1.0;" in shader_code, "Default lightIntensity is 1.0 for balanced natural illumination")
 
 	# [Test 3] Verify Project Configuration: Debanding Disabled to Prevent Upscale Grain
 	print("\n[Test 3] Testing Project Rendering Settings for Dither Grain Elimination...")
@@ -47,19 +48,28 @@ func _run_tests() -> void:
 	print("\n[Test 4] Testing Viewport and Shadow Bias in Main, Tutorial and Range scenes...")
 	var main_scene_text : String = FileAccess.get_file_as_string("res://scenes/main.tscn")
 	check("use_debanding = false" in main_scene_text, "main.tscn SubViewport has use_debanding = false")
-	check("shadow_bias = 0.03" in main_scene_text, "main.tscn DirectionalLight3D shadow_bias is 0.03 (prevents shadow acne)")
-	check("shadow_normal_bias = 1.2" in main_scene_text, "main.tscn DirectionalLight3D shadow_normal_bias is 1.2")
+	check("shadow_bias = 0.06" in main_scene_text, "main.tscn DirectionalLight3D shadow_bias is 0.06 (prevents shadow acne lines)")
+	check("shadow_normal_bias = 2.0" in main_scene_text, "main.tscn DirectionalLight3D shadow_normal_bias is 2.0")
+	check("directional_shadow_pancake_size = 20.0" in main_scene_text, "main.tscn DirectionalLight3D shadow pancake size is 20.0")
+	check("directional_shadow_blend_splits = true" in main_scene_text, "main.tscn DirectionalLight3D blends cascade splits seamlessly")
 
 	var tut_scene_text : String = FileAccess.get_file_as_string("res://scenes/tutorial/tutorial_map.tscn")
 	check("use_debanding = false" in tut_scene_text, "tutorial_map.tscn SubViewport has use_debanding = false")
-	check("shadow_bias = 0.03" in tut_scene_text, "tutorial_map.tscn DirectionalLight3D shadow_bias is 0.03")
+	check("shadow_bias = 0.06" in tut_scene_text, "tutorial_map.tscn DirectionalLight3D shadow_bias is 0.06")
+	check("directional_shadow_pancake_size = 20.0" in tut_scene_text, "tutorial_map.tscn shadow pancake size is 20.0")
 
 	var range_scene_text : String = FileAccess.get_file_as_string("res://scenes/gamemodes/range_mode.tscn")
-	check("shadow_bias = 0.03" in range_scene_text, "range_mode.tscn DirectionalLight3D shadow_bias is 0.03")
+	check("shadow_bias = 0.06" in range_scene_text, "range_mode.tscn DirectionalLight3D shadow_bias is 0.06")
+	check("directional_shadow_pancake_size = 20.0" in range_scene_text, "range_mode.tscn shadow pancake size is 20.0")
 
 	var space_station_script : String = FileAccess.get_file_as_string("res://scenes/level/space_station_map.gd")
-	check("sun_light.shadow_bias = 0.03" in space_station_script, "space_station_map.gd dynamic sun shadow_bias is 0.03")
-	check("sun_light.shadow_normal_bias = 1.2" in space_station_script, "space_station_map.gd dynamic sun shadow_normal_bias is 1.2")
+	check("sun_light.shadow_bias = 0.06" in space_station_script, "space_station_map.gd dynamic sun shadow_bias is 0.06")
+	check("sun_light.shadow_normal_bias = 2.0" in space_station_script, "space_station_map.gd dynamic sun shadow_normal_bias is 2.0")
+	check("sun_light.directional_shadow_pancake_size = 20.0" in space_station_script, "space_station_map.gd shadow pancake size is 20.0")
+
+	var dnc_script : String = FileAccess.get_file_as_string("res://scenes/level/day_night_cycle.gd")
+	check("sun_light.shadow_bias = 0.06" in dnc_script, "day_night_cycle.gd sun shadow_bias is 0.06")
+	check("sun_light.directional_shadow_pancake_size = 20.0" in dnc_script, "day_night_cycle.gd shadow pancake size is 20.0")
 
 	# [Test 5] Verify Shader Instantiation and Compilation in Engine
 	print("\n[Test 5] Testing Shader Loading & Instantiation in Engine...")
@@ -78,8 +88,9 @@ func _run_tests() -> void:
 	var dir_light : DirectionalLight3D = main_inst.find_child("DirectionalLight3D", true, false) as DirectionalLight3D
 	check(dir_light != null, "DirectionalLight3D found in main scene")
 	if dir_light != null:
-		check(is_equal_approx(dir_light.shadow_bias, 0.03), "DirectionalLight3D shadow_bias is 0.03")
-		check(is_equal_approx(dir_light.shadow_normal_bias, 1.2), "DirectionalLight3D shadow_normal_bias is 1.2")
+		check(is_equal_approx(dir_light.shadow_bias, 0.06), "DirectionalLight3D shadow_bias is 0.06")
+		check(is_equal_approx(dir_light.shadow_normal_bias, 2.0), "DirectionalLight3D shadow_normal_bias is 2.0")
+		check(is_equal_approx(dir_light.directional_shadow_pancake_size, 20.0), "DirectionalLight3D pancake size is 20.0")
 	main_inst.queue_free()
 
 	print("\n=======================================================")

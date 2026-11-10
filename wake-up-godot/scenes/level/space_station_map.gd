@@ -1067,7 +1067,7 @@ func _spawn_prop(parent: Node, scene_res: PackedScene, pos: Vector3, rot_deg_y: 
 		pole_light.position = Vector3(0.0, 3.2, 0.0)
 		pole_light.omni_range = 11.0
 		pole_light.omni_attenuation = 1.0
-		pole_light.light_energy = 2.4
+		pole_light.light_energy = 1.2
 		pole_light.shadow_enabled = true
 		pole_light.shadow_blur = 0.0
 		pole_light.shadow_bias = 0.02
@@ -1370,10 +1370,11 @@ func _apply_theme_environment_and_sky() -> void:
 	if sun_light != null:
 		sun_light.shadow_enabled = true
 		sun_light.shadow_blur = 0.0
-		sun_light.shadow_bias = 0.03
-		sun_light.shadow_normal_bias = 1.2
+		sun_light.shadow_bias = 0.06
+		sun_light.shadow_normal_bias = 2.0
 		sun_light.directional_shadow_max_distance = 48.0
-		sun_light.directional_shadow_blend_splits = false
+		sun_light.directional_shadow_pancake_size = 20.0
+		sun_light.directional_shadow_blend_splits = true
 
 	if world_env != null and world_env.environment != null:
 		var env : Environment = world_env.environment

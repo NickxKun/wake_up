@@ -117,12 +117,12 @@ func _find_nodes() -> void:
 func _configure_lighting() -> void:
 	if sun_light != null:
 		sun_light.shadow_enabled = true
-		sun_light.shadow_bias = 0.04
-		sun_light.shadow_normal_bias = 1.5
-		sun_light.shadow_blur = 0.8
+		sun_light.shadow_bias = 0.06
+		sun_light.shadow_normal_bias = 2.0
+		sun_light.shadow_blur = 0.0
 		sun_light.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
-		sun_light.directional_shadow_max_distance = 90.0
-		sun_light.directional_shadow_pancake_size = 0.0
+		sun_light.directional_shadow_max_distance = 48.0
+		sun_light.directional_shadow_pancake_size = 20.0
 		sun_light.directional_shadow_blend_splits = true
 
 func _process(delta: float) -> void:
